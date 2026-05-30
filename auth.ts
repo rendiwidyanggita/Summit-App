@@ -7,42 +7,12 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { prisma } from "@/lib/db";
+import { getAdminClaims } from "@/lib/server/auth-service";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
-
-async function getAdminClaims(userId: string) {
-  const admin = await prisma.adminUser.findUnique({
-    where: { userId },
-    include: {
-      role: {
-        include: {
-          permissions: {
-            include: {
-              permission: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!admin || admin.status !== "ACTIVE") {
-    return {
-      isAdmin: false,
-      roles: [],
-      permissions: [],
-    };
-  }
-
-  return {
-    isAdmin: true,
-    roles: [admin.role.code],
-    permissions: admin.role.permissions.map((item) => item.permission.code),
-  };
-}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),

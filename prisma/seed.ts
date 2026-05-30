@@ -1,12 +1,12 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 
+import { prisma } from "../src/lib/db";
+
 if (!process.env.DATABASE_URL) {
   console.log("Skipping seed: DATABASE_URL is not set.");
   process.exit(0);
 }
-
-const { prisma } = await import("../src/lib/db");
 
 const permissionData = [
   ["admin.access", "Akses Admin", "admin"],
