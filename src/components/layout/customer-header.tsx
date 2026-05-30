@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, Search, ShoppingCart, UserRound } from "lucide-react";
 
@@ -33,7 +34,7 @@ export function CustomerHeader() {
         </Sheet>
 
         <Link href="/" className="flex min-w-fit items-center gap-2 font-semibold text-primary">
-          <span className="grid size-9 place-items-center rounded-md bg-primary text-primary-foreground">SG</span>
+          <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-md" />
           <span className="hidden sm:inline">Summit Gear</span>
         </Link>
 

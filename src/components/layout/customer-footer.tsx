@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function CustomerFooter() {
@@ -5,7 +6,10 @@ export function CustomerFooter() {
     <footer className="border-t bg-primary text-primary-foreground">
       <div className="container-page grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="text-lg font-semibold">Summit Gear</div>
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <Image src="/logo.png" alt="Summit Gear Logo" width={32} height={32} className="rounded-md bg-white p-1" />
+            Summit Gear
+          </div>
           <p className="mt-3 text-sm text-primary-foreground/75">
             Peralatan pendakian dan camping untuk pendaki Indonesia, disiapkan untuk katalog, checkout, dan operasional backoffice.
           </p>

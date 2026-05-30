@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Menu, Search } from "lucide-react";
@@ -43,7 +44,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-card lg:block">
         <div className="flex h-16 items-center gap-2 border-b px-5">
-          <span className="grid size-9 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">SG</span>
+          <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-md" />
           <div>
             <div className="font-semibold">Summit Gear</div>
             <div className="text-xs text-muted-foreground">Admin Backoffice</div>
