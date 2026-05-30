@@ -26,19 +26,23 @@ export default function RegisterPage() {
         </>
       }
     >
-      <div className="mb-5 overflow-hidden rounded-lg border bg-[linear-gradient(135deg,var(--secondary),var(--background))]">
-        <div className="grid gap-3 p-4 sm:grid-cols-3">
+      <div className="mb-6 rounded-[1.5rem] bg-[linear-gradient(135deg,var(--secondary),var(--background))] p-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-sm">
           {[
-            { icon: CheckCircle2, label: "1. Buat akun" },
-            { icon: MapPinned, label: "2. Simpan alamat" },
-            { icon: Truck, label: "3. Checkout cepat" },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-2 rounded-md bg-card p-3 text-sm font-medium shadow-sm">
-              <item.icon className="size-4 text-primary" />
-              {item.label}
+            { icon: CheckCircle2, label: "Buat akun" },
+            { icon: MapPinned, label: "Lengkapi alamat" },
+            { icon: Truck, label: "Checkout cepat" },
+          ].map((item, index) => (
+            <div key={item.label} className="flex min-w-fit items-center gap-2">
+              <span className="grid size-8 place-items-center rounded-full bg-primary text-primary-foreground">
+                <item.icon className="size-4" />
+              </span>
+              <span className="font-medium">{item.label}</span>
+              {index < 2 ? <span className="h-px w-8 bg-border" /> : null}
             </div>
           ))}
         </div>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">Akun baru disiapkan untuk profil, alamat utama, email verification, dan checkout Sprint 4.</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -90,15 +94,17 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <div className="mt-5 grid gap-3 rounded-md bg-secondary p-4 text-sm text-muted-foreground sm:grid-cols-2">
-        <div className="flex gap-3">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-          <p>Email verification akan dikirim setelah register saat endpoint Sprint 2 terhubung ke layanan email.</p>
-        </div>
-        <div className="flex gap-3">
-          <PackageCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-          <p>Profil dan alamat menjadi dasar order tracking dan checkout Sprint 4.</p>
-        </div>
+      <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+        {[
+          { icon: ShieldCheck, label: "Email verification" },
+          { icon: PackageCheck, label: "Order tracking ready" },
+          { icon: Truck, label: "Checkout foundation" },
+        ].map((item) => (
+          <span key={item.label} className="inline-flex items-center gap-2">
+            <item.icon className="size-4 text-primary" />
+            {item.label}
+          </span>
+        ))}
       </div>
     </AuthPageShell>
   );

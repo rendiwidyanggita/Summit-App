@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Apple, Clock, KeyRound, Mail, MapPin, Mountain, PackageCheck, ShieldCheck } from "lucide-react";
+import { Apple, KeyRound, Mail, MapPin, Mountain, PackageCheck, ShieldCheck } from "lucide-react";
 
 import { AuthPageShell } from "@/components/sections/auth-page-shell";
 import { Button } from "@/components/ui/button";
@@ -26,18 +26,17 @@ export default function LoginPage() {
         </>
       }
     >
-      <div className="mb-5 grid gap-3 rounded-lg bg-primary p-4 text-primary-foreground sm:grid-cols-3">
-        {[
-          { icon: PackageCheck, label: "Pesanan", value: "Pantau status" },
-          { icon: MapPin, label: "Alamat", value: "Siap checkout" },
-          { icon: Clock, label: "Session", value: "Login cepat" },
-        ].map((item) => (
-          <div key={item.label} className="rounded-md border border-white/15 bg-white/10 p-3">
-            <item.icon className="size-4 text-accent" />
-            <div className="mt-2 text-sm font-semibold">{item.label}</div>
-            <div className="text-xs text-primary-foreground/72">{item.value}</div>
-          </div>
-        ))}
+      <div className="mb-6 rounded-[1.5rem] bg-primary p-4 text-primary-foreground">
+        <div className="flex flex-wrap gap-2 text-sm">
+          {["Pantau pesanan", "Alamat tersimpan", "Checkout cepat"].map((item) => (
+            <span key={item} className="rounded-full bg-white/12 px-3 py-1.5">
+              {item}
+            </span>
+          ))}
+        </div>
+        <p className="mt-4 text-sm leading-6 text-primary-foreground/78">
+          Masuk untuk melanjutkan belanja gear, memakai alamat utama, dan melihat status order saat modul payment/fulfillment aktif.
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -78,19 +77,19 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <div className="mt-5 grid gap-3 rounded-md bg-secondary p-4 text-sm">
-        <div className="flex gap-3">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-          <span>Session web disiapkan untuk proteksi halaman akun dan checkout.</span>
-        </div>
-        <div className="flex gap-3">
-          <KeyRound className="mt-0.5 size-4 shrink-0 text-primary" />
-          <span>Reset password tersedia jika akses akun perlu dipulihkan.</span>
-        </div>
-        <div className="flex gap-3">
-          <Mountain className="mt-0.5 size-4 shrink-0 text-primary" />
-          <span>OAuth Google dan Apple mengikuti requirement Sprint 2 PRD.</span>
-        </div>
+      <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+        {[
+          { icon: ShieldCheck, label: "Session protected" },
+          { icon: KeyRound, label: "Reset password" },
+          { icon: Mountain, label: "OAuth ready" },
+          { icon: PackageCheck, label: "Order tracking" },
+          { icon: MapPin, label: "Alamat utama" },
+        ].map((item) => (
+          <span key={item.label} className="inline-flex items-center gap-2">
+            <item.icon className="size-4 text-primary" />
+            {item.label}
+          </span>
+        ))}
       </div>
     </AuthPageShell>
   );
