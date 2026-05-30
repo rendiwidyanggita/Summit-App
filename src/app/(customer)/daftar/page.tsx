@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Apple, Mail, ShieldCheck } from "lucide-react";
+import { Apple, CheckCircle2, Mail, MapPinned, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 
 import { AuthPageShell } from "@/components/sections/auth-page-shell";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,21 @@ export default function RegisterPage() {
         </>
       }
     >
+      <div className="mb-5 overflow-hidden rounded-lg border bg-[linear-gradient(135deg,var(--secondary),var(--background))]">
+        <div className="grid gap-3 p-4 sm:grid-cols-3">
+          {[
+            { icon: CheckCircle2, label: "1. Buat akun" },
+            { icon: MapPinned, label: "2. Simpan alamat" },
+            { icon: Truck, label: "3. Checkout cepat" },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-2 rounded-md bg-card p-3 text-sm font-medium shadow-sm">
+              <item.icon className="size-4 text-primary" />
+              {item.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2">
         <Button variant="outline" type="button">
           <Mail /> Google
@@ -75,9 +90,15 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <div className="mt-5 flex gap-3 rounded-md bg-secondary p-4 text-sm text-muted-foreground">
-        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-        <p>Email verification akan dikirim setelah register saat endpoint Sprint 2 terhubung ke layanan email.</p>
+      <div className="mt-5 grid gap-3 rounded-md bg-secondary p-4 text-sm text-muted-foreground sm:grid-cols-2">
+        <div className="flex gap-3">
+          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+          <p>Email verification akan dikirim setelah register saat endpoint Sprint 2 terhubung ke layanan email.</p>
+        </div>
+        <div className="flex gap-3">
+          <PackageCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+          <p>Profil dan alamat menjadi dasar order tracking dan checkout Sprint 4.</p>
+        </div>
       </div>
     </AuthPageShell>
   );
