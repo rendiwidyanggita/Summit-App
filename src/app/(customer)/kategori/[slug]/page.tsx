@@ -1,21 +1,79 @@
-import { ProductCard } from "@/components/sections/product-card";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowRight, Boxes, Star } from "lucide-react";
+
+import { CatalogPageClient } from "@/components/sections/catalog-page-client";
 import { Badge } from "@/components/ui/badge";
-import { featuredProducts } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { categoryCatalog, getCategoryBySlug, getProductsByCategory } from "@/lib/constants";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const category = getCategoryBySlug(slug);
+
+  return {
+    title: category ? `${category.name} Pendakian` : "Kategori",
+    description: category?.description ?? "Kategori produk Summit Gear.",
+  };
+}
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const title = slug.replaceAll("-", " ");
+  const category = getCategoryBySlug(slug);
+
+  if (!category) {
+    notFound();
+  }
+
+  const products = getProductsByCategory(category.slug);
+  const topRated = products.reduce((best, product) => (product.rating > best ? product.rating : best), 0);
 
   return (
     <div className="container-page py-8">
-      <Badge variant="secondary">Kategori</Badge>
-      <h1 className="mt-3 text-3xl font-semibold capitalize tracking-normal">{title}</h1>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">Route kategori SEO-friendly sudah tersedia. Produk di bawah masih data foundation.</p>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {featuredProducts.map((product) => (
-          <ProductCard key={product.slug} product={product} />
+      <section className="relative mb-6 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
+        <Image src={category.image} alt={category.name} fill priority className="object-cover opacity-35" sizes="100vw" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary/20" />
+        <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1fr_360px] lg:items-end">
+          <div>
+            <Badge variant="accent">{category.highlight}</Badge>
+            <h1 className="mt-3 text-3xl font-semibold capitalize tracking-normal sm:text-5xl">{category.name}</h1>
+            <p className="mt-3 max-w-2xl text-sm text-primary-foreground/82 sm:text-base">{category.description}</p>
+          </div>
+          <Card className="bg-primary-foreground/95 text-foreground">
+            <CardContent className="grid gap-3 p-4 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Boxes className="size-4" /> Produk
+                </span>
+                <span className="font-semibold">{products.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Star className="size-4" /> Rating tertinggi
+                </span>
+                <span className="font-semibold">{topRated || "-"} </span>
+              </div>
+              <Button variant="accent" asChild>
+                <Link href="/produk">
+                  Lihat semua produk <ArrowRight />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
+        {categoryCatalog.map((item) => (
+          <Button key={item.slug} variant={item.slug === category.slug ? "default" : "outline"} size="sm" asChild>
+            <Link href={`/kategori/${item.slug}`}>{item.name}</Link>
+          </Button>
         ))}
       </div>
+
+      <CatalogPageClient products={products} initialCategorySlug={category.slug} />
     </div>
   );
 }
