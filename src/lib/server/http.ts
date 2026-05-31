@@ -2,6 +2,17 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
 import { ZodError } from "zod";
 
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    public code: string,
+    message: string,
+    public details?: unknown,
+  ) {
+    super(message);
+  }
+}
+
 export function ok<T>(data: T, init?: ResponseInit) {
   return NextResponse.json({ data }, init);
 }
@@ -24,6 +35,10 @@ export function fail(status: number, code: string, message: string, details?: un
 }
 
 export function handleRouteError(error: unknown) {
+  if (error instanceof ApiError) {
+    return fail(error.status, error.code, error.message, error.details);
+  }
+
   if (error instanceof ZodError) {
     return fail(422, "VALIDATION_ERROR", "Input tidak valid.", error.flatten());
   }

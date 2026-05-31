@@ -52,8 +52,19 @@ async function countFoundationTables() {
     "Product",
     "ProductVariant",
     "Banner",
+    "Cart",
+    "CartItem",
+    "Order",
+    "OrderItem",
+    "Payment",
+    "Shipment",
+    "Voucher",
     "EmailVerificationToken",
     "PasswordResetToken",
+    "GearChecklist",
+    "GearChecklistItem",
+    "SizeGuide",
+    "SearchHistory",
   ];
   const counts = {};
 

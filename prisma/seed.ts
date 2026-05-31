@@ -135,6 +135,66 @@ const gearChecklists: Array<{
   },
 ];
 
+const sizeGuides: Array<{
+  categorySlug: string;
+  title: string;
+  description: string;
+  rows: Array<Record<string, string>>;
+}> = [
+  {
+    categorySlug: "sepatu",
+    title: "Panduan Ukuran Sepatu Trail",
+    description: "Gunakan panjang kaki terpanjang dan sisakan ruang 0,5-1 cm untuk kaus kaki hiking.",
+    rows: [
+      { eu: "39", panjangKakiCm: "24.5", usMen: "6.5", rekomendasi: "Kaki ramping" },
+      { eu: "40", panjangKakiCm: "25.2", usMen: "7", rekomendasi: "Pendakian harian" },
+      { eu: "41", panjangKakiCm: "26.0", usMen: "8", rekomendasi: "Kaus kaki sedang" },
+      { eu: "42", panjangKakiCm: "26.7", usMen: "9", rekomendasi: "Kaki lebar" },
+      { eu: "43", panjangKakiCm: "27.5", usMen: "10", rekomendasi: "Trekking panjang" },
+    ],
+  },
+  {
+    categorySlug: "jaket",
+    title: "Panduan Ukuran Jaket Outdoor",
+    description: "Pilih ukuran dengan ruang layering untuk base layer dan fleece ringan.",
+    rows: [
+      { ukuran: "S", dadaCm: "88-94", panjangCm: "66", rekomendasi: "Tinggi 160-168 cm" },
+      { ukuran: "M", dadaCm: "95-101", panjangCm: "69", rekomendasi: "Tinggi 168-175 cm" },
+      { ukuran: "L", dadaCm: "102-108", panjangCm: "72", rekomendasi: "Tinggi 175-182 cm" },
+      { ukuran: "XL", dadaCm: "109-116", panjangCm: "75", rekomendasi: "Layering tebal" },
+    ],
+  },
+  {
+    categorySlug: "carrier",
+    title: "Panduan Fitting Carrier",
+    description: "Sesuaikan kapasitas dan torso length agar beban jatuh ke pinggul, bukan bahu.",
+    rows: [
+      { kapasitas: "25-35L", durasi: "Day hike", torsoCm: "40-48", bebanIdeal: "5-8 kg" },
+      { kapasitas: "40-50L", durasi: "1-2 malam", torsoCm: "43-52", bebanIdeal: "8-14 kg" },
+      { kapasitas: "55-65L", durasi: "3-5 malam", torsoCm: "46-55", bebanIdeal: "14-20 kg" },
+    ],
+  },
+];
+
+const sprint4Vouchers = [
+  {
+    code: "SUMMIT50",
+    type: "FIXED_AMOUNT" as const,
+    value: 50000,
+    minSpend: 500000,
+    maxDiscount: null,
+    quota: 100,
+  },
+  {
+    code: "FREEONGKIR",
+    type: "FREE_SHIPPING" as const,
+    value: 40000,
+    minSpend: 750000,
+    maxDiscount: null,
+    quota: 100,
+  },
+];
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -329,6 +389,33 @@ async function main() {
     }
   }
 
+  for (const guide of sizeGuides) {
+    const category = await prisma.category.findUniqueOrThrow({
+      where: { slug: guide.categorySlug },
+    });
+
+    await prisma.sizeGuide.upsert({
+      where: {
+        categoryId_title: {
+          categoryId: category.id,
+          title: guide.title,
+        },
+      },
+      update: {
+        description: guide.description,
+        rows: guide.rows,
+        isActive: true,
+      },
+      create: {
+        categoryId: category.id,
+        title: guide.title,
+        description: guide.description,
+        rows: guide.rows,
+        isActive: true,
+      },
+    });
+  }
+
   await prisma.banner.upsert({
     where: { id: "foundation-homepage-banner" },
     update: {
@@ -344,6 +431,33 @@ async function main() {
       isActive: true,
     },
   });
+
+  for (const voucher of sprint4Vouchers) {
+    await prisma.voucher.upsert({
+      where: { code: voucher.code },
+      update: {
+        type: voucher.type,
+        value: voucher.value,
+        minSpend: voucher.minSpend,
+        maxDiscount: voucher.maxDiscount,
+        quota: voucher.quota,
+        startsAt: new Date("2026-01-01T00:00:00.000Z"),
+        endsAt: new Date("2026-12-31T23:59:59.999Z"),
+        status: "ACTIVE",
+      },
+      create: {
+        code: voucher.code,
+        type: voucher.type,
+        value: voucher.value,
+        minSpend: voucher.minSpend,
+        maxDiscount: voucher.maxDiscount,
+        quota: voucher.quota,
+        startsAt: new Date("2026-01-01T00:00:00.000Z"),
+        endsAt: new Date("2026-12-31T23:59:59.999Z"),
+        status: "ACTIVE",
+      },
+    });
+  }
 
   const passwordHash = await bcrypt.hash("Password123!", 12);
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { code: "SUPER_ADMIN" } });
@@ -372,8 +486,10 @@ async function main() {
   const variantCount = await prisma.productVariant.count();
   const checklistCount = await prisma.gearChecklist.count();
   const checklistItemCount = await prisma.gearChecklistItem.count();
+  const sizeGuideCount = await prisma.sizeGuide.count();
+  const voucherCount = await prisma.voucher.count();
   console.log(
-    `Seed completed. products=${productCount} variants=${variantCount} checklists=${checklistCount} items=${checklistItemCount}`,
+    `Seed completed. products=${productCount} variants=${variantCount} checklists=${checklistCount} items=${checklistItemCount} sizeGuides=${sizeGuideCount} vouchers=${voucherCount}`,
   );
 }
 

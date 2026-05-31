@@ -92,6 +92,7 @@ model User {
   orders          Order[]
   addresses       Address[]
   wishlistItems   Wishlist[]
+  searchHistory   SearchHistory[]
   articles        Article[]
   notifications   Notification[]
   auditLogs       AuditLog[]
@@ -222,6 +223,7 @@ model Category {
   parent          Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children        Category[] @relation("CategoryHierarchy")
   products        Product[]
+  sizeGuides      SizeGuide[]
 }
 
 model Brand {
@@ -303,6 +305,8 @@ model Cart {
 
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
+
+  @@unique([userId])
 }
 
 model CartItem {
@@ -504,6 +508,34 @@ model Wishlist {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
+}
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  query     String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model SizeGuide {
+  id          String   @id @default(cuid())
+  categoryId  String
+  title       String
+  description String?  @db.Text
+  rows        Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, title])
+  @@index([categoryId])
+  @@index([isActive])
 }
 
 model AuditLog {

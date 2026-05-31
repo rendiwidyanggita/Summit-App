@@ -49,9 +49,16 @@ Public:
 - `GET /api/health`
 - `GET /api/products`
 - `GET /api/products/[slug]`
+- `GET /api/products/[slug]/related`
+- `GET /api/products/suggest`
 - `GET /api/categories`
 - `GET /api/brands`
 - `GET /api/banners`
+- `GET /api/home-feed`
+- `GET /api/gear-checklists`
+- `GET /api/gear-checklists/[slug]`
+- `GET /api/size-guides`
+- `GET /api/size-guides/[categorySlug]`
 - `POST /api/auth/register`
 - `POST /api/auth/verify-email`
 - `POST /api/auth/forgot-password`
@@ -66,6 +73,17 @@ Authenticated customer:
 - `POST /api/account/addresses`
 - `PATCH /api/account/addresses/[id]`
 - `DELETE /api/account/addresses/[id]`
+- `GET /api/search-history`
+- `POST /api/search-history`
+- `DELETE /api/search-history`
+- `GET /api/cart`
+- `POST /api/cart`
+- `DELETE /api/cart`
+- `PATCH /api/cart/items/[id]`
+- `DELETE /api/cart/items/[id]`
+- `POST /api/checkout/shipping-rates`
+- `POST /api/checkout/voucher`
+- `POST /api/checkout/order`
 
 Admin:
 
@@ -77,6 +95,36 @@ Sprint 2 auth/account behavior:
 - Google and Apple OAuth providers are enabled only when their env credentials are present.
 - Brevo is used for email verification and reset password delivery when `BREVO_API_KEY` and `EMAIL_FROM` are configured.
 - In development, missing Brevo credentials skip email delivery with a server warning; production must provide them.
+
+Sprint 3 catalog behavior:
+
+- Product list supports `q`, `category`, `brand`, `minPrice`, `maxPrice`, `minRating`, `discountOnly`, `inStockOnly`, `sort`, `page`, and `pageSize`.
+- Sort values are `newest`, `price_asc`, `price_desc`, `name_asc`, `best_selling`, and `rating_desc`.
+- Sitemap includes active product and category routes from the database.
+- Product detail pages include dynamic metadata and Product JSON-LD.
+- Search history is authenticated; size guides and gear checklists are public catalog support APIs.
+
+Sprint 3 verification:
+
+```bash
+npm.cmd run build
+npm.cmd run verify:sprint3
+```
+
+Sprint 4 cart/checkout behavior:
+
+- Cart is persisted per authenticated user and enforces variant stock limits.
+- Shipping rates are backend-calculated from cart weight and address province using a deterministic mock-rate table until RajaOngkir/BinderByte credentials are integrated.
+- Voucher validation supports fixed amount, percentage, and free-shipping vouchers with active dates, minimum spend, and quota checks.
+- Checkout order creation runs in a Prisma transaction, decrements variant stock, creates order items, payment placeholder, shipment placeholder, and clears the cart.
+- Midtrans payment creation is not active in Sprint 4; Sprint 4 stops at non-payment order creation readiness.
+
+Sprint 4 verification:
+
+```bash
+npm.cmd run build
+npm.cmd run verify:sprint4
+```
 
 ## Verified Routes
 

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, Boxes, Star } from "lucide-react";
 
@@ -8,14 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { categoryCatalog, getCategoryBySlug, getProductsByCategory } from "@/lib/constants";
+import { getCategoryBySlug as getCatalogCategoryBySlug } from "@/lib/server/catalog-service";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const category = getCategoryBySlug(slug);
+  const catalogCategory = await getCatalogCategoryBySlug(slug);
+  const fallbackCategory = getCategoryBySlug(slug);
 
   return {
-    title: category ? `${category.name} Pendakian` : "Kategori",
-    description: category?.description ?? "Kategori produk Summit Gear.",
+    title: catalogCategory?.metaTitle ?? (fallbackCategory ? `${fallbackCategory.name} Pendakian` : "Kategori"),
+    description: catalogCategory?.metaDescription ?? fallbackCategory?.description ?? "Kategori produk Summit Gear.",
   };
 }
 

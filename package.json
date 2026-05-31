@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "verify:sprint3": "node scripts/verify-sprint2-backend.mjs"
+    "verify:sprint3": "node scripts/verify-sprint3-backend.mjs",
+    "verify:sprint4": "tsx scripts/verify-sprint4-backend.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

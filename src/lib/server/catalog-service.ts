@@ -191,6 +191,49 @@ export async function getProductBySlug(slug: string) {
   return product ? serializeProduct(product) : null;
 }
 
+export async function getCategoryBySlug(slug: string) {
+  return prisma.category.findUnique({
+    where: { slug },
+    include: {
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
+  });
+}
+
+export async function listCatalogSitemapEntries() {
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({
+      where: { status: "ACTIVE" },
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.category.findMany({
+      where: {
+        products: {
+          some: { status: "ACTIVE" },
+        },
+      },
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
+
+  return {
+    products,
+    categories,
+  };
+}
+
 export async function getRelatedProducts(slug: string, limit = 6) {
   const safeLimit = Math.min(20, Math.max(1, Math.trunc(limit)));
   const source = await prisma.product.findFirst({

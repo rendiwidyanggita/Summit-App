@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Package, Star } from "lucide-react";
 
@@ -10,19 +11,64 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { catalogProducts, getProductBySlug, getProductsByCategory } from "@/lib/constants";
+import { getProductBySlug as getCatalogProductBySlug } from "@/lib/server/catalog-service";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const product = getProductBySlug(slug);
+function buildProductJsonLd(product: Awaited<ReturnType<typeof getCatalogProductBySlug>>, baseUrl: string) {
+  if (!product) return null;
+
+  const variants = product.variants ?? [];
+  const availableStock = variants.reduce((total, variant) => total + variant.stock, 0);
+  const price = product.discountPrice ?? product.price;
 
   return {
-    title: product?.name ?? "Produk",
-    description: product?.description ?? "Detail produk Summit Gear.",
-    openGraph: product
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.metaDescription ?? product.description,
+    image: product.photos,
+    sku: variants[0]?.sku,
+    brand: product.brand
       ? {
-          title: product.name,
-          description: product.description,
-          images: product.images.slice(0, 1),
+          "@type": "Brand",
+          name: product.brand.name,
+        }
+      : undefined,
+    category: product.category?.name,
+    url: `${baseUrl}/produk/${product.slug}`,
+    aggregateRating: product.ratingAvg
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: product.ratingAvg,
+          reviewCount: product.ratingCount,
+        }
+      : undefined,
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "IDR",
+      lowPrice: price,
+      highPrice: product.price,
+      offerCount: Math.max(1, variants.length),
+      availability: availableStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+  };
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const catalogProduct = await getCatalogProductBySlug(slug);
+  const fallbackProduct = getProductBySlug(slug);
+  const title = catalogProduct?.metaTitle ?? catalogProduct?.name ?? fallbackProduct?.name ?? "Produk";
+  const description = catalogProduct?.metaDescription ?? fallbackProduct?.description ?? "Detail produk Summit Gear.";
+  const images = catalogProduct?.photos?.slice(0, 1) ?? fallbackProduct?.images.slice(0, 1);
+
+  return {
+    title,
+    description,
+    openGraph: catalogProduct || fallbackProduct
+      ? {
+          title,
+          description,
+          images,
         }
       : undefined,
   };
@@ -31,6 +77,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
+  const catalogProduct = await getCatalogProductBySlug(slug);
+  const baseUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const productJsonLd = buildProductJsonLd(catalogProduct, baseUrl);
 
   if (!product) {
     notFound();
@@ -44,6 +93,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="container-page py-8">
+      {productJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+      ) : null}
+
       <div className="mb-5 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         <Link href="/produk" className="hover:text-primary">
           Produk
