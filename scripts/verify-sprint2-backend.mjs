@@ -114,6 +114,20 @@ try {
   checks.push(await request("GET", "/api/account/profile"));
   checks.push(await request("GET", "/api/account/addresses"));
   checks.push(await request("GET", "/api/admin/summary"));
+  // Sprint 3 catalog coverage
+  checks.push(await request("GET", "/api/products?sort=newest"));
+  checks.push(await request("GET", "/api/products?sort=best_selling&pageSize=5"));
+  checks.push(await request("GET", "/api/products?sort=rating_desc&minRating=4.5"));
+  checks.push(await request("GET", "/api/products?discountOnly=1&inStockOnly=1"));
+  checks.push(await request("GET", "/api/products?category=tenda&brand=summit-gear"));
+  checks.push(await request("GET", "/api/products/summit-ridge-tent-2p"));
+  checks.push(await request("GET", "/api/products/summit-ridge-tent-2p/related"));
+  checks.push(await request("GET", "/api/products/suggest?q=ten"));
+  checks.push(await request("GET", "/api/products/suggest?q="));
+  checks.push(await request("GET", "/api/home-feed"));
+  checks.push(await request("GET", "/api/gear-checklists"));
+  checks.push(await request("GET", "/api/gear-checklists/pendakian-gunung"));
+  checks.push(await request("GET", "/api/gear-checklists/non-existent"));
   const register = await request("POST", "/api/auth/register", {
       name: "Sprint Two Tester",
       email,

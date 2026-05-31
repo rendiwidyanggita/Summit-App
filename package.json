@@ -10,7 +10,8 @@
     "prisma:generate": "node scripts/prisma-generate.mjs",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "verify:sprint3": "node scripts/verify-sprint2-backend.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

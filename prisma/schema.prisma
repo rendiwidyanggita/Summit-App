@@ -235,34 +235,47 @@ model Brand {
 }
 
 model Product {
-  id              String           @id @default(cuid())
-  name            String
-  slug            String           @unique
-  description     String           @db.Text
-  categoryId      String
-  brandId         String
-  weightGram      Int
-  price           Decimal          @db.Decimal(12, 2)
-  discountPrice   Decimal?         @db.Decimal(12, 2)
-  photos          String[]
-  videoUrl        String?
-  status          ProductStatus    @default(DRAFT)
-  isCodAllowed    Boolean          @default(true)
-  metaTitle       String?
-  metaDescription String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                  String               @id @default(cuid())
+  name                String
+  slug                String               @unique
+  description         String               @db.Text
+  categoryId          String
+  brandId             String
+  weightGram          Int
+  price               Decimal              @db.Decimal(12, 2)
+  discountPrice       Decimal?             @db.Decimal(12, 2)
+  photos              String[]
+  videoUrl            String?
+  status              ProductStatus        @default(DRAFT)
+  isCodAllowed        Boolean              @default(true)
+  // Catalog metadata: tags & specs are intrinsic product data,
+  // ratingAvg/ratingCount/soldCount/isFeatured are denormalized counters
+  // to be maintained by future sprints (orders → soldCount, reviews → rating*).
+  tags                String[]             @default([])
+  specs               Json?
+  ratingAvg           Decimal?             @db.Decimal(3, 2)
+  ratingCount         Int                  @default(0)
+  soldCount           Int                  @default(0)
+  isFeatured          Boolean              @default(false)
+  metaTitle           String?
+  metaDescription     String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
-  category        Category         @relation(fields: [categoryId], references: [id])
-  brand           Brand            @relation(fields: [brandId], references: [id])
-  variants        ProductVariant[]
-  cartItems       CartItem[]
-  orderItems      OrderItem[]
-  wishlistItems   Wishlist[]
+  category            Category             @relation(fields: [categoryId], references: [id])
+  brand               Brand                @relation(fields: [brandId], references: [id])
+  variants            ProductVariant[]
+  cartItems           CartItem[]
+  orderItems          OrderItem[]
+  wishlistItems       Wishlist[]
+  gearChecklistItems  GearChecklistItem[]
 
   @@index([categoryId])
   @@index([brandId])
   @@index([status])
+  @@index([soldCount])
+  @@index([ratingAvg])
+  @@index([isFeatured])
 }
 
 model ProductVariant {
@@ -503,4 +516,40 @@ model AuditLog {
   createdAt DateTime @default(now())
 
   actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+}
+
+
+
+model GearChecklist {
+  id          String              @id @default(cuid())
+  slug        String              @unique
+  name        String
+  activity    String
+  description String?             @db.Text
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  items       GearChecklistItem[]
+
+  @@index([isActive])
+}
+
+model GearChecklistItem {
+  id          String         @id @default(cuid())
+  checklistId String
+  productId   String?
+  label       String
+  quantity    Int            @default(1)
+  isOptional  Boolean        @default(false)
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  checklist   GearChecklist  @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  product     Product?       @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([checklistId])
+  @@index([productId])
 }
