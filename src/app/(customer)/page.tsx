@@ -42,8 +42,8 @@ export default function HomePage() {
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/76 to-primary/20" />
-        <div className="container-page relative grid min-h-[calc(100vh-4rem)] content-end gap-8 py-10 md:grid-cols-[1.08fr_0.92fr] md:items-end md:py-14">
-          <div className="pb-4">
+        <div className="container-page relative grid min-h-[calc(100vh-4rem)] content-center gap-8 py-10 md:grid-cols-[1.08fr_0.92fr] md:items-center md:py-14 lg:-translate-y-4">
+          <div>
             <Badge variant="accent">Outdoor Gear Store</Badge>
             <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-normal sm:text-5xl lg:text-6xl">Summit Gear</h1>
             <p className="mt-4 max-w-2xl text-base text-primary-foreground/85 sm:text-lg">
@@ -69,7 +69,7 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <div className="pb-4">
+          <div>
             <div className="rounded-lg border border-white/18 bg-white/12 p-4 backdrop-blur">
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -141,14 +141,14 @@ export default function HomePage() {
           <div className="grid gap-3 sm:grid-cols-2">
             {categoryCatalog.slice(1, 7).map((category) => (
               <Link key={category.slug} href={`/kategori/${category.slug}`} className="group relative min-h-44 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
-              <Image src={category.image} alt={category.name} fill className="object-cover opacity-35 transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 25vw, 50vw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-4">
-                <Badge variant="accent">{category.highlight}</Badge>
-                <div className="mt-3 text-lg font-semibold">{category.name}</div>
-                <p className="mt-1 line-clamp-2 text-xs text-primary-foreground/78">{category.description}</p>
-              </div>
-            </Link>
+                <Image src={category.image} alt={category.name} fill className="object-cover opacity-35 transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 25vw, 50vw" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <Badge variant="accent">{category.highlight}</Badge>
+                  <div className="mt-3 text-lg font-semibold">{category.name}</div>
+                  <p className="mt-1 line-clamp-2 text-xs text-primary-foreground/78">{category.description}</p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -233,7 +233,7 @@ export default function HomePage() {
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-medium">{product.name}</div>
                   <div className="mt-1 text-sm text-muted-foreground">
-                    {product.category} · {product.sold} terjual · {product.rating} rating
+                    {product.category} - {product.sold} terjual - {product.rating} rating
                   </div>
                 </div>
                 <Zap className="size-4 shrink-0 text-accent" />

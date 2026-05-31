@@ -1,14 +1,19 @@
-import { Package } from "lucide-react";
+import { notFound } from "next/navigation";
 
-import { EmptyState } from "@/components/sections/empty-state";
+import { OrderDetailView } from "@/components/sections/order-detail-view";
+import { getOrderById } from "@/lib/order-mock";
+
+export const metadata = {
+  title: "Detail Pesanan",
+};
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = await params;
+  const order = getOrderById(orderId);
 
-  return (
-    <div className="container-page py-8">
-      <h1 className="mb-6 text-3xl font-semibold tracking-normal">Detail Pesanan {orderId}</h1>
-      <EmptyState icon={Package} title="Detail pesanan placeholder" description="Route detail pesanan sudah tersedia untuk kontrak URL dan layout sebelum data order aktif." />
-    </div>
-  );
+  if (!order) {
+    notFound();
+  }
+
+  return <OrderDetailView order={order} />;
 }
