@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, CreditCard, MapPin, PackageCheck, ReceiptText, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, CreditCard, MapPin, MessageSquareWarning, PackageCheck, ReceiptText, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/sections/order-status-badge";
 import { OrderTimeline } from "@/components/sections/order-timeline";
+import { ReviewFormMock } from "@/components/sections/review-form-mock";
+import { SupportFormMock } from "@/components/sections/support-form-mock";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,6 +103,8 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
               <OrderTimeline items={order.timeline} />
             </CardContent>
           </Card>
+
+          <ReviewFormMock order={order} />
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
@@ -143,6 +147,37 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
                 <Button disabled>Konfirmasi diterima</Button>
               )}
               <p className="text-xs leading-5 text-muted-foreground">Action fulfillment, cancel order, invoice, dan status final payment masih placeholder frontend sesuai batas Sprint 5.</p>
+            </CardContent>
+          </Card>
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <RotateCcw className="size-4 text-primary" />
+                Return / Komplain
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              {order.status === "COMPLETED" || order.status === "SHIPPED" ? (
+                <>
+                  <SupportFormMock order={order} mode="return" />
+                  <Separator />
+                  <SupportFormMock order={order} mode="complaint" />
+                </>
+              ) : (
+                <div className="rounded-md bg-secondary p-3 text-sm text-muted-foreground">Return dan komplain aktif setelah order dikirim atau selesai.</div>
+              )}
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" asChild>
+                  <Link href="/akun/return">
+                    <RotateCcw /> Return
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/akun/komplain">
+                    <MessageSquareWarning /> Komplain
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </aside>

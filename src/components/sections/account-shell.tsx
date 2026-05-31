@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CheckCircle2, Heart, Home, MapPin, PackageSearch, ShieldCheck, UserRound } from "lucide-react";
+import { Bell, CheckCircle2, Heart, Home, MapPin, MessageSquareWarning, PackageSearch, RotateCcw, ShieldCheck, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +13,8 @@ const accountNav = [
   { href: "/akun/alamat", label: "Alamat", icon: MapPin },
   { href: "/akun/pesanan", label: "Pesanan", icon: PackageSearch },
   { href: "/akun/wishlist", label: "Wishlist", icon: Heart },
+  { href: "/akun/return", label: "Return", icon: RotateCcw },
+  { href: "/akun/komplain", label: "Komplain", icon: MessageSquareWarning },
   { href: "/akun/notifikasi", label: "Notifikasi", icon: Bell },
 ];
 

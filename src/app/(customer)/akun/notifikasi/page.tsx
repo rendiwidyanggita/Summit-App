@@ -1,12 +1,14 @@
-import { Bell } from "lucide-react";
+import { AccountShell } from "@/components/sections/account-shell";
+import { NotificationsPageClient } from "@/components/sections/notifications-page-client";
 
-import { EmptyState } from "@/components/sections/empty-state";
+export const metadata = {
+  title: "Notifikasi",
+};
 
 export default function NotificationsPage() {
   return (
-    <div className="container-page py-8">
-      <h1 className="mb-6 text-3xl font-semibold tracking-normal">Notifikasi</h1>
-      <EmptyState icon={Bell} title="Notifikasi belum aktif" description="Email dan in-app notification akan terhubung saat order, payment, dan return flow tersedia." />
-    </div>
+    <AccountShell title="Notifikasi" description="Preview notifikasi transaksi, wishlist price drop, return, dan promo tanpa service backend.">
+      <NotificationsPageClient />
+    </AccountShell>
   );
 }

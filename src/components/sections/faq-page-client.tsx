@@ -1,0 +1,82 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { HelpCircle, MessageSquareWarning, Search } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { faqs } from "@/lib/support-trust-data";
+
+const categories = ["Semua", ...Array.from(new Set(faqs.map((faq) => faq.category)))];
+
+export function FaqPageClient() {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("Semua");
+
+  const filteredFaqs = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+
+    return faqs.filter((faq) => {
+      const matchesSearch = keyword ? [faq.question, faq.answer, faq.category].join(" ").toLowerCase().includes(keyword) : true;
+      const matchesCategory = category === "Semua" ? true : faq.category === category;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [category, search]);
+
+  return (
+    <div className="container-page py-8">
+      <section className="overflow-hidden rounded-[1.5rem] bg-primary p-5 text-primary-foreground sm:p-7">
+        <Badge variant="accent">Support Center</Badge>
+        <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">FAQ Summit Gear</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
+          Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
+        </p>
+        <div className="relative mt-5 max-w-xl">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari pertanyaan..." className="bg-background pl-9 text-foreground" />
+        </div>
+      </section>
+
+      <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
+        {categories.map((item) => (
+          <Button key={item} type="button" variant={category === item ? "default" : "outline"} onClick={() => setCategory(item)} className="shrink-0">
+            {item}
+          </Button>
+        ))}
+      </div>
+
+      <div className="mt-4 grid gap-3">
+        {filteredFaqs.map((faq) => (
+          <Card key={faq.id}>
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <Badge variant="secondary">{faq.category}</Badge>
+                  <h2 className="mt-3 font-semibold">{faq.question}</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{faq.answer}</p>
+                </div>
+                <HelpCircle className="size-5 shrink-0 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3 rounded-lg border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="font-semibold">Masih butuh bantuan?</div>
+          <p className="mt-1 text-sm text-muted-foreground">Komplain dan return mock sudah disiapkan di pusat akun customer.</p>
+        </div>
+        <Button asChild>
+          <Link href="/akun/komplain">
+            Pusat komplain <MessageSquareWarning />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+}

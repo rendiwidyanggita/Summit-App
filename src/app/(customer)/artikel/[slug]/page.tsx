@@ -1,13 +1,37 @@
-import { Badge } from "@/components/ui/badge";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { ArticleDetailView } from "@/components/sections/article-detail-view";
+import { getArticleBySlug, getRelatedArticles } from "@/lib/support-trust-data";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const article = getArticleBySlug(slug);
+
+  if (!article) {
+    return {
+      title: "Artikel",
+    };
+  }
+
+  return {
+    title: article.title,
+    description: article.excerpt,
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      images: [article.image],
+    },
+  };
+}
 
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const article = getArticleBySlug(slug);
 
-  return (
-    <article className="container-page max-w-3xl py-8">
-      <Badge variant="secondary">Artikel</Badge>
-      <h1 className="mt-3 text-3xl font-semibold capitalize tracking-normal">{slug.replaceAll("-", " ")}</h1>
-      <p className="mt-4 text-muted-foreground">Konten artikel masih placeholder untuk foundation route SEO. Detail artikel, metadata dinamis, dan Open Graph image akan ditambahkan saat modul artikel aktif.</p>
-    </article>
-  );
+  if (!article) {
+    notFound();
+  }
+
+  return <ArticleDetailView article={article} relatedArticles={getRelatedArticles(slug)} />;
 }

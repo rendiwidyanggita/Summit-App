@@ -67,7 +67,7 @@ export function ProductDetailSummary({ product }: { product: ProductCatalogItem 
           <ShoppingCart /> Add to Cart Sprint 4
         </Button>
         <Button variant="outline" disabled>
-          <Heart /> Wishlist Sprint 7
+          <Heart /> Wishlist mock
         </Button>
       </div>
 
@@ -78,7 +78,7 @@ export function ProductDetailSummary({ product }: { product: ProductCatalogItem 
         </div>
         <div className="flex gap-3">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" />
-          <span>Reserved stock dan checkout aman masuk setelah cart aktif.</span>
+          <span>Wishlist, review, dan trust signal tampil sebagai mock Sprint 7 tanpa persistence.</span>
         </div>
       </div>
     </div>

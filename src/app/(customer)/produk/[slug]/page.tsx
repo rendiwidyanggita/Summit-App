@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight, CheckCircle2, Package, Star } from "lucide-react";
+import { ArrowRight, CheckCircle2, Package } from "lucide-react";
 
 import { ProductCard } from "@/components/sections/product-card";
 import { ProductDetailSummary } from "@/components/sections/product-detail-summary";
 import { ProductGallery } from "@/components/sections/product-gallery";
+import { ProductReviews } from "@/components/sections/product-reviews";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -149,10 +150,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
               </TabsContent>
               <TabsContent value="reviews" className="mt-5">
-                <div className="rounded-md bg-secondary p-4 text-sm text-muted-foreground">
-                  <Star className="mb-2 size-5 fill-accent text-accent" />
-                  Rating summary dan review pembeli akan aktif setelah order selesai dan modul review Sprint 7 tersedia.
-                </div>
+                <ProductReviews productSlug={product.slug} />
               </TabsContent>
             </Tabs>
           </CardContent>
