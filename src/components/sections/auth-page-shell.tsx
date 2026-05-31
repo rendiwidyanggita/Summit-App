@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Clock, MapPinned, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, MapPinned, ShieldCheck, Sparkles, Truck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -18,25 +18,33 @@ export function AuthPageShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden border-b bg-[radial-gradient(circle_at_20%_20%,color-mix(in_oklab,var(--accent)_22%,transparent),transparent_30%),linear-gradient(135deg,var(--secondary)_0%,var(--background)_52%,color-mix(in_oklab,var(--primary)_10%,var(--background))_100%)]">
-      <div className="pointer-events-none absolute -left-28 top-20 size-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-10 size-80 rounded-full bg-accent/20 blur-3xl" />
-      <div className="container-page relative grid min-h-[calc(100vh-4rem)] gap-8 py-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-center lg:py-12">
-        <div className="relative overflow-hidden rounded-[2rem] border bg-card/90 p-5 shadow-sm backdrop-blur sm:p-7">
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-bl-[4rem] bg-accent/25" />
+    <section className="summit-surface relative overflow-hidden border-b">
+      <div className="pointer-events-none absolute -left-24 top-16 size-72 rounded-full bg-primary/12 blur-3xl" />
+      <div className="pointer-events-none absolute -right-28 bottom-8 size-96 rounded-full bg-accent/20 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px rotate-12 bg-primary/10" />
+      <div className="container-page relative grid min-h-[calc(100vh-4rem)] gap-6 py-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-center lg:py-10">
+        <div className="relative overflow-hidden rounded-[2rem] border bg-card/88 p-4 shadow-sm backdrop-blur sm:p-6 lg:rounded-[2.5rem_1.25rem_2.5rem_1.25rem]">
+          <div className="absolute -right-12 -top-12 size-40 rounded-full bg-accent/25" />
+          <div className="absolute bottom-0 left-0 h-24 w-44 rounded-tr-[5rem] bg-primary/8" />
           <div className="relative">
-            <Badge variant="accent" className="w-fit">
-              {badge}
-            </Badge>
-            <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-4xl">{title}</h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="accent" className="w-fit">
+                {badge}
+              </Badge>
+              <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+                <Sparkles className="size-3.5 text-primary" />
+                Outdoor account flow
+              </span>
+            </div>
+            <h1 className="mt-4 max-w-xl text-3xl font-semibold tracking-normal sm:text-4xl">{title}</h1>
             <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">{description}</p>
-            <div className="my-6 h-px bg-[linear-gradient(90deg,var(--primary),transparent)]" />
+            <div className="trail-divider my-6" />
             {children}
             {footer ? <div className="mt-5 text-center text-sm text-muted-foreground">{footer}</div> : null}
           </div>
         </div>
 
-        <div className="relative hidden min-h-[640px] overflow-hidden rounded-[2.5rem] bg-primary text-primary-foreground shadow-sm lg:block">
+        <div className="relative hidden min-h-[640px] overflow-hidden rounded-[1.5rem_3rem_1.5rem_3rem] bg-primary text-primary-foreground shadow-sm lg:block">
           <Image
             src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80"
             alt="Pendaki menyiapkan perlengkapan outdoor"
@@ -46,6 +54,8 @@ export function AuthPageShell({
             sizes="50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/10" />
+          <div className="absolute left-8 top-28 h-48 w-28 rounded-full border border-white/20" />
+          <div className="absolute right-8 top-16 size-24 rounded-[2rem] border border-accent/60 bg-accent/10 backdrop-blur" />
           <div className="absolute left-8 top-8 flex flex-wrap gap-2">
             {["Profil", "Alamat", "Checkout", "Tracking"].map((item) => (
               <span key={item} className="rounded-full border border-white/20 bg-white/12 px-4 py-2 text-sm backdrop-blur">
@@ -53,12 +63,12 @@ export function AuthPageShell({
               </span>
             ))}
           </div>
-          <div className="absolute inset-x-0 bottom-0 p-9">
+          <div className="absolute inset-x-0 bottom-0 p-8 xl:p-9">
             <Badge variant="secondary" className="mb-4">
               Summit Gear Account
             </Badge>
             <h2 className="max-w-lg text-4xl font-semibold tracking-normal">Belanja gear pendakian lebih cepat, aman, dan mudah dilacak.</h2>
-            <div className="mt-7 grid gap-4">
+            <div className="mt-7 grid gap-4 rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur">
               {[
                 { icon: CheckCircle2, label: "Profil dan alamat tersimpan untuk checkout Sprint 4." },
                 { icon: ShieldCheck, label: "Session web disiapkan untuk Auth.js dan RBAC admin." },

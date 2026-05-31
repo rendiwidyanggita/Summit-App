@@ -1,28 +1,18 @@
 import { SearchX } from "lucide-react";
 
 import { ProductCard } from "@/components/sections/product-card";
-import { Card, CardContent } from "@/components/ui/card";
+import { RouteStatePanel } from "@/components/sections/route-state-panel";
 import type { ProductCatalogItem } from "@/lib/constants";
 
 export function ProductGrid({ products }: { products: ProductCatalogItem[] }) {
   if (products.length === 0) {
     return (
-      <Card>
-        <CardContent className="grid min-h-80 place-items-center p-8 text-center">
-          <div>
-            <div className="mx-auto grid size-12 place-items-center rounded-md bg-secondary text-primary">
-              <SearchX className="size-6" />
-            </div>
-            <h2 className="mt-4 text-lg font-semibold">Produk tidak ditemukan</h2>
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">Coba ubah kata kunci, rentang harga, atau nonaktifkan beberapa filter.</p>
-          </div>
-        </CardContent>
-      </Card>
+      <RouteStatePanel icon={SearchX} eyebrow="Katalog kosong" title="Produk tidak ditemukan" description="Coba ubah kata kunci, rentang harga, atau nonaktifkan beberapa filter." />
     );
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {products.map((product) => (
         <ProductCard key={product.slug} product={product} />
       ))}

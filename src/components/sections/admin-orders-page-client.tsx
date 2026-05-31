@@ -51,7 +51,7 @@ export function AdminOrdersPageClient() {
 
       <AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={options} placeholder="Cari order, customer, atau kurir..." />
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_380px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="grid gap-3">
           {orders.map((order) => (
             <button

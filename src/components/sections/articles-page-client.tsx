@@ -24,7 +24,9 @@ export function ArticlesPageClient() {
   return (
     <div className="container-page py-8">
       <section className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-        <div className="rounded-[1.5rem] bg-primary p-5 text-primary-foreground sm:p-7">
+        <div className="relative overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-primary p-5 text-primary-foreground sm:p-7">
+          <div className="absolute -right-20 -top-20 size-60 rounded-full bg-accent/20 blur-2xl" />
+          <div className="relative">
           <Badge variant="accent">Artikel & SEO</Badge>
           <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">Tips Outdoor Summit Gear</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
@@ -34,8 +36,9 @@ export function ArticlesPageClient() {
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari artikel..." className="bg-background pl-9 text-foreground" />
           </div>
+          </div>
         </div>
-        <Link href={`/artikel/${featured.slug}`} className="group relative min-h-72 overflow-hidden rounded-[1.5rem] bg-primary text-primary-foreground">
+        <Link href={`/artikel/${featured.slug}`} className="group relative min-h-72 overflow-hidden rounded-[1rem_2rem_1rem_2rem] bg-primary text-primary-foreground">
           <Image src={featured.image} alt={featured.title} fill className="object-cover opacity-55 transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 48vw, 100vw" />
           <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-5">
@@ -46,9 +49,9 @@ export function ArticlesPageClient() {
         </Link>
       </section>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
-        {filteredArticles.map((article) => (
-          <Card key={article.slug} className="overflow-hidden">
+      <div className="mt-6 grid auto-rows-fr gap-4 md:grid-cols-3">
+        {filteredArticles.map((article, index) => (
+          <Card key={article.slug} className={`overflow-hidden ${index === 0 ? "md:col-span-2" : ""}`}>
             <Link href={`/artikel/${article.slug}`} className="relative block aspect-[4/3] bg-secondary">
               <Image src={article.image} alt={article.title} fill className="object-cover" sizes="(min-width: 768px) 33vw, 100vw" />
             </Link>

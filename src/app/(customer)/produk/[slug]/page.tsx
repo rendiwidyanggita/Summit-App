@@ -119,12 +119,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <span className="text-foreground">{product.name}</span>
       </div>
 
-      <section className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
         <ProductGallery images={product.images} alt={product.name} />
         <ProductDetailSummary product={product} />
       </section>
 
-      <section className="mt-8 grid gap-5 lg:grid-cols-[1fr_360px]">
+      <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Card>
           <CardContent className="p-5">
             <Tabs defaultValue="description">

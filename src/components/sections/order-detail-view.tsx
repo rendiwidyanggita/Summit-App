@@ -22,8 +22,10 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
         </Link>
       </Button>
 
-      <section className="overflow-hidden rounded-[1.5rem] border bg-card">
-        <div className="bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_74%,black))] p-5 text-primary-foreground sm:p-7">
+      <section className="overflow-hidden rounded-[2rem_1rem_2rem_1rem] border bg-card">
+        <div className="relative overflow-hidden bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_74%,black))] p-5 text-primary-foreground sm:p-7">
+          <div className="absolute -right-16 -top-16 size-52 rounded-full bg-accent/25 blur-2xl" />
+          <div className="relative">
           <Badge variant="accent">Detail Order</Badge>
           <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -35,10 +37,11 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
               <PaymentStatusBadge status={order.paymentStatus} className="bg-white/15 text-primary-foreground" />
             </div>
           </div>
+          </div>
         </div>
       </section>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid gap-5">
           <Card>
             <CardHeader>
@@ -48,7 +51,7 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
             </CardHeader>
             <CardContent className="grid gap-4">
               {order.items.map((item) => (
-                <div key={item.id} className="flex gap-3 rounded-lg border p-3">
+                <div key={item.id} className="flex flex-col gap-3 rounded-[1.25rem] border p-3 sm:flex-row">
                   <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-secondary">
                     <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" sizes="80px" />
                   </div>
@@ -68,7 +71,7 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-[1.25rem]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <MapPin className="size-5 text-primary" /> Alamat dan pengiriman

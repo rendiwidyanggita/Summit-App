@@ -32,9 +32,9 @@ export function WishlistPageClient() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        {wishlistItems.map((item) => (
-          <Card key={item.id} className="overflow-hidden">
-            <CardContent className="grid gap-4 p-4 sm:grid-cols-[140px_1fr]">
+        {wishlistItems.map((item, index) => (
+          <Card key={item.id} className={index === 0 ? "overflow-hidden border-primary/35 lg:col-span-2" : "overflow-hidden"}>
+            <CardContent className={`grid gap-4 p-4 ${index === 0 ? "sm:grid-cols-[220px_1fr]" : "sm:grid-cols-[140px_1fr]"}`}>
               <Link href={`/produk/${item.product.slug}`} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-secondary sm:aspect-square">
                 <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover transition-transform hover:scale-105" sizes="180px" />
               </Link>
@@ -43,7 +43,7 @@ export function WishlistPageClient() {
                   {item.priceDrop > 0 ? <Badge variant="accent">Diskon {item.priceDrop}%</Badge> : <Badge variant="secondary">Harga stabil</Badge>}
                   <Badge variant={item.product.stock > 0 ? "secondary" : "destructive"}>{item.product.stock > 0 ? `${item.product.stock} stok` : "Habis"}</Badge>
                 </div>
-                <Link href={`/produk/${item.product.slug}`} className="mt-3 block text-lg font-semibold hover:text-primary">
+                <Link href={`/produk/${item.product.slug}`} className={`${index === 0 ? "text-2xl" : "text-lg"} mt-3 block font-semibold hover:text-primary`}>
                   {item.product.name}
                 </Link>
                 <p className="mt-1 text-sm text-muted-foreground">{item.product.brand} - ditambahkan {item.addedAt}</p>
@@ -69,7 +69,7 @@ export function WishlistPageClient() {
         ))}
       </div>
 
-      <div className="rounded-lg border border-accent/40 bg-accent/10 p-4 text-sm text-muted-foreground">
+      <div className="rounded-[1.25rem] border border-accent/40 bg-accent/10 p-4 text-sm text-muted-foreground">
         Wishlist persistence dan notifikasi price drop real belum memanggil backend. UI ini menyiapkan kontrak Sprint 7 sesuai PRD.
       </div>
     </div>

@@ -22,7 +22,7 @@ export function CatalogToolbar({
   onOpenFilters: () => void;
 }) {
   return (
-    <div className="grid gap-3 rounded-lg border bg-card p-4 shadow-sm lg:grid-cols-[1fr_auto_auto] lg:items-center">
+    <div className="grid gap-3 overflow-hidden rounded-[1.35rem] border bg-card p-4 shadow-sm lg:grid-cols-[1fr_auto_auto] lg:items-center">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input className="pl-9" placeholder="Cari tenda, carrier, headlamp..." value={search} onChange={(event) => onSearchChange(event.target.value)} aria-label="Cari produk" />
@@ -42,7 +42,7 @@ export function CatalogToolbar({
       <Button type="button" variant="outline" className="lg:hidden" onClick={onOpenFilters} aria-label="Buka filter produk">
         <SlidersHorizontal /> Filter
       </Button>
-      <div className="text-sm text-muted-foreground lg:text-right">{resultCount} produk ditemukan</div>
+      <div className="rounded-full bg-secondary px-3 py-2 text-sm font-medium text-muted-foreground lg:text-right">{resultCount} produk ditemukan</div>
     </div>
   );
 }

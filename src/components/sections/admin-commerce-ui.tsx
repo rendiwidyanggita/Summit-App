@@ -20,7 +20,8 @@ export function AdminMetricCard({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <Card>
+    <Card className="overflow-hidden">
+      <div className="h-1 bg-gradient-to-r from-primary via-accent to-transparent" />
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <Icon className="size-4 text-muted-foreground" />
@@ -66,7 +67,7 @@ export function AdminDataToolbar({
   placeholder?: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border bg-card p-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 rounded-[1.25rem] border bg-card p-3 sm:flex-row sm:items-center">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder={placeholder} className="pl-9" aria-label="Cari data admin" />

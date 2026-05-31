@@ -29,12 +29,15 @@ export function FaqPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="overflow-hidden rounded-[1.5rem] bg-primary p-5 text-primary-foreground sm:p-7">
-        <Badge variant="accent">Support Center</Badge>
-        <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">FAQ Summit Gear</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
-          Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
-        </p>
+      <section className="relative overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-primary p-5 text-primary-foreground sm:p-7">
+        <div className="absolute -right-20 top-8 size-64 rounded-full bg-accent/20 blur-2xl" />
+        <div className="relative">
+          <Badge variant="accent">Support Center</Badge>
+          <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">FAQ Summit Gear</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
+            Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
+          </p>
+        </div>
         <div className="relative mt-5 max-w-xl">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari pertanyaan..." className="bg-background pl-9 text-foreground" />
@@ -49,9 +52,9 @@ export function FaqPageClient() {
         ))}
       </div>
 
-      <div className="mt-4 grid gap-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
         {filteredFaqs.map((faq) => (
-          <Card key={faq.id}>
+          <Card key={faq.id} className="bg-card/92">
             <CardContent className="p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -66,7 +69,7 @@ export function FaqPageClient() {
         ))}
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 rounded-lg border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-6 flex flex-col gap-3 rounded-[1.25rem] border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="font-semibold">Masih butuh bantuan?</div>
           <p className="mt-1 text-sm text-muted-foreground">Komplain dan return mock sudah disiapkan di pusat akun customer.</p>

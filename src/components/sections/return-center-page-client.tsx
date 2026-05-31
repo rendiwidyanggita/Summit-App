@@ -42,7 +42,7 @@ export function ReturnCenterPageClient() {
         ))}
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1fr_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="grid gap-3">
           {returnRequests.map((request) => (
             <button

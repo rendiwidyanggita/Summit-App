@@ -106,8 +106,8 @@ export default function HomePage() {
             { icon: Search, title: "Cari cepat", body: "Temukan gear lewat search, kategori, brand, rating, dan harga." },
             { icon: ShoppingCart, title: "Keranjang aktif", body: "Ubah quantity, cek berat, dan lanjut ke checkout mock." },
             { icon: ShieldCheck, title: "Siap integrasi", body: "UI sudah menjaga boundary untuk payment, ongkir, dan stock reserve." },
-          ].map((item) => (
-            <div key={item.title} className="rounded-lg border bg-card p-5 shadow-sm">
+          ].map((item, index) => (
+            <div key={item.title} className={`rounded-[1.35rem] border bg-card p-5 shadow-sm ${index === 1 ? "md:-translate-y-3 md:border-primary/30" : ""}`}>
               <item.icon className="size-5 text-primary" />
               <h2 className="mt-4 font-semibold">{item.title}</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
@@ -129,7 +129,7 @@ export default function HomePage() {
           </Button>
         </div>
         <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-          <Link href="/kategori/tenda" className="group relative min-h-[360px] overflow-hidden rounded-lg bg-primary text-primary-foreground shadow-sm">
+          <Link href="/kategori/tenda" className="group relative min-h-[360px] overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-primary text-primary-foreground shadow-sm">
             <Image src={categoryCatalog[0].image} alt={categoryCatalog[0].name} fill className="object-cover opacity-42 transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 58vw, 100vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/55 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
@@ -140,7 +140,7 @@ export default function HomePage() {
           </Link>
           <div className="grid gap-3 sm:grid-cols-2">
             {categoryCatalog.slice(1, 7).map((category) => (
-              <Link key={category.slug} href={`/kategori/${category.slug}`} className="group relative min-h-44 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
+              <Link key={category.slug} href={`/kategori/${category.slug}`} className="group relative min-h-44 overflow-hidden rounded-[1.25rem] border bg-primary text-primary-foreground shadow-sm">
                 <Image src={category.image} alt={category.name} fill className="object-cover opacity-35 transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 25vw, 50vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4">
@@ -166,7 +166,7 @@ export default function HomePage() {
             </Link>
           </Button>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {featuredProducts.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
@@ -175,7 +175,7 @@ export default function HomePage() {
 
       <section className="border-y bg-secondary/60">
         <div className="container-page grid gap-5 py-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative overflow-hidden rounded-lg bg-primary p-6 text-primary-foreground">
+          <div className="relative overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-primary p-6 text-primary-foreground">
             <div className="absolute -right-16 -top-16 size-44 rounded-full bg-accent/25 blur-2xl" />
             <Badge variant="accent">Promo Preview</Badge>
             <h2 className="relative mt-4 text-3xl font-semibold tracking-normal">Flash sale gear camp siap ditampilkan.</h2>
@@ -200,7 +200,7 @@ export default function HomePage() {
               { icon: MapPinned, title: "Alamat & ongkir", body: "Flow disiapkan untuk kalkulasi ongkir dan snapshot alamat order." },
               { icon: Clock, title: "Payment timer", body: "Copy dan UI countdown mengikuti batas waktu pembayaran di PRD." },
             ].map((item) => (
-              <Card key={item.title} className="overflow-hidden">
+              <Card key={item.title} className="overflow-hidden rounded-[1.25rem]">
                 <CardHeader>
                   <item.icon className="size-5 text-primary" />
                   <CardTitle className="text-base">{item.title}</CardTitle>

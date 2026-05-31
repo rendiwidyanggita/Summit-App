@@ -35,7 +35,7 @@ export function OrdersPageClient() {
   return (
     <div className="container-page py-8">
       <section className="overflow-hidden rounded-[1.5rem] bg-primary text-primary-foreground">
-        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_340px] lg:items-end">
+        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
           <div>
             <Badge variant="accent">Sprint 5 Order</Badge>
             <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">Pesanan Saya</h1>
@@ -97,7 +97,7 @@ export function OrdersPageClient() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 p-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                   <div className="flex gap-3">
                     <div className="relative size-20 shrink-0 overflow-hidden rounded-lg bg-secondary">
                       <Image src={order.items[0].product.images[0]} alt={order.items[0].product.name} fill className="object-cover" sizes="80px" />

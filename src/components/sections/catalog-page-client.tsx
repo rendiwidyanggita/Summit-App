@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 
@@ -18,6 +18,18 @@ function toNumber(value: string) {
   return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
 }
 
+function subscribeToClientReady() {
+  return () => undefined;
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
 export function CatalogPageClient({
   products,
   initialCategorySlug,
@@ -32,6 +44,7 @@ export function CatalogPageClient({
     categorySlugs: initialCategorySlug ? [initialCategorySlug] : [],
   });
   const [filterOpen, setFilterOpen] = useState(false);
+  const mounted = useSyncExternalStore(subscribeToClientReady, getClientSnapshot, getServerSnapshot);
 
   const filteredProducts = useMemo(() => {
     const filtered = filterProducts(products, {
@@ -67,9 +80,9 @@ export function CatalogPageClient({
   const filterPanel = <ProductFilters value={filters} onChange={setFilters} onReset={resetFilters} lockedCategorySlug={initialCategorySlug} />;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
+    <div className="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
       <aside className="hidden lg:block">
-        <Card className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <Card className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-[1.5rem] bg-card/92">
           <CardContent className="p-5">{filterPanel}</CardContent>
         </Card>
       </aside>
@@ -77,7 +90,7 @@ export function CatalogPageClient({
       <div className="grid gap-5">
         <CatalogToolbar search={search} sort={sort} resultCount={filteredProducts.length} onSearchChange={setSearch} onSortChange={setSort} onOpenFilters={() => setFilterOpen(true)} />
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 rounded-[1.25rem] border bg-card/80 p-3 shadow-sm">
           {activeFilterLabels.map((label) => (
             <Badge key={label} variant="secondary">
               {label}
@@ -111,14 +124,16 @@ export function CatalogPageClient({
         <ProductGrid products={filteredProducts} />
       </div>
 
-      <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
-        <SheetContent side="left" className="w-80 overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Filter katalog</SheetTitle>
-          </SheetHeader>
-          <div className="mt-5">{filterPanel}</div>
-        </SheetContent>
-      </Sheet>
+      {mounted ? (
+        <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
+          <SheetContent side="left" className="w-80 overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Filter katalog</SheetTitle>
+            </SheetHeader>
+            <div className="mt-5">{filterPanel}</div>
+          </SheetContent>
+        </Sheet>
+      ) : null}
     </div>
   );
 }

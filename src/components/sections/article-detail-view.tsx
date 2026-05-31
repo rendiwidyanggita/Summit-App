@@ -44,7 +44,7 @@ export function ArticleDetailView({
         </div>
       </section>
 
-      <div className="container-page grid gap-8 py-8 lg:grid-cols-[1fr_320px]">
+      <div className="container-page grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="mx-auto max-w-3xl">
           <div className="flex flex-wrap gap-2">
             {article.tags.map((tag) => (

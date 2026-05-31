@@ -24,8 +24,8 @@ export default function RegisterPage() {
         </>
       }
     >
-      <div className="mb-6 rounded-[1.5rem] bg-[linear-gradient(135deg,var(--secondary),var(--background))] p-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-sm">
+      <div className="mb-6 overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(135deg,var(--secondary),var(--background))]">
+        <div className="flex items-center gap-2 overflow-x-auto p-4 pb-2 text-sm">
           {[
             { icon: CheckCircle2, label: "Buat akun" },
             { icon: MapPinned, label: "Lengkapi alamat" },
@@ -40,7 +40,8 @@ export default function RegisterPage() {
             </div>
           ))}
         </div>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">Akun baru disiapkan untuk profil, alamat utama, email verification, dan checkout Sprint 4.</p>
+        <div className="trail-divider" />
+        <p className="p-4 pt-3 text-sm leading-6 text-muted-foreground">Akun baru disiapkan untuk profil, alamat utama, email verification, dan checkout Sprint 4.</p>
       </div>
 
       <RegisterForm googleEnabled={hasGoogleOAuthEnv()} appleEnabled={hasAppleOAuthEnv()} />

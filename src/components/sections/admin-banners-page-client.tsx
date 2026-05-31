@@ -47,7 +47,7 @@ export function AdminBannersPageClient() {
       <div className="grid gap-4">
         {banners.map((banner) => (
           <Card key={banner.id} className="overflow-hidden">
-            <CardContent className="grid gap-4 p-4 lg:grid-cols-[320px_1fr_auto] lg:items-center">
+            <CardContent className="grid gap-4 p-4 lg:grid-cols-[320px_minmax(0,1fr)_auto] lg:items-center">
               <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-secondary">
                 <Image src={banner.image} alt={banner.title} fill className="object-cover" sizes="(min-width: 1024px) 320px, 100vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />

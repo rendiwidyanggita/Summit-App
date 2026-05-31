@@ -12,7 +12,7 @@ export function CheckoutSteps({ activeStep, onStepChange }: { activeStep: Checko
   const activeIndex = checkoutSteps.indexOf(activeStep);
 
   return (
-    <div className="overflow-x-auto rounded-full border bg-card p-2 shadow-sm">
+    <div className="overflow-x-auto rounded-[1.25rem] border bg-card p-2 shadow-sm sm:rounded-full">
       <div className="flex min-w-max items-center gap-2">
         {checkoutSteps.map((step, index) => {
           const complete = index < activeIndex;

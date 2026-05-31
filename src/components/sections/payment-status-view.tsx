@@ -20,9 +20,11 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
         </Link>
       </Button>
 
-      <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        <div className="overflow-hidden rounded-[1.5rem] border bg-card">
-          <div className="bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_74%,black))] p-5 text-primary-foreground sm:p-7">
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="overflow-hidden rounded-[2rem_1rem_2rem_1rem] border bg-card">
+          <div className="relative overflow-hidden bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_74%,black))] p-5 text-primary-foreground sm:p-7">
+            <div className="absolute -right-16 -top-16 size-52 rounded-full bg-accent/25 blur-2xl" />
+            <div className="relative">
             <Badge variant="accent">Status Pembayaran</Badge>
             <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">
               {isPending ? "Selesaikan pembayaran" : "Pembayaran tercatat"}
@@ -34,11 +36,12 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
               <OrderStatusBadge status={order.status} className="bg-white/15 text-primary-foreground" />
               <PaymentStatusBadge status={order.paymentStatus} className="bg-white/15 text-primary-foreground" />
             </div>
+            </div>
           </div>
 
           <div className="grid gap-5 p-5 sm:p-7">
             {isPending ? (
-              <div className="rounded-2xl border border-accent bg-accent/10 p-5">
+              <div className="rounded-[1.5rem] border border-accent bg-accent/10 p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2 text-sm font-medium text-accent-foreground">
@@ -67,7 +70,7 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
               </div>
             )}
 
-            <Card>
+            <Card className="rounded-[1.25rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   {order.paymentMethod.id === "qris" ? <QrCode className="size-5 text-primary" /> : <CreditCard className="size-5 text-primary" />}
@@ -104,7 +107,7 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
-          <Card>
+          <Card className="rounded-[1.25rem]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <ReceiptText className="size-5 text-primary" /> Ringkasan

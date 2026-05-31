@@ -25,7 +25,7 @@ export default function ProductsPage() {
   return (
     <div className="container-page py-8">
       <section className="mb-6 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
-        <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
             <Badge variant="accent">Sprint 3 Catalog</Badge>
             <h1 className="mt-3 text-3xl font-semibold tracking-normal sm:text-5xl">Produk Pendakian</h1>

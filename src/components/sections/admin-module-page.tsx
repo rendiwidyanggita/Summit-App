@@ -18,7 +18,7 @@ export function AdminModulePage({
   return (
     <div>
       <AdminPageHeader title={title} description={description} />
-      <div className="grid gap-4 xl:grid-cols-[1fr_360px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
         <EmptyState
           icon={icon}
           title={`${title} siap sebagai preview frontend`}

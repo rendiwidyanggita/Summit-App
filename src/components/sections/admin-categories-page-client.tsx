@@ -44,7 +44,7 @@ export function AdminCategoriesPageClient() {
       <AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={options} placeholder="Cari kategori, slug, atau parent..." />
 
       <div className="grid gap-4 xl:grid-cols-[0.75fr_1.25fr]">
-        <Card>
+        <Card className="rounded-[1.35rem]">
           <CardHeader>
             <CardTitle className="text-base">Hierarki mock</CardTitle>
           </CardHeader>
@@ -65,7 +65,7 @@ export function AdminCategoriesPageClient() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[1.35rem]">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Kategori katalog</CardTitle>
             <Button disabled>Tambah kategori</Button>
@@ -73,7 +73,7 @@ export function AdminCategoriesPageClient() {
           <CardContent className="grid gap-3">
             {categories.length ? (
               categories.map((category) => (
-                <div key={category.slug} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[96px_1fr_auto] md:items-center">
+                <div key={category.slug} className="grid gap-3 rounded-[1.15rem] border p-3 md:grid-cols-[96px_minmax(0,1fr)_auto] md:items-center">
                   <div className="relative h-24 overflow-hidden rounded-md bg-secondary md:h-20">
                     <Image src={category.image} alt={category.name} fill className="object-cover" sizes="160px" />
                   </div>

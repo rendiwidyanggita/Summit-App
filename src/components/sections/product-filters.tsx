@@ -49,7 +49,7 @@ export function ProductFilters({
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold">Filter Produk</h2>
-          <p className="mt-1 text-xs text-muted-foreground">UI lokal Sprint 3, siap disambungkan ke query backend.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Filter lokal Sprint 3, siap untuk query backend.</p>
         </div>
         <Button type="button" variant="ghost" size="sm" onClick={onReset}>
           <RotateCcw /> Reset
@@ -61,7 +61,7 @@ export function ProductFilters({
           <div className="mb-3 text-sm font-medium">Kategori</div>
           <div className="grid gap-2">
             {categoryCatalog.map((category) => (
-              <label key={category.slug} className="flex items-center gap-2 text-sm">
+              <label key={category.slug} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
                 <input
                   type="checkbox"
                   className="size-4 rounded border-input accent-primary"
@@ -79,9 +79,9 @@ export function ProductFilters({
 
       <div>
         <div className="mb-3 text-sm font-medium">Brand</div>
-        <div className="grid gap-2">
+          <div className="grid gap-2">
           {catalogBrands.map((brand) => (
-            <label key={brand} className="flex items-center gap-2 text-sm">
+            <label key={brand} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
               <input
                 type="checkbox"
                 className="size-4 rounded border-input accent-primary"
@@ -130,11 +130,11 @@ export function ProductFilters({
       </div>
 
       <div className="grid gap-2">
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
           <input type="checkbox" className="size-4 rounded border-input accent-primary" checked={value.discountOnly} onChange={(event) => onChange({ ...value, discountOnly: event.target.checked })} />
           Hanya produk diskon
         </label>
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
           <input type="checkbox" className="size-4 rounded border-input accent-primary" checked={value.inStockOnly} onChange={(event) => onChange({ ...value, inStockOnly: event.target.checked })} />
           Hanya stok tersedia
         </label>

@@ -43,9 +43,9 @@ function AdminNav() {
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[linear-gradient(180deg,var(--background),color-mix(in_oklab,var(--secondary)_55%,var(--background)))]">
       <SkipToContent />
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-card lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-card/95 backdrop-blur lg:block">
         <div className="flex h-16 items-center gap-2 border-b px-5">
           <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-md" />
           <div>

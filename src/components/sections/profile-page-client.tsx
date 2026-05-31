@@ -121,7 +121,7 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
         </CardContent>
       </Card>
 
-      <div className="grid gap-5 xl:grid-cols-[1fr_0.85fr]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]">
         <Card className="overflow-hidden">
           <div className="h-1 bg-primary" />
           <CardHeader>

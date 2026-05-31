@@ -41,16 +41,17 @@ export function CheckoutPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="mb-6 rounded-[1.5rem] border bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_78%,black))] p-5 text-primary-foreground shadow-sm sm:p-6">
+      <section className="relative mb-6 overflow-hidden rounded-[1rem_2rem_1rem_2rem] border bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_78%,black))] p-5 text-primary-foreground shadow-sm sm:p-6">
+        <div className="absolute -bottom-20 right-10 size-56 rounded-full bg-accent/20 blur-2xl" />
         <Badge variant="accent">Sprint 4 Checkout</Badge>
-        <div className="mt-3 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="relative mt-3 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <h1 className="text-3xl font-semibold tracking-normal sm:text-5xl">Checkout Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
               Simulasi alur alamat, kurir, voucher, metode pembayaran, dan ringkasan biaya tanpa membuat order real.
             </p>
           </div>
-          <div className="rounded-full border border-white/20 bg-white/12 px-4 py-2 text-sm">
+          <div className="w-fit rounded-full border border-white/20 bg-white/12 px-4 py-2 text-sm">
             <Clock className="mr-2 inline size-4 text-accent" />
             Payment timer mock: 23:42:18
           </div>
@@ -59,9 +60,9 @@ export function CheckoutPageClient() {
 
       <CheckoutSteps activeStep={activeStep} onStepChange={setActiveStep} />
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid gap-5">
-          <Card className={activeStep === "Alamat" ? "border-primary" : undefined}>
+          <Card className={activeStep === "Alamat" ? "border-primary shadow-sm" : "bg-card/92"}>
             <CardHeader>
               <CardTitle className="text-lg">1. Pilih alamat</CardTitle>
             </CardHeader>
@@ -70,7 +71,7 @@ export function CheckoutPageClient() {
             </CardContent>
           </Card>
 
-          <Card className={activeStep === "Kurir" ? "border-primary" : undefined}>
+          <Card className={activeStep === "Kurir" ? "border-primary shadow-sm" : "bg-card/92"}>
             <CardHeader>
               <CardTitle className="text-lg">2. Pilih kurir</CardTitle>
             </CardHeader>
@@ -79,7 +80,7 @@ export function CheckoutPageClient() {
             </CardContent>
           </Card>
 
-          <Card className={activeStep === "Voucher" ? "border-primary" : undefined}>
+          <Card className={activeStep === "Voucher" ? "border-primary shadow-sm" : "bg-card/92"}>
             <CardHeader>
               <CardTitle className="text-lg">3. Voucher</CardTitle>
             </CardHeader>
@@ -88,7 +89,7 @@ export function CheckoutPageClient() {
             </CardContent>
           </Card>
 
-          <Card className={activeStep === "Pembayaran" ? "border-primary" : undefined}>
+          <Card className={activeStep === "Pembayaran" ? "border-primary shadow-sm" : "bg-card/92"}>
             <CardHeader>
               <CardTitle className="text-lg">4. Metode pembayaran</CardTitle>
             </CardHeader>
@@ -97,7 +98,7 @@ export function CheckoutPageClient() {
             </CardContent>
           </Card>
 
-          <Card className={activeStep === "Ringkasan" ? "border-primary" : undefined}>
+          <Card className={activeStep === "Ringkasan" ? "border-primary shadow-sm" : "bg-card/92"}>
             <CardHeader>
               <CardTitle className="text-lg">5. Review final</CardTitle>
             </CardHeader>

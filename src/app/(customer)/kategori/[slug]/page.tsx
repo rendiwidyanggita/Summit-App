@@ -49,7 +49,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       <section className="relative mb-6 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
         <Image src={category.image} alt={category.name} fill priority className="object-cover opacity-35" sizes="100vw" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary/20" />
-        <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1fr_360px] lg:items-end">
+        <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
           <div>
             <Badge variant="accent">{category.highlight}</Badge>
             <h1 className="mt-3 text-3xl font-semibold capitalize tracking-normal sm:text-5xl">{category.name}</h1>

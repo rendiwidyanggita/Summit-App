@@ -51,7 +51,7 @@ export function AdminProductsPageClient() {
 
       <AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={statusOptions} placeholder="Cari nama, brand, atau kategori..." />
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden rounded-[1.35rem]">
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base">Produk katalog</CardTitle>
           <Dialog>
@@ -113,7 +113,7 @@ export function AdminProductsPageClient() {
 
           <div className="grid gap-3 p-4 lg:hidden">
             {products.map((product) => (
-              <div key={product.slug} className="rounded-lg border p-3">
+              <div key={product.slug} className="rounded-[1.15rem] border bg-background p-3">
                 <div className="flex gap-3">
                   <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-secondary">
                     <Image src={product.image} alt={product.name} fill className="object-cover" sizes="64px" />
