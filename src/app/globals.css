@@ -75,6 +75,11 @@ select {
   background: color-mix(in oklab, var(--accent) 40%, transparent);
 }
 
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
 .container-page {
   width: min(100% - 2rem, 1180px);
   margin-inline: auto;

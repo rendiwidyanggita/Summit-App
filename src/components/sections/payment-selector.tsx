@@ -43,6 +43,8 @@ export function PaymentSelector({
             type="button"
             disabled={codBlocked}
             onClick={() => onSelect(method.id)}
+            aria-pressed={active}
+            aria-label={`Pilih metode pembayaran ${method.label}`}
             className={cn(
               "rounded-lg border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary disabled:cursor-not-allowed disabled:opacity-55",
               active && "border-primary ring-2 ring-primary/15",

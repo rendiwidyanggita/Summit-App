@@ -65,11 +65,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
+    alternates: {
+      canonical: `/produk/${slug}`,
+    },
     openGraph: catalogProduct || fallbackProduct
       ? {
           title,
           description,
           images,
+          type: "website",
         }
       : undefined,
   };

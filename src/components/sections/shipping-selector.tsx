@@ -25,6 +25,8 @@ export function ShippingSelector({
             key={service.id}
             type="button"
             onClick={() => onSelect(service.id)}
+            aria-pressed={active}
+            aria-label={`Pilih kurir ${service.courier} ${service.service}`}
             className={cn("rounded-lg border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary", active && "border-primary ring-2 ring-primary/15")}
           >
             <div className="flex items-start justify-between gap-4">

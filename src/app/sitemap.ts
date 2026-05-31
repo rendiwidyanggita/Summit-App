@@ -1,15 +1,10 @@
 import type { MetadataRoute } from "next";
 
+import { categoryCatalog } from "@/lib/catalog-mock";
 import { listCatalogSitemapEntries } from "@/lib/server/catalog-service";
+import { articles } from "@/lib/support-trust-data";
 
-const routes = [
-  "",
-  "/produk",
-  "/keranjang",
-  "/checkout",
-  "/artikel",
-  "/faq",
-];
+const routes = ["", "/produk", "/keranjang", "/checkout", "/artikel", "/faq"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -23,12 +18,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.7,
   }));
 
-  const categoryRoutes = catalog.categories.map((category) => ({
-    url: `${baseUrl}/kategori/${category.slug}`,
-    lastModified: category.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.75,
-  }));
+  const categoryRoutes = [
+    ...catalog.categories.map((category) => ({
+      url: `${baseUrl}/kategori/${category.slug}`,
+      lastModified: category.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })),
+    ...categoryCatalog.map((category) => ({
+      url: `${baseUrl}/kategori/${category.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  ];
 
   const productRoutes = catalog.products.map((product) => ({
     url: `${baseUrl}/produk/${product.slug}`,
@@ -37,5 +40,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes];
+  const articleRoutes = articles.map((article) => ({
+    url: `${baseUrl}/artikel/${article.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
+
+  const allRoutes = [...staticRoutes, ...categoryRoutes, ...productRoutes, ...articleRoutes];
+
+  return Array.from(new Map(allRoutes.map((route) => [route.url, route])).values());
 }

@@ -67,6 +67,7 @@ export function OrdersPageClient() {
             key={filter.value}
             type="button"
             onClick={() => setActiveFilter(filter.value)}
+            aria-pressed={activeFilter === filter.value}
             className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
               activeFilter === filter.value ? "border-primary bg-primary text-primary-foreground" : "bg-background hover:border-primary"
             }`}

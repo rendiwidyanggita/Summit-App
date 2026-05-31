@@ -39,6 +39,8 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
               key={item.rating}
               type="button"
               onClick={() => setRatingFilter((current) => (current === item.rating ? 0 : item.rating))}
+              aria-pressed={ratingFilter === item.rating}
+              aria-label={`Filter review ${item.rating} bintang`}
               className={`flex items-center gap-3 rounded-md px-2 py-1.5 text-sm transition-colors ${ratingFilter === item.rating ? "bg-background" : "hover:bg-background/70"}`}
             >
               <span className="w-10 font-medium">{item.rating} star</span>
@@ -52,11 +54,11 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="button" variant={ratingFilter === 0 ? "default" : "outline"} onClick={() => setRatingFilter(0)}>
+        <Button type="button" variant={ratingFilter === 0 ? "default" : "outline"} onClick={() => setRatingFilter(0)} aria-pressed={ratingFilter === 0}>
           Semua
         </Button>
         {[5, 4, 3, 2, 1].map((rating) => (
-          <Button key={rating} type="button" variant={ratingFilter === rating ? "default" : "outline"} onClick={() => setRatingFilter(rating)}>
+          <Button key={rating} type="button" variant={ratingFilter === rating ? "default" : "outline"} onClick={() => setRatingFilter(rating)} aria-pressed={ratingFilter === rating}>
             {rating} star
           </Button>
         ))}

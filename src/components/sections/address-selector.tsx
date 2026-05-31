@@ -25,6 +25,8 @@ export function AddressSelector({
             key={address.id}
             type="button"
             onClick={() => onSelect(address.id)}
+            aria-pressed={active}
+            aria-label={`Pilih alamat ${address.label}`}
             className={cn("rounded-lg border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary", active && "border-primary ring-2 ring-primary/15")}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -43,7 +45,7 @@ export function AddressSelector({
             <p className="mt-3 text-sm text-muted-foreground">{address.fullAddress}</p>
             <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="size-4" />
-              {address.phone} · {address.city}, {address.postalCode}
+              {address.phone} - {address.city}, {address.postalCode}
             </div>
           </button>
         );

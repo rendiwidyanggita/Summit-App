@@ -49,6 +49,8 @@ export function ReturnCenterPageClient() {
               key={request.id}
               type="button"
               onClick={() => setSelectedId(request.id)}
+              aria-pressed={selected?.id === request.id}
+              aria-label={`Lihat return ${request.id}`}
               className={`rounded-lg border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary ${selected?.id === request.id ? "border-primary" : ""}`}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

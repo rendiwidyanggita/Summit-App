@@ -61,7 +61,14 @@ export function ReviewFormMock({ order }: { order: OrderMock }) {
               <Label>Rating</Label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((item) => (
-                  <button key={item} type="button" onClick={() => setRating(item)} className="rounded-md p-1 text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setRating(item)}
+                    aria-label={`Beri rating ${item} bintang`}
+                    aria-pressed={item <= rating}
+                    className="rounded-md p-1 text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
                     <Star className={`size-6 ${item <= rating ? "fill-accent" : ""}`} />
                   </button>
                 ))}

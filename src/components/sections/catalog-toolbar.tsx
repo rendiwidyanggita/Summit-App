@@ -25,7 +25,7 @@ export function CatalogToolbar({
     <div className="grid gap-3 rounded-lg border bg-card p-4 shadow-sm lg:grid-cols-[1fr_auto_auto] lg:items-center">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input className="pl-9" placeholder="Cari tenda, carrier, headlamp..." value={search} onChange={(event) => onSearchChange(event.target.value)} />
+        <Input className="pl-9" placeholder="Cari tenda, carrier, headlamp..." value={search} onChange={(event) => onSearchChange(event.target.value)} aria-label="Cari produk" />
       </div>
       <select
         className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -39,7 +39,7 @@ export function CatalogToolbar({
         <option value="best-selling">Terlaris</option>
         <option value="rating-desc">Rating tertinggi</option>
       </select>
-      <Button type="button" variant="outline" className="lg:hidden" onClick={onOpenFilters}>
+      <Button type="button" variant="outline" className="lg:hidden" onClick={onOpenFilters} aria-label="Buka filter produk">
         <SlidersHorizontal /> Filter
       </Button>
       <div className="text-sm text-muted-foreground lg:text-right">{resultCount} produk ditemukan</div>

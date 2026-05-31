@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogOut, Menu, Search, Settings, ShoppingCart, UserRound } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -10,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { customerNav } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export function CustomerHeader({
   user,
@@ -20,6 +22,9 @@ export function CustomerHeader({
     isAdmin: boolean;
   } | null;
 }) {
+  const pathname = usePathname();
+  const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href.split("/")[1] === "kategori" ? "/kategori" : href));
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
       <div className="container-page flex h-16 items-center gap-3">
@@ -34,11 +39,20 @@ export function CustomerHeader({
               <SheetTitle>Summit Gear</SheetTitle>
             </SheetHeader>
             <nav className="mt-8 grid gap-2">
-              {customerNav.map((item) => (
-                <Link key={item.href} href={item.href} className="rounded-md px-3 py-2 text-sm font-medium hover:bg-secondary">
-                  {item.label}
-                </Link>
-              ))}
+              {customerNav.map((item) => {
+                const active = isActive(item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn("rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground", active && "bg-secondary text-foreground")}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
           </SheetContent>
         </Sheet>
@@ -49,17 +63,26 @@ export function CustomerHeader({
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {customerNav.map((item) => (
-            <Link key={item.href} href={item.href} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
-              {item.label}
-            </Link>
-          ))}
+          {customerNav.map((item) => {
+            const active = isActive(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn("rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground", active && "bg-secondary text-foreground")}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="ml-auto hidden min-w-64 max-w-sm flex-1 items-center lg:flex">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Cari tenda, carrier, headlamp..." />
+            <Input className="pl-9" placeholder="Cari tenda, carrier, headlamp..." aria-label="Cari produk Summit Gear" />
           </div>
         </div>
 

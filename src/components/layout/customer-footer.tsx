@@ -26,8 +26,11 @@ export function CustomerFooter() {
           <div className="font-medium">Bantuan</div>
           <div className="mt-3 grid gap-2 text-sm text-primary-foreground/75">
             <Link href="/faq">FAQ</Link>
+            <Link href="/artikel">Artikel Outdoor</Link>
             <Link href="/akun/pesanan">Pesanan</Link>
             <Link href="/akun/notifikasi">Notifikasi</Link>
+            <Link href="/akun/return">Return</Link>
+            <Link href="/akun/komplain">Komplain</Link>
           </div>
         </div>
         <div>

@@ -58,6 +58,8 @@ export function AdminOrdersPageClient() {
               key={order.id}
               type="button"
               onClick={() => setSelectedOrderId(order.id)}
+              aria-pressed={selectedOrder?.id === order.id}
+              aria-label={`Lihat fulfillment order ${order.orderNumber}`}
               className={`rounded-lg border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary ${selectedOrder?.id === order.id ? "border-primary" : ""}`}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

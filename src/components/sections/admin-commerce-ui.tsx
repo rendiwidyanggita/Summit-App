@@ -69,11 +69,12 @@ export function AdminDataToolbar({
     <div className="flex flex-col gap-3 rounded-lg border bg-card p-3 sm:flex-row sm:items-center">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder={placeholder} className="pl-9" />
+        <Input value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder={placeholder} className="pl-9" aria-label="Cari data admin" />
       </div>
       <select
         value={filter}
         onChange={(event) => onFilterChange(event.target.value)}
+        aria-label="Filter data admin"
         className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {options.map((option) => (

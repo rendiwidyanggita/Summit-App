@@ -8,6 +8,14 @@ import { formatRupiah } from "@/lib/utils";
 export const metadata = {
   title: "Produk Pendakian",
   description: "Katalog peralatan pendakian Summit Gear dengan search, filter, sort, dan grid produk responsive.",
+  alternates: {
+    canonical: "/produk",
+  },
+  openGraph: {
+    title: "Produk Pendakian",
+    description: "Katalog peralatan pendakian Summit Gear dengan search, filter, sort, dan grid produk responsive.",
+    type: "website",
+  },
 };
 
 export default function ProductsPage() {

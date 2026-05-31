@@ -10,12 +10,19 @@ export const metadata: Metadata = {
   },
   description: "Responsive web e-commerce peralatan pendakian untuk katalog, checkout, dan admin backoffice.",
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Summit Gear",
     description: "Peralatan pendakian, camping, dan outdoor untuk pendaki Indonesia.",
     siteName: "Summit Gear",
     locale: "id_ID",
     type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

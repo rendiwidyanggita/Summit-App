@@ -19,6 +19,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: catalogCategory?.metaTitle ?? (fallbackCategory ? `${fallbackCategory.name} Pendakian` : "Kategori"),
     description: catalogCategory?.metaDescription ?? fallbackCategory?.description ?? "Kategori produk Summit Gear.",
+    alternates: {
+      canonical: `/kategori/${slug}`,
+    },
+    openGraph: fallbackCategory
+      ? {
+          title: `${fallbackCategory.name} Pendakian`,
+          description: fallbackCategory.description,
+          images: [fallbackCategory.image],
+          type: "website",
+        }
+      : undefined,
   };
 }
 

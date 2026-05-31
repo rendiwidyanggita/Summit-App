@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { SkipToContent } from "@/components/layout/skip-to-content";
 import { adminNav } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ function AdminNav() {
           <Link
             key={item.href}
             href={item.href}
+            aria-current={active ? "page" : undefined}
             className={cn(
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
               active && "bg-secondary text-foreground",
@@ -42,6 +44,7 @@ function AdminNav() {
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-card lg:block">
         <div className="flex h-16 items-center gap-2 border-b px-5">
           <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-md" />
@@ -75,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           <div className="relative hidden w-full max-w-md sm:block">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Cari produk, order, customer..." />
+            <Input className="pl-9" placeholder="Cari produk, order, customer..." aria-label="Cari data admin Summit Gear" />
           </div>
 
           <div className="ml-auto flex items-center gap-2">
@@ -87,7 +90,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </Avatar>
           </div>
         </header>
-        <main className="p-4 sm:p-6">{children}</main>
+        <main id="main-content" className="p-4 sm:p-6" tabIndex={-1}>
+          {children}
+        </main>
       </div>
     </div>
   );
