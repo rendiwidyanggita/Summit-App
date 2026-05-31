@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Separator } from "@/components/ui/separator";
 
 export function LoginForm({
@@ -89,7 +90,7 @@ export function LoginForm({
               Lupa password?
             </Link>
           </div>
-          <Input id="password" name="password" type="password" autoComplete="current-password" placeholder="Minimal 8 karakter" required minLength={8} />
+          <PasswordInput id="password" name="password" autoComplete="current-password" placeholder="Minimal 8 karakter" required minLength={8} />
         </div>
         <Button type="submit" size="lg" className="w-full" disabled={loading}>
           {loading ? <Loader2 className="animate-spin" /> : null}

@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: ProductCatalogItem }) {
         </div>
       </Link>
       <CardContent className="flex flex-1 flex-col gap-3 p-4">
-        <div className="min-h-28">
+        <div className="min-h-32">
           <div className="flex items-center justify-between gap-2">
             <div className="text-xs font-medium uppercase text-muted-foreground">{product.category}</div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -35,7 +35,7 @@ export function ProductCard({ product }: { product: ProductCatalogItem }) {
               {product.rating}
             </div>
           </div>
-          <Link href={`/produk/${product.slug}`} className="mt-1 line-clamp-2 font-semibold hover:text-primary">
+          <Link href={`/produk/${product.slug}`} className="mt-1 line-clamp-2 min-h-12 font-semibold hover:text-primary">
             {product.name}
           </Link>
           <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">

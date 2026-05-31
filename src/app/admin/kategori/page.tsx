@@ -1,7 +1,5 @@
-import { Tags } from "lucide-react";
-
-import { AdminModulePage } from "@/components/sections/admin-module-page";
+import { AdminCategoriesPageClient } from "@/components/sections/admin-categories-page-client";
 
 export default function AdminCategoriesPage() {
-  return <AdminModulePage title="Manajemen Kategori" description="CRUD kategori, hierarki, icon, slug, dan metadata SEO kategori." icon={Tags} />;
+  return <AdminCategoriesPageClient />;
 }

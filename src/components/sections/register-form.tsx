@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest } from "@/lib/api-client";
 
@@ -119,11 +120,11 @@ export function RegisterForm({
         <div className="grid gap-2 sm:grid-cols-2">
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" autoComplete="new-password" placeholder="Minimal 8 karakter" required minLength={8} />
+            <PasswordInput id="password" name="password" autoComplete="new-password" placeholder="Minimal 8 karakter" required minLength={8} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirmPassword">Konfirmasi password</Label>
-            <Input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" placeholder="Ulangi password" required minLength={8} />
+            <PasswordInput id="confirmPassword" name="confirmPassword" autoComplete="new-password" placeholder="Ulangi password" required minLength={8} />
           </div>
         </div>
         <label className="flex items-start gap-2 text-sm text-muted-foreground">
