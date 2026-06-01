@@ -1,37 +1,133 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, PackageX, ShieldCheck, ShoppingBag, TicketPercent, Truck } from "lucide-react";
+import { ArrowRight, Loader2, PackageX, ShieldCheck, ShoppingBag, TicketPercent, Trash2, Truck } from "lucide-react";
+import { toast } from "sonner";
 
 import { CartItemRow } from "@/components/sections/cart-item-row";
 import { OrderSummary } from "@/components/sections/order-summary";
 import { RouteStatePanel } from "@/components/sections/route-state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { initialCartItems, type CartItemMock } from "@/lib/commerce-mock";
+import { ApiRequestError, apiRequest } from "@/lib/api-client";
+import type { CartResponse } from "@/lib/commerce-types";
 
 export function CartPageClient() {
-  const [items, setItems] = useState<CartItemMock[]>(initialCartItems);
+  const [cart, setCart] = useState<CartResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [unauthenticated, setUnauthenticated] = useState(false);
+  const [busyItemId, setBusyItemId] = useState<string | null>(null);
+  const [clearing, setClearing] = useState(false);
 
-  function updateQuantity(id: string, quantity: number) {
-    setItems((currentItems) =>
-      currentItems.map((item) => (item.id === id ? { ...item, quantity: Math.min(Math.max(quantity, 1), item.variant.stock) } : item)),
+  async function loadCart() {
+    try {
+      const data = await apiRequest<CartResponse>("/api/cart");
+      setCart(data);
+      setUnauthenticated(false);
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 401) {
+        setUnauthenticated(true);
+        setCart(null);
+        return;
+      }
+
+      toast.error(error instanceof Error ? error.message : "Gagal memuat keranjang.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadCart();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  async function updateQuantity(id: string, quantity: number) {
+    setBusyItemId(id);
+
+    try {
+      const data = await apiRequest<CartResponse>(`/api/cart/items/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ quantity }),
+      });
+      setCart(data);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Quantity gagal diperbarui.");
+    } finally {
+      setBusyItemId(null);
+    }
+  }
+
+  async function removeItem(id: string) {
+    setBusyItemId(id);
+
+    try {
+      const data = await apiRequest<CartResponse>(`/api/cart/items/${id}`, {
+        method: "DELETE",
+      });
+      setCart(data);
+      toast.success("Item dihapus dari keranjang.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Item gagal dihapus.");
+    } finally {
+      setBusyItemId(null);
+    }
+  }
+
+  async function clearCart() {
+    setClearing(true);
+
+    try {
+      const data = await apiRequest<CartResponse>("/api/cart", {
+        method: "DELETE",
+      });
+      setCart(data);
+      toast.success("Keranjang dikosongkan.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Keranjang gagal dikosongkan.");
+    } finally {
+      setClearing(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container-page py-8">
+        <RouteStatePanel icon={Loader2} eyebrow="Keranjang" title="Memuat keranjang" description="Mengambil item cart dari backend Sprint 4." />
+      </div>
     );
   }
 
-  function removeItem(id: string) {
-    setItems((currentItems) => currentItems.filter((item) => item.id !== id));
+  if (unauthenticated) {
+    return (
+      <div className="container-page py-8">
+        <RouteStatePanel
+          icon={ShoppingBag}
+          eyebrow="Keranjang"
+          title="Masuk untuk melihat keranjang"
+          description="Keranjang disimpan per akun agar checkout, voucher, dan reserved stock divalidasi backend."
+          actions={
+            <Button asChild>
+              <Link href="/masuk?callbackUrl=/keranjang">Masuk</Link>
+            </Button>
+          }
+        />
+      </div>
+    );
   }
 
-  if (items.length === 0) {
+  if (!cart || cart.items.length === 0) {
     return (
       <div className="container-page py-8">
         <RouteStatePanel
           icon={PackageX}
           eyebrow="Keranjang"
           title="Keranjang kosong"
-          description="Item berhasil dihapus. Jelajahi katalog Sprint 3 untuk memilih gear pendakian baru."
+          description="Pilih produk dan varian dari katalog untuk mulai checkout Sprint 4."
           actions={
             <Button asChild>
               <Link href="/produk">Lihat produk</Link>
@@ -51,27 +147,27 @@ export function CartPageClient() {
             <Badge variant="accent">Sprint 4 Cart</Badge>
             <h1 className="mt-3 text-3xl font-semibold tracking-normal sm:text-5xl">Keranjang Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Review item, sesuaikan quantity, cek estimasi berat, lalu lanjut ke checkout mock tanpa menyentuh backend.
+              Review item, sesuaikan quantity, cek estimasi berat, lalu lanjut ke checkout yang sudah terhubung backend.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-sm lg:max-w-sm">
-            <span className="rounded-full bg-white/12 px-3 py-2">Reserved stock UI</span>
+            <span className="rounded-full bg-white/12 px-3 py-2">Cart API</span>
             <span className="rounded-full bg-white/12 px-3 py-2">Voucher Sprint 4</span>
-            <span className="rounded-full bg-white/12 px-3 py-2">Ongkir mock</span>
+            <span className="rounded-full bg-white/12 px-3 py-2">Ongkir backend</span>
           </div>
         </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid gap-4">
-          {items.map((item) => (
-            <CartItemRow key={item.id} item={item} onQuantityChange={updateQuantity} onRemove={removeItem} />
+          {cart.items.map((item) => (
+            <CartItemRow key={item.id} item={item} busy={busyItemId === item.id} onQuantityChange={updateQuantity} onRemove={removeItem} />
           ))}
           <div className="grid gap-3 rounded-[1.25rem] border bg-[linear-gradient(135deg,var(--secondary),var(--background))] p-4 text-sm sm:grid-cols-3">
             {[
-              { icon: TicketPercent, text: "Coba voucher SUMMIT50 atau FREEONGKIR di checkout." },
-              { icon: Truck, text: "Ongkir dihitung dari total berat dan layanan kurir mock." },
-              { icon: ShieldCheck, text: "Reserved stock final tetap harus divalidasi backend." },
+              { icon: TicketPercent, text: "Voucher divalidasi server saat checkout." },
+              { icon: Truck, text: "Ongkir dihitung dari berat cart dan alamat." },
+              { icon: ShieldCheck, text: "Reserved stock dibuat saat order checkout." },
             ].map((item) => (
               <div key={item.text} className="flex gap-3">
                 <item.icon className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -83,7 +179,7 @@ export function CartPageClient() {
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <OrderSummary
-            items={items}
+            cart={cart}
             action={
               <Button asChild>
                 <Link href="/checkout">
@@ -96,6 +192,10 @@ export function CartPageClient() {
             <Link href="/produk">
               <ShoppingBag /> Tambah gear lain
             </Link>
+          </Button>
+          <Button type="button" variant="ghost" className="mt-2 w-full" onClick={clearCart} disabled={clearing}>
+            {clearing ? <Loader2 className="animate-spin" /> : <Trash2 />}
+            Kosongkan keranjang
           </Button>
         </aside>
       </div>

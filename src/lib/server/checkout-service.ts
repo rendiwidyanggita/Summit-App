@@ -151,36 +151,48 @@ export async function createCheckoutOrder(userId: string, input: z.infer<typeof 
         status: input.paymentMethod === "COD" ? "PROCESSING" : "PENDING_PAYMENT",
         paymentMethod: input.paymentMethod,
         expiresAt,
-        items: {
-          create: cart.items.map((item) => {
-            const unitPrice = lineUnitPrice(item);
-
-            return {
-              productId: item.productId,
-              variantId: item.variantId,
-              quantity: item.quantity,
-              unitPrice,
-              subtotal: unitPrice.mul(item.quantity),
-            };
-          }),
-        },
-        payment: {
-          create: {
-            method: input.paymentMethod,
-            status: "PENDING",
-            amount: total,
-            midtransOrderId: input.paymentMethod === "COD" ? null : orderNumber,
-            expiredAt: expiresAt,
-          },
-        },
-        shipment: {
-          create: {
-            courier: shippingService.courier,
-            service: shippingService.service,
-            status: "PENDING",
-          },
-        },
       },
+    });
+
+    await tx.orderItem.createMany({
+      data: cart.items.map((item) => {
+        const unitPrice = lineUnitPrice(item);
+
+        return {
+          orderId: order.id,
+          productId: item.productId,
+          variantId: item.variantId,
+          quantity: item.quantity,
+          unitPrice,
+          subtotal: unitPrice.mul(item.quantity),
+        };
+      }),
+    });
+
+    await tx.payment.create({
+      data: {
+        orderId: order.id,
+        method: input.paymentMethod,
+        status: "PENDING",
+        amount: total,
+        midtransOrderId: input.paymentMethod === "COD" ? null : orderNumber,
+        expiredAt: expiresAt,
+      },
+    });
+
+    await tx.shipment.create({
+      data: {
+        orderId: order.id,
+        courier: shippingService.courier,
+        service: shippingService.service,
+        status: "PENDING",
+      },
+    });
+
+    await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+
+    const orderWithRelations = await tx.order.findUniqueOrThrow({
+      where: { id: order.id },
       include: {
         items: {
           include: {
@@ -194,37 +206,35 @@ export async function createCheckoutOrder(userId: string, input: z.infer<typeof 
       },
     });
 
-    await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-
     return {
-      id: order.id,
-      orderNumber: order.orderNumber,
-      status: order.status,
-      paymentMethod: order.paymentMethod,
-      subtotal: Number(order.subtotal),
-      shippingCost: Number(order.shippingCost),
+      id: orderWithRelations.id,
+      orderNumber: orderWithRelations.orderNumber,
+      status: orderWithRelations.status,
+      paymentMethod: orderWithRelations.paymentMethod,
+      subtotal: Number(orderWithRelations.subtotal),
+      shippingCost: Number(orderWithRelations.shippingCost),
       discount,
-      total: Number(order.total),
-      expiresAt: order.expiresAt,
-      addressSnapshot: order.addressSnapshot,
-      shipment: order.shipment,
-      payment: order.payment
+      total: Number(orderWithRelations.total),
+      expiresAt: orderWithRelations.expiresAt,
+      addressSnapshot: orderWithRelations.addressSnapshot,
+      shipment: orderWithRelations.shipment,
+      payment: orderWithRelations.payment
         ? {
-            id: order.payment.id,
-            method: order.payment.method,
-            status: order.payment.status,
-            amount: Number(order.payment.amount),
-            midtransOrderId: order.payment.midtransOrderId,
-            expiredAt: order.payment.expiredAt,
+            id: orderWithRelations.payment.id,
+            method: orderWithRelations.payment.method,
+            status: orderWithRelations.payment.status,
+            amount: Number(orderWithRelations.payment.amount),
+            midtransOrderId: orderWithRelations.payment.midtransOrderId,
+            expiredAt: orderWithRelations.payment.expiredAt,
           }
         : null,
-      voucher: order.voucher
+      voucher: orderWithRelations.voucher
         ? {
-            code: order.voucher.code,
-            type: order.voucher.type,
+            code: orderWithRelations.voucher.code,
+            type: orderWithRelations.voucher.type,
           }
         : null,
-      items: order.items.map((item) => ({
+      items: orderWithRelations.items.map((item) => ({
         id: item.id,
         productId: item.productId,
         variantId: item.variantId,

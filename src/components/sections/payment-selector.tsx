@@ -3,15 +3,22 @@
 import { CreditCard, QrCode, Wallet } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import type { CheckoutAddressMock, PaymentMethodMock } from "@/lib/commerce-mock";
+import type { CheckoutPaymentMethod } from "@/lib/commerce-types";
 import { cn, formatRupiah } from "@/lib/utils";
 
-function PaymentIcon({ id }: { id: string }) {
-  if (id === "qris") {
+export type PaymentMethodOption = {
+  id: CheckoutPaymentMethod;
+  label: string;
+  description: string;
+  group: "Midtrans" | "COD";
+};
+
+function PaymentIcon({ id }: { id: CheckoutPaymentMethod }) {
+  if (id === "MIDTRANS_QRIS") {
     return <QrCode className="size-4 text-primary" />;
   }
 
-  if (id === "ewallet" || id === "cod") {
+  if (id === "MIDTRANS_EWALLET" || id === "COD") {
     return <Wallet className="size-4 text-primary" />;
   }
 
@@ -23,18 +30,18 @@ export function PaymentSelector({
   selectedMethodId,
   onSelect,
   total,
-  address,
+  codSupported,
 }: {
-  methods: PaymentMethodMock[];
-  selectedMethodId: string;
-  onSelect: (id: string) => void;
+  methods: PaymentMethodOption[];
+  selectedMethodId: CheckoutPaymentMethod;
+  onSelect: (id: CheckoutPaymentMethod) => void;
   total: number;
-  address: CheckoutAddressMock;
+  codSupported: boolean;
 }) {
   return (
     <div className="grid gap-3">
       {methods.map((method) => {
-        const codBlocked = method.id === "cod" && (total > 1500000 || !address.codSupported);
+        const codBlocked = method.id === "COD" && (total > 1500000 || !codSupported);
         const active = selectedMethodId === method.id;
 
         return (

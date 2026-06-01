@@ -3,18 +3,28 @@
 import { Clock, Truck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import type { ShippingServiceMock } from "@/lib/commerce-mock";
+import type { ShippingServiceResponse } from "@/lib/commerce-types";
 import { formatRupiah, cn } from "@/lib/utils";
 
 export function ShippingSelector({
   services,
   selectedServiceId,
+  loading,
   onSelect,
 }: {
-  services: ShippingServiceMock[];
+  services: ShippingServiceResponse[];
   selectedServiceId: string;
+  loading?: boolean;
   onSelect: (id: string) => void;
 }) {
+  if (loading) {
+    return <div className="rounded-lg border bg-secondary p-4 text-sm text-muted-foreground">Menghitung ongkir dari backend...</div>;
+  }
+
+  if (services.length === 0) {
+    return <div className="rounded-lg border bg-secondary p-4 text-sm text-muted-foreground">Pilih alamat untuk melihat layanan kurir.</div>;
+  }
+
   return (
     <div className="grid gap-3">
       {services.map((service) => {

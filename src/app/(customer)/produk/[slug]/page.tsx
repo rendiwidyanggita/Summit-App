@@ -4,14 +4,14 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Package } from "lucide-react";
 
 import { ProductCard } from "@/components/sections/product-card";
-import { ProductDetailSummary } from "@/components/sections/product-detail-summary";
+import { ProductDetailSummary, type ProductDetailViewProduct } from "@/components/sections/product-detail-summary";
 import { ProductGallery } from "@/components/sections/product-gallery";
 import { ProductReviews } from "@/components/sections/product-reviews";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { catalogProducts, getProductBySlug, getProductsByCategory } from "@/lib/constants";
+import { catalogProducts, getProductsByCategory } from "@/lib/constants";
 import { getProductBySlug as getCatalogProductBySlug } from "@/lib/server/catalog-service";
 
 function buildProductJsonLd(product: Awaited<ReturnType<typeof getCatalogProductBySlug>>, baseUrl: string) {
@@ -57,10 +57,9 @@ function buildProductJsonLd(product: Awaited<ReturnType<typeof getCatalogProduct
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const catalogProduct = await getCatalogProductBySlug(slug);
-  const fallbackProduct = getProductBySlug(slug);
-  const title = catalogProduct?.metaTitle ?? catalogProduct?.name ?? fallbackProduct?.name ?? "Produk";
-  const description = catalogProduct?.metaDescription ?? fallbackProduct?.description ?? "Detail produk Summit Gear.";
-  const images = catalogProduct?.photos?.slice(0, 1) ?? fallbackProduct?.images.slice(0, 1);
+  const title = catalogProduct?.metaTitle ?? catalogProduct?.name ?? "Produk";
+  const description = catalogProduct?.metaDescription ?? catalogProduct?.description ?? "Detail produk Summit Gear.";
+  const images = catalogProduct?.photos?.slice(0, 1);
 
   return {
     title,
@@ -68,7 +67,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical: `/produk/${slug}`,
     },
-    openGraph: catalogProduct || fallbackProduct
+    openGraph: catalogProduct
       ? {
           title,
           description,
@@ -79,22 +78,61 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+function serializeSpecs(specs: unknown) {
+  if (!specs || typeof specs !== "object" || Array.isArray(specs)) return {};
+
+  return Object.fromEntries(Object.entries(specs).map(([key, value]) => [key, String(value)]));
+}
+
+function variantLabel(variant: NonNullable<Awaited<ReturnType<typeof getCatalogProductBySlug>>>["variants"][number]) {
+  const label = [variant.size, variant.color].filter(Boolean).join(" / ");
+  return label || variant.sku;
+}
+
+function toProductDetailView(product: NonNullable<Awaited<ReturnType<typeof getCatalogProductBySlug>>>): ProductDetailViewProduct {
+  const currentPrice = product.discountPrice ?? product.price;
+
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    category: product.category?.name ?? "Produk",
+    brand: product.brand?.name ?? "Summit Gear",
+    price: currentPrice,
+    compareAt: product.discountPrice ? product.price : null,
+    stock: product.variants.reduce((total, variant) => total + variant.stock, 0),
+    weightGram: product.weightGram,
+    rating: product.ratingAvg,
+    sold: product.soldCount,
+    isNew: Date.now() - new Date(product.createdAt).getTime() < 1000 * 60 * 60 * 24 * 30,
+    variants: product.variants.map((variant) => ({
+      id: variant.id,
+      label: variantLabel(variant),
+      sku: variant.sku,
+      stock: variant.stock,
+      priceModifier: variant.priceModifier,
+    })),
+  };
+}
+
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
   const catalogProduct = await getCatalogProductBySlug(slug);
   const baseUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const productJsonLd = buildProductJsonLd(catalogProduct, baseUrl);
 
-  if (!product) {
+  if (!catalogProduct) {
     notFound();
   }
 
-  const relatedProducts = getProductsByCategory(product.categorySlug)
-    .filter((item) => item.slug !== product.slug)
+  const categorySlug = catalogProduct.category?.slug ?? "";
+  const productView = toProductDetailView(catalogProduct);
+  const specs = serializeSpecs(catalogProduct.specs);
+  const relatedProducts = getProductsByCategory(categorySlug)
+    .filter((item) => item.slug !== catalogProduct.slug)
     .slice(0, 3);
 
-  const fallbackRelatedProducts = catalogProducts.filter((item) => item.slug !== product.slug).slice(0, 3);
+  const fallbackRelatedProducts = catalogProducts.filter((item) => item.slug !== catalogProduct.slug).slice(0, 3);
 
   return (
     <div className="container-page py-8">
@@ -112,16 +150,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           Produk
         </Link>
         <span>/</span>
-        <Link href={`/kategori/${product.categorySlug}`} className="hover:text-primary">
-          {product.category}
+        <Link href={`/kategori/${categorySlug}`} className="hover:text-primary">
+          {catalogProduct.category?.name ?? "Kategori"}
         </Link>
         <span>/</span>
-        <span className="text-foreground">{product.name}</span>
+        <span className="text-foreground">{catalogProduct.name}</span>
       </div>
 
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
-        <ProductGallery images={product.images} alt={product.name} />
-        <ProductDetailSummary product={product} />
+        <ProductGallery images={catalogProduct.photos} alt={catalogProduct.name} />
+        <ProductDetailSummary product={productView} />
       </section>
 
       <section className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -134,9 +172,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <TabsTrigger value="reviews">Review</TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-5 text-sm leading-6 text-muted-foreground">
-                <p>{product.description}</p>
+                <p>{catalogProduct.description}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
+                  {catalogProduct.tags.map((tag) => (
                     <Badge key={tag} variant="secondary">
                       {tag}
                     </Badge>
@@ -145,7 +183,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </TabsContent>
               <TabsContent value="specs" className="mt-5">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {Object.entries(product.specs).map(([key, value]) => (
+                  {Object.entries(specs).map(([key, value]) => (
                     <div key={key} className="rounded-md border bg-background p-3 text-sm">
                       <div className="text-muted-foreground">{key}</div>
                       <div className="mt-1 font-medium">{value}</div>
@@ -154,7 +192,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
               </TabsContent>
               <TabsContent value="reviews" className="mt-5">
-                <ProductReviews productSlug={product.slug} />
+                <ProductReviews productSlug={catalogProduct.slug} />
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -170,7 +208,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {[
                 { icon: Package, text: "SKU varian sudah tersedia sebagai kontrak cart item." },
                 { icon: CheckCircle2, text: "Stok dan berat siap dipakai untuk checkout dan ongkir." },
-                { icon: ArrowRight, text: "CTA tetap disabled sampai cart Sprint 4 aktif." },
+                { icon: ArrowRight, text: "CTA add-to-cart sudah terhubung ke backend Sprint 4." },
               ].map((item) => (
                 <div key={item.text} className="flex gap-3">
                   <item.icon className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -180,8 +218,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </CardContent>
           </Card>
           <Button variant="outline" asChild>
-            <Link href={`/kategori/${product.categorySlug}`}>
-              Jelajahi kategori {product.category}
+            <Link href={`/kategori/${categorySlug}`}>
+              Jelajahi kategori {catalogProduct.category?.name ?? "produk"}
             </Link>
           </Button>
         </div>

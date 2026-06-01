@@ -2,25 +2,21 @@ import { PackageCheck, Scale, TicketPercent, Truck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { CartItemMock, VoucherMock } from "@/lib/commerce-mock";
-import { getCartQuantity, getCartSubtotal, getCartWeight, getVoucherDiscount } from "@/lib/commerce-mock";
+import type { CartResponse } from "@/lib/commerce-types";
 import { formatRupiah } from "@/lib/utils";
 
 export function OrderSummary({
-  items,
+  cart,
   shippingCost = 0,
-  voucher = null,
+  discount = 0,
   action,
 }: {
-  items: CartItemMock[];
+  cart: CartResponse;
   shippingCost?: number;
-  voucher?: VoucherMock | null;
+  discount?: number;
   action?: React.ReactNode;
 }) {
-  const subtotal = getCartSubtotal(items);
-  const weight = getCartWeight(items);
-  const discount = getVoucherDiscount(voucher, subtotal, shippingCost);
-  const total = subtotal + shippingCost - discount;
+  const total = cart.summary.subtotal + shippingCost - discount;
 
   return (
     <Card className="overflow-hidden">
@@ -28,7 +24,7 @@ export function OrderSummary({
       <CardHeader>
         <CardTitle className="flex items-center justify-between gap-3 text-base">
           Ringkasan Pesanan
-          <Badge variant="secondary">{getCartQuantity(items)} item</Badge>
+          <Badge variant="secondary">{cart.summary.totalQuantity} item</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -37,13 +33,13 @@ export function OrderSummary({
             <span className="flex items-center gap-2 text-muted-foreground">
               <PackageCheck className="size-4" /> Subtotal
             </span>
-            <span className="font-medium">{formatRupiah(subtotal)}</span>
+            <span className="font-medium">{formatRupiah(cart.summary.subtotal)}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-2 text-muted-foreground">
               <Scale className="size-4" /> Estimasi berat
             </span>
-            <span className="font-medium">{(weight / 1000).toFixed(2)} kg</span>
+            <span className="font-medium">{(cart.summary.totalWeightGram / 1000).toFixed(2)} kg</span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-2 text-muted-foreground">

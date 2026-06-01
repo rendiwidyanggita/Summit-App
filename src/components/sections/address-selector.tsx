@@ -3,22 +3,25 @@
 import { MapPin, Phone } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import type { CheckoutAddressMock } from "@/lib/commerce-mock";
+import type { AccountAddressResponse, ShippingRatesResponse } from "@/lib/commerce-types";
 import { cn } from "@/lib/utils";
 
 export function AddressSelector({
   addresses,
   selectedAddressId,
+  shippingAddress,
   onSelect,
 }: {
-  addresses: CheckoutAddressMock[];
+  addresses: AccountAddressResponse[];
   selectedAddressId: string;
+  shippingAddress?: ShippingRatesResponse["address"] | null;
   onSelect: (id: string) => void;
 }) {
   return (
     <div className="grid gap-3">
       {addresses.map((address) => {
         const active = selectedAddressId === address.id;
+        const codSupported = active ? shippingAddress?.codSupported : undefined;
 
         return (
           <button
@@ -39,7 +42,7 @@ export function AddressSelector({
               </div>
               <div className="flex gap-2">
                 {address.isPrimary ? <Badge>Utama</Badge> : null}
-                <Badge variant={address.codSupported ? "secondary" : "outline"}>{address.codSupported ? "COD OK" : "COD off"}</Badge>
+                {codSupported !== undefined ? <Badge variant={codSupported ? "secondary" : "outline"}>{codSupported ? "COD OK" : "COD off"}</Badge> : null}
               </div>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{address.fullAddress}</p>

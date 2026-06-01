@@ -24,3 +24,7 @@ pnpm-debug.log*
 # os/editor
 .DS_Store
 Thumbs.db
+
+# ai
+.agents/
+.kiro/

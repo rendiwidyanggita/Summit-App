@@ -1,44 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { TicketPercent } from "lucide-react";
+import { Loader2, TicketPercent, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { VoucherMock } from "@/lib/commerce-mock";
-import { getVoucherByCode } from "@/lib/commerce-mock";
+import type { VoucherValidationResponse } from "@/lib/commerce-types";
 import { formatRupiah } from "@/lib/utils";
 
 export function VoucherBox({
-  subtotal,
   selectedVoucher,
+  message,
+  loading,
   onApply,
+  onClear,
 }: {
-  subtotal: number;
-  selectedVoucher: VoucherMock | null;
-  onApply: (voucher: VoucherMock | null) => void;
+  selectedVoucher: VoucherValidationResponse | null;
+  message: string;
+  loading?: boolean;
+  onApply: (code: string) => void;
+  onClear: () => void;
 }) {
   const [code, setCode] = useState(selectedVoucher?.code ?? "");
-  const [message, setMessage] = useState("Coba SUMMIT50 atau FREEONGKIR.");
-
-  function applyVoucher() {
-    const voucher = getVoucherByCode(code);
-
-    if (!voucher) {
-      onApply(null);
-      setMessage("Kode voucher tidak ditemukan pada mock Sprint 4.");
-      return;
-    }
-
-    if (subtotal < voucher.minSpend) {
-      onApply(null);
-      setMessage(`Minimum belanja ${formatRupiah(voucher.minSpend)} untuk voucher ini.`);
-      return;
-    }
-
-    onApply(voucher);
-    setMessage(`${voucher.label} diterapkan.`);
-  }
 
   return (
     <div className="rounded-lg border bg-card p-4 shadow-sm">
@@ -47,11 +30,22 @@ export function VoucherBox({
         Voucher
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
-        <Input value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="SUMMIT50" />
-        <Button type="button" onClick={applyVoucher}>
+        <Input value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="SUMMIT50" disabled={loading} />
+        <Button type="button" onClick={() => onApply(code)} disabled={loading || code.trim().length < 2}>
+          {loading ? <Loader2 className="animate-spin" /> : null}
           Pakai
         </Button>
       </div>
+      {selectedVoucher ? (
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-md bg-secondary p-3 text-sm">
+          <span>
+            {selectedVoucher.code} diterapkan: -{formatRupiah(selectedVoucher.discount)}
+          </span>
+          <Button type="button" variant="ghost" size="icon" onClick={onClear} aria-label="Hapus voucher">
+            <X />
+          </Button>
+        </div>
+      ) : null}
       <p className="mt-2 text-sm text-muted-foreground">{message}</p>
     </div>
   );
