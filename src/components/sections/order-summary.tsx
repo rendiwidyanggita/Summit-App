@@ -20,7 +20,7 @@ export function OrderSummary({
 
   return (
     <Card className="overflow-hidden">
-      <div className="h-1 bg-[linear-gradient(90deg,var(--primary),var(--accent))]" />
+      <div className="h-1 bg-primary" />
       <CardHeader>
         <CardTitle className="flex items-center justify-between gap-3 text-base">
           Ringkasan Pesanan

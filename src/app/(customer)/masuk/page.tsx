@@ -37,7 +37,7 @@ export default async function LoginPage({
             <div className="text-sm font-semibold">Lanjutkan perjalanan belanja</div>
             <p className="mt-1 text-xs leading-5 text-primary-foreground/72">Alamat, pesanan, dan tracking tetap dalam satu flow customer.</p>
           </div>
-          <div className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground">Ready 78%</div>
+          <div className="rounded-full bg-[var(--green-light)] px-4 py-2 text-sm font-semibold text-[var(--summit-green)]">Ready 78%</div>
         </div>
         <div className="trail-divider opacity-40" />
         <div className="flex flex-wrap gap-2 p-4 pt-3 text-sm">

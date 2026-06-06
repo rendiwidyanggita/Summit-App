@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, Clock, CreditCard, PackageCheck, QrCode, ReceiptText, ShieldCheck } from "lucide-react";
 
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/sections/order-status-badge";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,12 +22,12 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
       </Button>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="overflow-hidden rounded-[2rem_1rem_2rem_1rem] border bg-card">
-          <div className="relative overflow-hidden bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_74%,black))] p-5 text-primary-foreground sm:p-7">
-            <div className="absolute -right-16 -top-16 size-52 rounded-full bg-accent/25 blur-2xl" />
+        <div className="overflow-hidden rounded-xl border bg-card">
+          <div className="summit-dark relative overflow-hidden p-5 sm:p-7">
+            <DesignParticles />
             <div className="relative">
             <Badge variant="accent">Status Pembayaran</Badge>
-            <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">
+            <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">
               {isPending ? "Selesaikan pembayaran" : "Pembayaran tercatat"}
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
@@ -41,7 +42,7 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
 
           <div className="grid gap-5 p-5 sm:p-7">
             {isPending ? (
-              <div className="rounded-[1.5rem] border border-accent bg-accent/10 p-5">
+              <div className="rounded-xl border bg-secondary p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2 text-sm font-medium text-accent-foreground">
@@ -131,7 +132,7 @@ export function PaymentStatusView({ order }: { order: OrderMock }) {
                 <span className="text-muted-foreground">Total</span>
                 <span className="text-2xl font-semibold">{formatRupiah(order.total)}</span>
               </div>
-              <div className="rounded-lg bg-primary p-4 text-primary-foreground">
+              <div className="rounded-xl bg-[var(--green-house)] p-4 text-white">
                 <div className="flex gap-3">
                   <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" />
                   <p className="text-xs leading-5 text-primary-foreground/82">UI ini sengaja tidak mengubah status order dari browser customer. Sumber final pembayaran tetap server.</p>

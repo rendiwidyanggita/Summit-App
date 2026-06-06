@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { AddressSelector } from "@/components/sections/address-selector";
 import { CheckoutSteps, type CheckoutStep } from "@/components/sections/checkout-steps";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { OrderSummary } from "@/components/sections/order-summary";
 import { PaymentSelector, type PaymentMethodOption } from "@/components/sections/payment-selector";
 import { ShippingSelector } from "@/components/sections/shipping-selector";
@@ -276,12 +277,12 @@ export function CheckoutPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="relative mb-6 overflow-hidden rounded-[1rem_2rem_1rem_2rem] border bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_78%,black))] p-5 text-primary-foreground shadow-sm sm:p-6">
-        <div className="absolute -bottom-20 right-10 size-56 rounded-full bg-accent/20 blur-2xl" />
+      <section className="summit-dark relative mb-6 overflow-hidden rounded-xl border border-white/10 p-5 sm:p-6">
+        <DesignParticles />
         <Badge variant="accent">Sprint 4 Checkout</Badge>
         <div className="relative mt-3 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <h1 className="text-3xl font-semibold tracking-normal sm:text-5xl">Checkout Pendakian</h1>
+            <h1 className="text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Checkout Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
               Alamat, kurir, voucher, metode pembayaran, dan order creation sudah memakai backend Sprint 4.
             </p>
@@ -369,7 +370,7 @@ export function CheckoutPageClient() {
               </div>
             }
           />
-          <div className="mt-4 grid gap-3 rounded-lg bg-primary p-4 text-sm text-primary-foreground">
+          <div className="mt-4 grid gap-3 rounded-xl bg-[var(--green-house)] p-4 text-sm text-white">
             {[
               { icon: PackageCheck, text: "Reserved stock dibuat saat order berhasil." },
               { icon: ShieldCheck, text: `Voucher discount aktif: ${discount ? formatRupiah(discount) : "belum ada"}.` },

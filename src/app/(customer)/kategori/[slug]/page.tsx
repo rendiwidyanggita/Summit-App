@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Boxes, Star } from "lucide-react";
 
 import { CatalogPageClient } from "@/components/sections/catalog-page-client";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,13 +47,14 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="container-page py-8">
-      <section className="relative mb-6 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
+      <section className="summit-dark relative mb-6 overflow-hidden rounded-xl border border-white/10">
+        <DesignParticles />
         <Image src={category.image} alt={category.name} fill priority className="object-cover opacity-35" sizes="100vw" />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary/20" />
+        <div className="absolute inset-0 bg-[var(--green-house)]/78" />
         <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
           <div>
             <Badge variant="accent">{category.highlight}</Badge>
-            <h1 className="mt-3 text-3xl font-semibold capitalize tracking-normal sm:text-5xl">{category.name}</h1>
+            <h1 className="mt-3 text-3xl font-medium capitalize tracking-[-0.03em] sm:text-5xl">{category.name}</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/82 sm:text-base">{category.description}</p>
           </div>
           <Card className="bg-primary-foreground/95 text-foreground">
@@ -69,7 +71,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 </span>
                 <span className="font-semibold">{topRated || "-"} </span>
               </div>
-              <Button variant="accent" asChild>
+              <Button asChild>
                 <Link href="/produk">
                   Lihat semua produk <ArrowRight />
                 </Link>

@@ -1,6 +1,7 @@
 import { BadgePercent, Boxes, Search, ShieldCheck } from "lucide-react";
 
 import { CatalogPageClient } from "@/components/sections/catalog-page-client";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { catalogProducts } from "@/lib/constants";
 import { formatRupiah } from "@/lib/utils";
@@ -24,11 +25,12 @@ export default function ProductsPage() {
 
   return (
     <div className="container-page py-8">
-      <section className="mb-6 overflow-hidden rounded-lg border bg-primary text-primary-foreground shadow-sm">
-        <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+      <section className="summit-dark relative mb-6 overflow-hidden rounded-xl border border-white/10">
+        <DesignParticles />
+        <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
             <Badge variant="accent">Sprint 3 Catalog</Badge>
-            <h1 className="mt-3 text-3xl font-semibold tracking-normal sm:text-5xl">Produk Pendakian</h1>
+            <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Produk Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
               Cari tenda, carrier, jaket, cooking set, dan essentials lain dengan filter lokal yang siap menjadi kontrak query backend.
             </p>

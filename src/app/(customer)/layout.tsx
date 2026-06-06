@@ -1,5 +1,6 @@
 import { CustomerFooter } from "@/components/layout/customer-footer";
 import { CustomerHeader } from "@/components/layout/customer-header";
+import { FloatingCartFab } from "@/components/layout/floating-cart-fab";
 import { SkipToContent } from "@/components/layout/skip-to-content";
 import { auth } from "@/lib/auth";
 
@@ -23,6 +24,7 @@ export default async function CustomerLayout({ children }: { children: React.Rea
       <main id="main-content" className="flex-1" tabIndex={-1}>
         {children}
       </main>
+      <FloatingCartFab />
       <CustomerFooter />
     </div>
   );

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Search } from "lucide-react";
 
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,11 +25,11 @@ export function ArticlesPageClient() {
   return (
     <div className="container-page py-8">
       <section className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-        <div className="relative overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-primary p-5 text-primary-foreground sm:p-7">
-          <div className="absolute -right-20 -top-20 size-60 rounded-full bg-accent/20 blur-2xl" />
+        <div className="summit-dark relative overflow-hidden rounded-xl p-5 sm:p-7">
+          <DesignParticles />
           <div className="relative">
           <Badge variant="accent">Artikel & SEO</Badge>
-          <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">Tips Outdoor Summit Gear</h1>
+          <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Tips Outdoor Summit Gear</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
             Edukasi gear, checklist pendakian, dan maintenance produk untuk mendukung trust customer.
           </p>
@@ -38,9 +39,9 @@ export function ArticlesPageClient() {
           </div>
           </div>
         </div>
-        <Link href={`/artikel/${featured.slug}`} className="group relative min-h-72 overflow-hidden rounded-[1rem_2rem_1rem_2rem] bg-primary text-primary-foreground">
+        <Link href={`/artikel/${featured.slug}`} className="group relative min-h-72 overflow-hidden rounded-xl bg-[var(--green-house)] text-white">
           <Image src={featured.image} alt={featured.title} fill className="object-cover opacity-55 transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 48vw, 100vw" />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--green-house)] via-[var(--green-house)]/50 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-5">
             <Badge variant="accent">Featured</Badge>
             <h2 className="mt-3 text-2xl font-semibold">{featured.title}</h2>

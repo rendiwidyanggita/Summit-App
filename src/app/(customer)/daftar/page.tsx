@@ -24,7 +24,7 @@ export default function RegisterPage() {
         </>
       }
     >
-      <div className="mb-6 overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(135deg,var(--secondary),var(--background))]">
+      <div className="mb-6 overflow-hidden rounded-xl border bg-secondary">
         <div className="flex items-center gap-2 overflow-x-auto p-4 pb-2 text-sm">
           {[
             { icon: CheckCircle2, label: "Buat akun" },

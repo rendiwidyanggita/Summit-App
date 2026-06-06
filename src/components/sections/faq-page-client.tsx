@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { HelpCircle, MessageSquareWarning, Search } from "lucide-react";
 
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,11 +30,11 @@ export function FaqPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="relative overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-primary p-5 text-primary-foreground sm:p-7">
-        <div className="absolute -right-20 top-8 size-64 rounded-full bg-accent/20 blur-2xl" />
+      <section className="summit-dark relative overflow-hidden rounded-xl p-5 sm:p-7">
+        <DesignParticles />
         <div className="relative">
           <Badge variant="accent">Support Center</Badge>
-          <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">FAQ Summit Gear</h1>
+          <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">FAQ Summit Gear</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
             Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
           </p>

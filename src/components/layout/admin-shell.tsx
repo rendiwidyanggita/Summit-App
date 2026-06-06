@@ -28,8 +28,8 @@ function AdminNav() {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
-              active && "bg-secondary text-foreground",
+              "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
+              active && "bg-white text-primary shadow-sm",
             )}
           >
             <Icon className="size-4" />
@@ -43,11 +43,11 @@ function AdminNav() {
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,var(--background),color-mix(in_oklab,var(--secondary)_55%,var(--background)))]">
+    <div className="min-h-screen bg-background">
       <SkipToContent />
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-card/95 backdrop-blur lg:block">
-        <div className="flex h-16 items-center gap-2 border-b px-5">
-          <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-md" />
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-secondary/80 backdrop-blur lg:block">
+        <div className="flex h-[72px] items-center gap-2 border-b px-5">
+          <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-full border bg-white p-1" />
           <div>
             <div className="font-semibold">Summit Gear</div>
             <div className="text-xs text-muted-foreground">Admin Backoffice</div>
@@ -59,7 +59,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur sm:px-6">
+        <header className="summit-nav-shadow sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur sm:px-6">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Buka menu admin">

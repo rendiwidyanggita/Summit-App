@@ -6,6 +6,7 @@ import { ArrowRight, Loader2, PackageX, ShieldCheck, ShoppingBag, TicketPercent,
 import { toast } from "sonner";
 
 import { CartItemRow } from "@/components/sections/cart-item-row";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { OrderSummary } from "@/components/sections/order-summary";
 import { RouteStatePanel } from "@/components/sections/route-state-panel";
 import { Badge } from "@/components/ui/badge";
@@ -140,12 +141,12 @@ export function CartPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="relative mb-6 overflow-hidden rounded-[2rem_1rem_2rem_1rem] border bg-primary text-primary-foreground shadow-sm">
-        <div className="absolute -right-20 -top-20 size-56 rounded-full bg-accent/25 blur-2xl" />
+      <section className="summit-dark relative mb-6 overflow-hidden rounded-xl border border-white/10">
+        <DesignParticles />
         <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <Badge variant="accent">Sprint 4 Cart</Badge>
-            <h1 className="mt-3 text-3xl font-semibold tracking-normal sm:text-5xl">Keranjang Pendakian</h1>
+            <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Keranjang Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
               Review item, sesuaikan quantity, cek estimasi berat, lalu lanjut ke checkout yang sudah terhubung backend.
             </p>
@@ -163,7 +164,7 @@ export function CartPageClient() {
           {cart.items.map((item) => (
             <CartItemRow key={item.id} item={item} busy={busyItemId === item.id} onQuantityChange={updateQuantity} onRemove={removeItem} />
           ))}
-          <div className="grid gap-3 rounded-[1.25rem] border bg-[linear-gradient(135deg,var(--secondary),var(--background))] p-4 text-sm sm:grid-cols-3">
+          <div className="grid gap-3 rounded-xl border bg-white p-4 text-sm sm:grid-cols-3">
             {[
               { icon: TicketPercent, text: "Voucher divalidasi server saat checkout." },
               { icon: Truck, text: "Ongkir dihitung dari berat cart dan alamat." },

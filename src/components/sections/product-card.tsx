@@ -13,7 +13,7 @@ export function ProductCard({ product }: { product: ProductCatalogItem }) {
 
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-      <div className="absolute inset-x-0 top-0 z-10 h-1 bg-gradient-to-r from-primary via-accent to-transparent opacity-80" />
+      <div className="absolute inset-x-0 top-0 z-10 h-1 bg-primary" />
       <Link href={`/produk/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-secondary">
         <Image
           src={product.images[0]}

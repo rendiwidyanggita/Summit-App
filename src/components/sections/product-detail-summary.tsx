@@ -102,7 +102,7 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
       </div>
 
       <Card className="mt-6 overflow-hidden">
-        <div className="h-1 bg-[linear-gradient(90deg,var(--primary),var(--accent))]" />
+        <div className="h-1 bg-primary" />
         <CardContent className="p-5">
           <div className="text-3xl font-semibold">{formatRupiah(unitPrice)}</div>
           {product.compareAt && product.compareAt > product.price ? <div className="mt-1 text-sm text-muted-foreground line-through">{formatRupiah(product.compareAt)}</div> : null}

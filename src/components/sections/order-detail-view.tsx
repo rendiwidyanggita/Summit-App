@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, CreditCard, MapPin, MessageSquareWarning, PackageCheck, ReceiptText, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/sections/order-status-badge";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { OrderTimeline } from "@/components/sections/order-timeline";
 import { ReviewFormMock } from "@/components/sections/review-form-mock";
 import { SupportFormMock } from "@/components/sections/support-form-mock";
@@ -22,14 +23,14 @@ export function OrderDetailView({ order }: { order: OrderMock }) {
         </Link>
       </Button>
 
-      <section className="overflow-hidden rounded-[2rem_1rem_2rem_1rem] border bg-card">
-        <div className="relative overflow-hidden bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_74%,black))] p-5 text-primary-foreground sm:p-7">
-          <div className="absolute -right-16 -top-16 size-52 rounded-full bg-accent/25 blur-2xl" />
+      <section className="overflow-hidden rounded-xl border bg-card">
+        <div className="summit-dark relative overflow-hidden p-5 sm:p-7">
+          <DesignParticles />
           <div className="relative">
           <Badge variant="accent">Detail Order</Badge>
           <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-3xl font-semibold tracking-normal sm:text-5xl">{order.orderNumber}</h1>
+              <h1 className="text-3xl font-medium tracking-[-0.03em] sm:text-5xl">{order.orderNumber}</h1>
               <p className="mt-2 text-sm text-primary-foreground/78">Dibuat {order.createdAt}</p>
             </div>
             <div className="flex flex-wrap gap-2">

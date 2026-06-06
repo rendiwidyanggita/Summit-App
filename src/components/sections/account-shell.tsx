@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, CheckCircle2, Heart, Home, MapPin, MessageSquareWarning, PackageSearch, RotateCcw, ShieldCheck, UserRound } from "lucide-react";
 
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -31,12 +32,12 @@ export function AccountShell({
 
   return (
     <div className="container-page py-8">
-      <div className="relative mb-6 overflow-hidden rounded-[2rem_1rem_2rem_1rem] border bg-primary text-primary-foreground shadow-sm">
-        <div className="absolute -right-16 -top-16 size-52 rounded-full bg-accent/25 blur-2xl" />
+      <div className="summit-dark relative mb-6 overflow-hidden rounded-xl border border-white/10">
+        <DesignParticles />
         <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <Badge variant="accent">Akun Customer</Badge>
-            <h1 className="mt-3 text-3xl font-semibold tracking-normal sm:text-4xl">{title}</h1>
+            <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-4xl">{title}</h1>
             <p className="mt-2 max-w-2xl text-sm text-primary-foreground/78">{description}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:w-[430px]">
@@ -86,8 +87,8 @@ export function AccountShell({
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex min-w-fit items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
-                        active && "bg-secondary text-foreground",
+                        "flex min-w-fit items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
+                        active && "bg-secondary text-primary",
                       )}
                     >
                       <Icon className="size-4" />

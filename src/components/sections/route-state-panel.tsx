@@ -22,7 +22,7 @@ export function RouteStatePanel({
   return (
     <Card className={cn("overflow-hidden border-primary/15 bg-card/95", className)}>
       <CardContent className="relative grid min-h-72 place-items-center p-6 text-center sm:p-10">
-        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-accent to-transparent" />
+        <div className="absolute inset-x-8 top-0 h-px bg-border" />
         <div className="absolute -right-20 -top-20 size-52 rounded-full bg-secondary/70 blur-3xl" />
         <div className="relative max-w-xl">
           <div className="mx-auto grid size-14 place-items-center rounded-full bg-secondary text-primary shadow-sm">

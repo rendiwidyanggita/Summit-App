@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, CreditCard, PackageCheck, Search, Truck } from "lucide-react";
 
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/sections/order-status-badge";
+import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,18 +35,19 @@ export function OrdersPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="overflow-hidden rounded-[1.5rem] bg-primary text-primary-foreground">
-        <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
+      <section className="summit-dark relative overflow-hidden rounded-xl">
+        <DesignParticles />
+        <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
           <div>
             <Badge variant="accent">Sprint 5 Order</Badge>
-            <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">Pesanan Saya</h1>
+            <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Pesanan Saya</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
               Pantau payment status, fulfillment, resi, dan timeline order dari data mock frontend. Status final payment tetap disiapkan untuk sinkronisasi server.
             </p>
           </div>
           <div className="rounded-2xl border border-white/18 bg-white/12 p-4 backdrop-blur">
             <div className="flex items-center gap-3">
-              <div className="grid size-11 place-items-center rounded-full bg-accent text-accent-foreground">
+              <div className="grid size-11 place-items-center rounded-full bg-white text-primary">
                 <PackageCheck className="size-5" />
               </div>
               <div>

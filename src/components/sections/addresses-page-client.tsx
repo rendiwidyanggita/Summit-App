@@ -114,7 +114,7 @@ export function AddressesPageClient({ initialAddresses }: { initialAddresses: Ad
 
   return (
     <div className="grid gap-5">
-      <div className="grid gap-4 rounded-lg border bg-[linear-gradient(135deg,var(--secondary),var(--background))] p-4 sm:grid-cols-3">
+      <div className="grid gap-4 rounded-xl border bg-secondary p-4 sm:grid-cols-3">
         {[
           { label: "Alamat utama", value: primary?.label ?? "Belum ada", icon: Home },
           { label: "Alamat tersimpan", value: `${addresses.length} lokasi`, icon: MapPin },
@@ -150,7 +150,7 @@ export function AddressesPageClient({ initialAddresses }: { initialAddresses: Ad
         ) : null}
         {addresses.map((item) => (
           <Card key={item.id} className={item.isPrimary ? "overflow-hidden border-primary" : "overflow-hidden"}>
-            <div className={item.isPrimary ? "h-1.5 bg-[linear-gradient(90deg,var(--primary),var(--accent))]" : "h-1.5 bg-secondary"} />
+            <div className={item.isPrimary ? "h-1.5 bg-primary" : "h-1.5 bg-secondary"} />
             <CardHeader className="flex flex-row items-start justify-between gap-4">
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">

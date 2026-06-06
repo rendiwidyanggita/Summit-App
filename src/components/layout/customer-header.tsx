@@ -26,8 +26,8 @@ export function CustomerHeader({
   const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href.split("/")[1] === "kategori" ? "/kategori" : href));
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-      <div className="container-page flex h-16 items-center gap-3">
+    <header className="summit-nav-shadow sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
+      <div className="container-page flex h-16 items-center gap-3 md:h-[72px]">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden" aria-label="Buka navigasi">
@@ -47,7 +47,7 @@ export function CustomerHeader({
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={cn("rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground", active && "bg-secondary text-foreground")}
+                    className={cn("rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground", active && "bg-white text-primary shadow-sm")}
                   >
                     {item.label}
                   </Link>
@@ -57,8 +57,8 @@ export function CustomerHeader({
           </SheetContent>
         </Sheet>
 
-        <Link href="/" className="flex min-w-fit items-center gap-2 font-semibold text-primary">
-          <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-md" />
+        <Link href="/" className="flex min-w-fit items-center gap-2 font-semibold text-[var(--summit-green)]">
+          <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-full border bg-white p-1" />
           <span className="hidden sm:inline">Summit Gear</span>
         </Link>
 
@@ -71,7 +71,7 @@ export function CustomerHeader({
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={cn("rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground", active && "bg-secondary text-foreground")}
+                className={cn("rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground", active && "bg-white text-primary shadow-sm")}
               >
                 {item.label}
               </Link>

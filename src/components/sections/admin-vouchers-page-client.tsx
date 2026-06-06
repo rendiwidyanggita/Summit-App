@@ -50,7 +50,7 @@ export function AdminVouchersPageClient() {
 
           return (
             <Card key={voucher.code} className="overflow-hidden">
-              <div className="h-1 bg-[linear-gradient(90deg,var(--primary),var(--accent))]" />
+              <div className="h-1 bg-primary" />
               <CardHeader>
                 <div className="flex items-start justify-between gap-3">
                   <div>

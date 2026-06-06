@@ -78,7 +78,7 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
   return (
     <div className="grid gap-5">
       <Card className="overflow-hidden">
-        <div className="h-2 bg-[linear-gradient(90deg,var(--primary),var(--accent))]" />
+        <div className="h-2 bg-primary" />
         <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>Ringkasan akun</CardTitle>
@@ -100,7 +100,7 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
                 <span className="text-xs text-muted-foreground">Siap checkout</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-background">
-                <div className="h-full rounded-full bg-[linear-gradient(90deg,var(--primary),var(--accent))]" style={{ width: `${completionPercent}%` }} />
+                <div className="h-full rounded-full bg-primary" style={{ width: `${completionPercent}%` }} />
               </div>
               <p className="mt-3 text-sm text-muted-foreground">Lengkapi nomor HP dan alamat utama untuk membuka alur COD, ongkir, dan notifikasi transaksi.</p>
             </div>
