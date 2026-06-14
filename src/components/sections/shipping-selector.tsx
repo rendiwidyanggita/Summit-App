@@ -27,6 +27,9 @@ export function ShippingSelector({
 
   return (
     <div className="grid gap-3">
+      <div className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-xs text-muted-foreground">
+        Tarif dan estimasi kurir merupakan simulasi untuk kebutuhan demonstrasi.
+      </div>
       {services.map((service) => {
         const active = selectedServiceId === service.id;
 

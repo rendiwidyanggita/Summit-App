@@ -72,7 +72,7 @@ export function AuthPageShell({
             <h2 className="max-w-lg text-4xl font-semibold tracking-normal">Belanja gear pendakian lebih cepat, aman, dan mudah dilacak.</h2>
             <div className="mt-7 grid gap-4 rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur">
               {[
-                { icon: CheckCircle2, label: "Profil dan alamat tersimpan untuk checkout Sprint 4." },
+                { icon: CheckCircle2, label: "Profil dan alamat tersimpan untuk proses checkout." },
                 { icon: ShieldCheck, label: "Session web disiapkan untuk Auth.js dan RBAC admin." },
                 { icon: Truck, label: "Pesanan, tracking, dan notifikasi siap mengikuti flow PRD." },
               ].map((item) => (

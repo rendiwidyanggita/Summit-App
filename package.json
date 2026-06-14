@@ -13,7 +13,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "verify:sprint3": "node scripts/verify-sprint3-backend.mjs",
     "verify:sprint4": "tsx scripts/verify-sprint4-backend.ts",
-    "verify:sprint5": "tsx scripts/verify-sprint5-backend.ts"
+    "verify:sprint5": "tsx scripts/verify-sprint5-backend.ts",
+    "verify:sprint6": "tsx scripts/verify-sprint6-backend.ts",
+    "verify:sprint7": "tsx scripts/verify-sprint7-backend.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

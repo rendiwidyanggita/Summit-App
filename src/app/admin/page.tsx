@@ -19,13 +19,13 @@ export default async function AdminDashboardPage() {
   const modules = [
     { label: "Produk", value: summary.products.toLocaleString("id-ID"), note: `${summary.activeProducts} aktif`, icon: Package },
     { label: "Order aktif", value: summary.pendingOrders.toLocaleString("id-ID"), note: "Menunggu fulfillment", icon: ShoppingBag },
-    { label: "Customer", value: summary.users.toLocaleString("id-ID"), note: "Akun terdaftar", icon: TrendingUp },
-    { label: "Voucher aktif", value: summary.activeVouchers.toLocaleString("id-ID"), note: "Promo berjalan", icon: AlertTriangle },
+    { label: "Revenue", value: new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(summary.revenue), note: "Order valid", icon: TrendingUp },
+    { label: "Voucher/banner aktif", value: `${summary.activeVouchers}/${summary.activeBanners}`, note: "Promo berjalan", icon: AlertTriangle },
   ];
 
   return (
     <div>
-      <AdminPageHeader title="Dashboard Utama" description="Ringkasan foundation backoffice untuk sales, order aktif, produk terlaris, revenue bulanan, dan low stock." />
+      <AdminPageHeader title="Dashboard Utama" description="Ringkasan operasional admin untuk katalog, order, revenue, dan stock alert." />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {modules.map((item) => (
           <Card key={item.label}>
@@ -58,16 +58,11 @@ export default async function AdminDashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[
-                  ["Auth & Account", "Aktif", "Sprint 2"],
-                  ["Catalog Query", "Aktif", "Sprint 1"],
-                  ["Cart & Checkout", "Belum aktif", "Sprint 4"],
-                  ["Payment & Order", "Belum aktif", "Sprint 5"],
-                ].map(([module, status, sprint]) => (
-                  <TableRow key={module}>
-                    <TableCell className="font-medium">{module}</TableCell>
-                    <TableCell><Badge variant="secondary">{status}</Badge></TableCell>
-                    <TableCell>{sprint}</TableCell>
+                {summary.bestSellers.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell><Badge variant="secondary">Aktif</Badge></TableCell>
+                    <TableCell>{product.soldCount} terjual</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -90,7 +85,7 @@ export default async function AdminDashboardPage() {
                 <TrendingUp className="size-4 text-primary" /> Laporan
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Revenue, margin, produk terlaris, dan performa promo disiapkan sebagai modul laporan.</CardContent>
+            <CardContent className="text-sm text-muted-foreground">Revenue order valid saat ini: {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(summary.revenue)}.</CardContent>
           </Card>
           <Card>
             <CardHeader>
@@ -98,7 +93,7 @@ export default async function AdminDashboardPage() {
                 <Package className="size-4 text-primary" /> Fulfillment
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">Invoice, packing list, dan input resi manual akan masuk setelah order management aktif.</CardContent>
+            <CardContent className="text-sm text-muted-foreground">Invoice, packing list, input resi manual, dan state transition fulfillment sudah aktif.</CardContent>
           </Card>
         </div>
       </div>

@@ -2,6 +2,7 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 
 import { catalogProducts } from "../src/lib/catalog-mock";
+import { articleSeedData as sprint7Articles } from "../src/lib/article-seed-data";
 import { prisma } from "../src/lib/db";
 
 if (!process.env.DATABASE_URL) {
@@ -18,6 +19,11 @@ const permissionData = [
   ["promo.write", "Kelola Promo", "marketing"],
   ["report.read", "Lihat Laporan", "reporting"],
   ["role.manage", "Kelola Role", "rbac"],
+  ["review.moderate", "Moderasi Review", "trust"],
+  ["return.manage", "Kelola Return", "support"],
+  ["return.refund", "Proses Refund Return", "finance"],
+  ["complaint.manage", "Kelola Komplain", "support"],
+  ["article.write", "Kelola Artikel", "content"],
 ] as const;
 
 const roles = [
@@ -34,17 +40,17 @@ const roles = [
   {
     code: "ADMIN_MARKETING",
     name: "Admin Marketing",
-    permissions: ["admin.access", "promo.write", "product.read"],
+    permissions: ["admin.access", "promo.write", "product.read", "article.write"],
   },
   {
     code: "ADMIN_CUSTOMER_SERVICE",
     name: "Admin Customer Service",
-    permissions: ["admin.access", "order.read"],
+    permissions: ["admin.access", "order.read", "review.moderate", "return.manage", "complaint.manage"],
   },
   {
     code: "ADMIN_FINANCE",
     name: "Admin Finance",
-    permissions: ["admin.access", "order.read", "report.read"],
+    permissions: ["admin.access", "order.read", "report.read", "return.manage", "return.refund"],
   },
 ];
 
@@ -247,11 +253,17 @@ async function main() {
   for (const name of categoryData) {
     await prisma.category.upsert({
       where: { slug: slugify(name) },
-      update: { name },
+      update: {
+        name,
+        imageUrl: catalogProducts.find((product) => product.category === name)?.images[0] ?? null,
+        isVisible: true,
+      },
       create: {
         name,
         slug: slugify(name),
         icon: "package",
+        imageUrl: catalogProducts.find((product) => product.category === name)?.images[0] ?? null,
+        isVisible: true,
         metaTitle: `${name} Summit Gear`,
         metaDescription: `Katalog ${name.toLowerCase()} untuk kebutuhan pendakian dan camping.`,
       },
@@ -291,6 +303,7 @@ async function main() {
       brandId: brand.id,
       weightGram: item.weightGram,
       price,
+      costPrice: Math.round(Number(price) * 0.65),
       discountPrice,
       photos: item.images,
       tags: item.tags,
@@ -325,6 +338,7 @@ async function main() {
           size: variant.name,
           stock: variant.stock,
           minimumStock: 10,
+          isActive: true,
           priceModifier: variant.priceModifier ?? 0,
         },
         create: {
@@ -333,6 +347,7 @@ async function main() {
           size: variant.name,
           stock: variant.stock,
           minimumStock: 10,
+          isActive: true,
           priceModifier: variant.priceModifier ?? 0,
         },
       });
@@ -420,6 +435,7 @@ async function main() {
     where: { id: "foundation-homepage-banner" },
     update: {
       title: "Summit Gear Launch",
+      placement: "HOME_HERO",
       isActive: true,
     },
     create: {
@@ -427,6 +443,7 @@ async function main() {
       title: "Summit Gear Launch",
       imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=80",
       targetUrl: "/produk",
+      placement: "HOME_HERO",
       sortOrder: 1,
       isActive: true,
     },
@@ -436,6 +453,7 @@ async function main() {
     await prisma.voucher.upsert({
       where: { code: voucher.code },
       update: {
+        name: voucher.code === "SUMMIT50" ? "Potongan gear pendakian" : "Gratis ongkir basecamp",
         type: voucher.type,
         value: voucher.value,
         minSpend: voucher.minSpend,
@@ -447,6 +465,7 @@ async function main() {
       },
       create: {
         code: voucher.code,
+        name: voucher.code === "SUMMIT50" ? "Potongan gear pendakian" : "Gratis ongkir basecamp",
         type: voucher.type,
         value: voucher.value,
         minSpend: voucher.minSpend,
@@ -481,6 +500,39 @@ async function main() {
       status: "ACTIVE",
     },
   });
+
+  for (const article of sprint7Articles) {
+    await prisma.article.upsert({
+      where: { slug: article.slug },
+      update: {
+        title: article.title,
+        excerpt: article.excerpt,
+        category: article.category,
+        tags: [...article.tags],
+        content: article.content.join("\n\n"),
+        imageUrl: article.image,
+        authorId: demoAdmin.id,
+        status: "PUBLISHED",
+        publishedAt: new Date(),
+        metaTitle: article.title,
+        metaDescription: article.excerpt,
+      },
+      create: {
+        title: article.title,
+        slug: article.slug,
+        excerpt: article.excerpt,
+        category: article.category,
+        tags: [...article.tags],
+        content: article.content.join("\n\n"),
+        imageUrl: article.image,
+        authorId: demoAdmin.id,
+        status: "PUBLISHED",
+        publishedAt: new Date(),
+        metaTitle: article.title,
+        metaDescription: article.excerpt,
+      },
+    });
+  }
 
   const productCount = await prisma.product.count();
   const variantCount = await prisma.productVariant.count();

@@ -1,6 +1,6 @@
 # Summit Gear
 
-Panduan instalasi dan pengaturan project Summit Gear untuk lingkungan pengembangan lokal.
+Panduan instalasi, pengaturan lokal, dan deployment demo Summit Gear.
 
 ## Prasyarat
 
@@ -62,6 +62,7 @@ Kemudian isi nilai pada `.env` sesuai layanan yang digunakan.
 | --- | --- |
 | `APP_URL` | URL aplikasi lokal, gunakan `http://localhost:3000`. |
 | `NODE_ENV` | Mode aplikasi, gunakan `development` untuk pengembangan lokal. |
+| `DEMO_MODE` | Aktifkan perilaku khusus demo seperti simulasi pembayaran. |
 | `DATABASE_URL` | Koneksi database saat aplikasi berjalan. Untuk Supabase, gunakan transaction pooler port `6543`. |
 | `DIRECT_URL` | Koneksi database untuk migrasi dan seed. Untuk Supabase, gunakan session pooler atau koneksi langsung port `5432`. |
 | `AUTH_SECRET` | Secret aman untuk proses autentikasi. |
@@ -81,13 +82,14 @@ Jangan menyimpan kredensial asli ke Git. File `.env` sudah diabaikan melalui `.g
 Isi variabel berikut hanya jika fitur terkait akan digunakan:
 
 - `AUTH_GOOGLE_ID` dan `AUTH_GOOGLE_SECRET`: login Google.
-- `AUTH_APPLE_ID` dan `AUTH_APPLE_SECRET`: login Apple.
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, dan `SUPABASE_SERVICE_ROLE_KEY`: integrasi Supabase.
+- `AUTH_APPLE_ID` dan `AUTH_APPLE_SECRET`: login Apple, belum digunakan pada versi demo.
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, dan `SUPABASE_SERVICE_ROLE_KEY`: tidak diperlukan karena aplikasi mengakses Supabase PostgreSQL melalui Prisma.
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, dan `CLOUDINARY_API_SECRET`: penyimpanan gambar Cloudinary.
 - `BREVO_API_KEY`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, dan `EMAIL_FROM`: pengiriman email.
-- `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, `MIDTRANS_IS_PRODUCTION`, dan `MIDTRANS_MOCK_ENABLED`: pembayaran Midtrans.
-- `RAJAONGKIR_API_KEY` dan `BINDERBYTE_API_KEY`: layanan pengiriman.
-- `NEXT_PUBLIC_GA_ID` dan `SENTRY_DSN`: analytics dan monitoring.
+- `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, dan `MIDTRANS_IS_PRODUCTION`: hanya diperlukan untuk integrasi Midtrans nyata.
+- `MIDTRANS_MOCK_ENABLED`: aktifkan bersama `DEMO_MODE=true` untuk simulasi pembayaran tanpa Midtrans.
+- `RAJAONGKIR_API_KEY` dan `BINDERBYTE_API_KEY`: belum diperlukan karena versi demo memakai kalkulasi ongkir simulasi.
+- `NEXT_PUBLIC_GA_ID` dan `SENTRY_DSN`: belum digunakan pada versi demo.
 
 ## 4. Siapkan Database dengan Prisma
 
@@ -151,12 +153,16 @@ Buka [http://localhost:3000](http://localhost:3000) di browser.
 | `npm run verify:sprint3` | Menjalankan verifikasi backend Sprint 3. |
 | `npm run verify:sprint4` | Menjalankan verifikasi backend Sprint 4. |
 | `npm run verify:sprint5` | Menjalankan verifikasi backend Sprint 5. |
+| `npm run verify:sprint6` | Menjalankan verifikasi backend Sprint 6. |
+| `npm run verify:sprint7` | Menjalankan verifikasi backend Sprint 7. |
 
 Untuk memverifikasi project secara umum:
 
 ```bash
 npm run lint
 npm run build
+npm run verify:sprint6
+npm run verify:sprint7
 ```
 
 Untuk mencoba production build secara lokal:
@@ -165,6 +171,49 @@ Untuk mencoba production build secara lokal:
 npm run build
 npm run start
 ```
+
+## Deployment Demo di Vercel
+
+Deployment ini ditujukan untuk demonstrasi tugas kuliah dan tidak boleh digunakan untuk menerima transaksi nyata.
+
+1. Hubungkan repository GitHub ke Vercel.
+2. Tambahkan environment variables berikut pada Vercel:
+
+```env
+APP_URL="https://URL-DEPLOYMENT-VERCEL"
+DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+AUTH_SECRET="SECRET-ACAK-YANG-AMAN"
+AUTH_TRUST_HOST="true"
+DEMO_MODE="true"
+MIDTRANS_MOCK_ENABLED="true"
+MIDTRANS_IS_PRODUCTION="false"
+AUTH_GOOGLE_ID="GOOGLE-CLIENT-ID"
+AUTH_GOOGLE_SECRET="GOOGLE-CLIENT-SECRET"
+BREVO_API_KEY="BREVO-API-KEY"
+EMAIL_FROM="Summit Gear <EMAIL-SENDER-TERVERIFIKASI>"
+```
+
+3. Di Google Cloud Console, tambahkan callback URL:
+
+```text
+https://URL-DEPLOYMENT-VERCEL/api/auth/callback/google
+```
+
+4. Verifikasi sender pada Brevo agar registrasi, verifikasi email, dan reset password dapat didemokan. Jika fitur authorized IP Brevo aktif, izinkan sumber deployment atau nonaktifkan pembatasan IP khusus selama demo.
+5. Jalankan migration dan seed dari komputer lokal menggunakan `DIRECT_URL`:
+
+```powershell
+npx.cmd prisma migrate deploy
+npm.cmd run db:seed
+```
+
+Pada mode demo:
+
+- Pembayaran Midtrans disimulasikan tanpa server/client key atau merchant production.
+- COD tetap dapat digunakan.
+- Tarif dan estimasi ongkir merupakan simulasi.
+- Apple Login, Cloudinary, RajaOngkir, BinderByte, Sentry, dan analytics tidak diperlukan.
+- Jangan mengaktifkan `DEMO_MODE` atau `MIDTRANS_MOCK_ENABLED` untuk toko production nyata.
 
 ## Troubleshooting
 

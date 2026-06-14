@@ -1,142 +1,115 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
-import { Boxes, Package, Plus, SlidersHorizontal, TrendingUp } from "lucide-react";
+import { Archive, Loader2, Package, Pencil, Plus, SlidersHorizontal } from "lucide-react";
+import { toast } from "sonner";
 
-import { AdminDataToolbar, AdminLowStockFlag, AdminMetricCard, AdminMockActionNotice, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
+import { AdminDataToolbar, AdminLowStockFlag, AdminMetricCard, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
 import { AdminPageHeader } from "@/components/sections/admin-page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { adminProducts, getAdminCommerceSummary } from "@/lib/admin-commerce-mock";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type { AdminCategory, AdminListResponse, AdminProduct } from "@/lib/admin-types";
+import { apiRequest } from "@/lib/api-client";
 import { formatRupiah } from "@/lib/utils";
 
-const statusOptions = [
-  { label: "Semua status", value: "ALL" },
-  { label: "Active", value: "ACTIVE" },
-  { label: "Draft", value: "DRAFT" },
-  { label: "Inactive", value: "INACTIVE" },
-  { label: "Archived", value: "ARCHIVED" },
-  { label: "Low stock", value: "LOW_STOCK" },
-];
+type Brand = { id: string; name: string; slug: string };
+const statusOptions = ["ALL", "ACTIVE", "DRAFT", "INACTIVE", "ARCHIVED", "LOW_STOCK"].map((value) => ({ label: value.replace("_", " "), value }));
 
 export function AdminProductsPageClient() {
+  const [data, setData] = useState<AdminListResponse<AdminProduct> | null>(null);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("ALL");
-  const summary = getAdminCommerceSummary();
+  const [editing, setEditing] = useState<AdminProduct | null | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const products = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-
-    return adminProducts.filter((product) => {
-      const matchesSearch = keyword ? [product.name, product.brand, product.category].join(" ").toLowerCase().includes(keyword) : true;
-      const matchesStatus = status === "ALL" ? true : status === "LOW_STOCK" ? product.lowStock : product.status === status;
-
-      return matchesSearch && matchesStatus;
-    });
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [products, categoryResult, brandResult] = await Promise.all([
+        apiRequest<AdminListResponse<AdminProduct>>(`/api/admin/products?q=${encodeURIComponent(search)}&status=${status}&pageSize=100`),
+        apiRequest<AdminListResponse<AdminCategory>>("/api/admin/categories?pageSize=100"),
+        apiRequest<Brand[]>("/api/brands"),
+      ]);
+      setData(products); setCategories(categoryResult.items); setBrands(brandResult);
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Produk gagal dimuat."); }
+    finally { setLoading(false); }
   }, [search, status]);
 
-  return (
-    <div className="grid gap-6">
-      <AdminPageHeader title="Manajemen Produk" description="UI mock untuk katalog admin: status produk, stok, varian, harga, dan quick action inventory tanpa menyentuh backend." />
+  useEffect(() => { const timer = setTimeout(() => void load(), 200); return () => clearTimeout(timer); }, [load]);
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <AdminMetricCard title="Total produk" value={String(summary.totalProducts)} note={`${summary.activeProducts} aktif di katalog`} icon={Package} />
-        <AdminMetricCard title="Low stock" value={String(summary.lowStockProducts)} note="Threshold mock < 10 unit" icon={SlidersHorizontal} />
-        <AdminMetricCard title="Produk diskon" value={String(summary.discountProducts)} note="Campaign siap dipreview" icon={TrendingUp} />
-        <AdminMetricCard title="Varian aktif" value={String(adminProducts.reduce((sum, product) => sum + product.variants, 0))} note="SKU mock dari katalog FE" icon={Boxes} />
-      </div>
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setSaving(true);
+    const form = new FormData(event.currentTarget);
+    const existingVariants = editing?.variants ?? [];
+    const payload = {
+      name: String(form.get("name")), slug: String(form.get("slug")), description: String(form.get("description")),
+      categoryId: String(form.get("categoryId")), brandId: String(form.get("brandId")), weightGram: Number(form.get("weightGram")),
+      price: Number(form.get("price")), costPrice: Number(form.get("costPrice")), discountPrice: form.get("discountPrice") ? Number(form.get("discountPrice")) : null,
+      photos: String(form.get("photo")).split(",").map((value) => value.trim()).filter(Boolean), videoUrl: editing?.videoUrl ?? "",
+      status: String(form.get("status")), isCodAllowed: editing?.isCodAllowed ?? true, tags: editing?.tags ?? [], specs: editing?.specs ?? null, isFeatured: editing?.isFeatured ?? false, metaTitle: editing?.metaTitle ?? "", metaDescription: editing?.metaDescription ?? "",
+      variants: existingVariants.length ? existingVariants.map((variant, index) => index === 0 ? { ...variant, stock: Number(form.get("stock")), sku: String(form.get("sku")) } : variant)
+        : [{ sku: String(form.get("sku")), size: "", color: "", stock: Number(form.get("stock")), minimumStock: 10, priceModifier: 0, isActive: true }],
+    };
+    try {
+      await apiRequest(editing ? `/api/admin/products/${editing.id}` : "/api/admin/products", { method: editing ? "PATCH" : "POST", body: JSON.stringify(payload) });
+      toast.success(editing ? "Produk diperbarui." : "Produk ditambahkan."); setEditing(undefined); await load();
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Produk gagal disimpan."); }
+    finally { setSaving(false); }
+  }
 
-      <AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={statusOptions} placeholder="Cari nama, brand, atau kategori..." />
+  async function archive(product: AdminProduct) {
+    if (!window.confirm(`Archive ${product.name}?`)) return;
+    try { await apiRequest(`/api/admin/products/${product.id}`, { method: "DELETE" }); toast.success("Produk diarsipkan."); await load(); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Produk gagal diarsipkan."); }
+  }
 
-      <Card className="overflow-hidden rounded-[1.35rem]">
-        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-base">Produk katalog</CardTitle>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus /> Produk mock
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Tambah produk mock</DialogTitle>
-                <DialogDescription>Form CRUD real belum diaktifkan. Sprint 6 hanya menyiapkan affordance UI admin untuk integrasi backend berikutnya.</DialogDescription>
-              </DialogHeader>
-              <AdminMockActionNotice />
-            </DialogContent>
-          </Dialog>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="hidden lg:block">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Produk</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Stok</TableHead>
-                  <TableHead>Harga</TableHead>
-                  <TableHead>Performa</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.slug}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="relative size-12 overflow-hidden rounded-md bg-secondary">
-                          <Image src={product.image} alt={product.name} fill className="object-cover" sizes="48px" />
-                        </div>
-                        <div>
-                          <div className="font-medium">{product.name}</div>
-                          <div className="text-xs text-muted-foreground">{product.brand} - {product.category}</div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell><AdminStatusPill status={product.status} /></TableCell>
-                    <TableCell>
-                      <div className="font-medium">{product.stock} unit</div>
-                      <AdminLowStockFlag show={product.lowStock} />
-                    </TableCell>
-                    <TableCell>{formatRupiah(product.price)}</TableCell>
-                    <TableCell>
-                      <div className="text-sm">{product.sold} terjual</div>
-                      <div className="text-xs text-muted-foreground">{product.rating} rating - {product.variants} varian</div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="grid gap-3 p-4 lg:hidden">
-            {products.map((product) => (
-              <div key={product.slug} className="rounded-[1.15rem] border bg-background p-3">
-                <div className="flex gap-3">
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-secondary">
-                    <Image src={product.image} alt={product.name} fill className="object-cover" sizes="64px" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium line-clamp-1">{product.name}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">{product.brand} - {product.category}</div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <AdminStatusPill status={product.status} />
-                      <AdminLowStockFlag show={product.lowStock} />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center justify-between text-sm">
-                  <span>{formatRupiah(product.price)}</span>
-                  <span className="text-muted-foreground">{product.stock} stok</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-      <AdminMockActionNotice />
+  const products = data?.items ?? [];
+  return <div className="grid gap-6">
+    <AdminPageHeader title="Manajemen Produk" description="Katalog, varian, stok, harga beli/jual, margin, dan status produk terhubung ke backend." />
+    <div className="grid gap-4 md:grid-cols-3">
+      <AdminMetricCard title="Total produk" value={String(data?.pagination.total ?? 0)} note={`${products.filter((p) => p.status === "ACTIVE").length} aktif`} icon={Package} />
+      <AdminMetricCard title="Low stock" value={String(products.filter((p) => p.lowStock).length)} note="Sesuai threshold varian" icon={SlidersHorizontal} />
+      <AdminMetricCard title="Total stok" value={String(products.reduce((sum, p) => sum + p.stock, 0))} note="Varian aktif" icon={Package} />
     </div>
-  );
+    <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex-1"><AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={statusOptions} placeholder="Cari produk..." /></div>
+      <Button onClick={() => setEditing(null)}><Plus /> Tambah produk</Button>
+    </div>
+    <Card><CardHeader><CardTitle className="text-base">Produk katalog</CardTitle></CardHeader><CardContent className="grid gap-3">
+      {loading ? <Loader2 className="animate-spin" /> : products.map((product) => <div key={product.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[64px_1fr_auto] md:items-center">
+        <div className="relative size-16 overflow-hidden rounded-md bg-secondary">{product.photos[0] ? <Image src={product.photos[0]} alt={product.name} fill className="object-cover" sizes="64px" /> : null}</div>
+        <div><div className="flex flex-wrap items-center gap-2"><strong>{product.name}</strong><AdminStatusPill status={product.status} /><AdminLowStockFlag show={product.lowStock} /></div>
+          <div className="mt-1 text-sm text-muted-foreground">{product.brand.name} · {product.category.name} · {product.stock} stok · margin {product.margin}%</div>
+          <div className="mt-1 font-medium">{formatRupiah(product.price)}</div></div>
+        <div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => setEditing(product)}><Pencil /> Edit</Button><Button size="sm" variant="ghost" onClick={() => void archive(product)}><Archive /> Archive</Button></div>
+      </div>)}
+    </CardContent></Card>
+    <Dialog open={editing !== undefined} onOpenChange={(open) => !open && setEditing(undefined)}><DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto"><DialogHeader><DialogTitle>{editing ? "Edit produk" : "Tambah produk"}</DialogTitle><DialogDescription>Varian pertama dapat diperbarui melalui form ini; varian lain tetap dipertahankan.</DialogDescription></DialogHeader>
+      <form className="grid gap-4" onSubmit={save}>
+        <div className="grid gap-3 sm:grid-cols-2"><Field label="Nama" name="name" value={editing?.name} /><Field label="Slug" name="slug" value={editing?.slug} /></div>
+        <div className="grid gap-2"><Label>Deskripsi</Label><Textarea name="description" defaultValue={editing?.description} required /></div>
+        <div className="grid gap-3 sm:grid-cols-2"><SelectField label="Kategori" name="categoryId" value={editing?.categoryId} options={categories.map((c) => ({ value: c.id, label: c.name }))} /><SelectField label="Brand" name="brandId" value={editing?.brandId} options={brands.map((b) => ({ value: b.id, label: b.name }))} /></div>
+        <div className="grid gap-3 sm:grid-cols-3"><Field label="Harga jual" name="price" type="number" value={editing?.price} /><Field label="Harga beli" name="costPrice" type="number" value={editing?.costPrice} /><Field label="Harga diskon" name="discountPrice" type="number" value={editing?.discountPrice ?? ""} /></div>
+        <div className="grid gap-3 sm:grid-cols-3"><Field label="Berat gram" name="weightGram" type="number" value={editing?.weightGram ?? 500} /><Field label="SKU utama" name="sku" value={editing?.variants[0]?.sku} /><Field label="Stok utama" name="stock" type="number" value={editing?.variants[0]?.stock ?? 0} /></div>
+        <Field label="URL foto (pisahkan koma)" name="photo" value={editing?.photos.join(", ")} />
+        <SelectField label="Status" name="status" value={editing?.status ?? "DRAFT"} options={["DRAFT","ACTIVE","INACTIVE","ARCHIVED"].map((value) => ({ value, label: value }))} />
+        <Button type="submit" disabled={saving}>{saving ? <Loader2 className="animate-spin" /> : null} Simpan produk</Button>
+      </form>
+    </DialogContent></Dialog>
+  </div>;
+}
+
+function Field({ label, name, value, type = "text" }: { label: string; name: string; value?: string | number | null; type?: string }) {
+  return <div className="grid gap-2"><Label>{label}</Label><Input name={name} type={type} defaultValue={value ?? ""} required={name !== "discountPrice"} /></div>;
+}
+function SelectField({ label, name, value, options }: { label: string; name: string; value?: string; options: Array<{ value: string; label: string }> }) {
+  return <div className="grid gap-2"><Label>{label}</Label><select name={name} defaultValue={value} required className="h-10 rounded-md border bg-background px-3 text-sm">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>;
 }

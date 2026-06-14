@@ -59,18 +59,20 @@ export function LoginForm({
 
   return (
     <>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={`grid gap-3 ${appleEnabled ? "sm:grid-cols-2" : ""}`}>
         <Button variant="outline" type="button" onClick={() => onOAuth("google")} disabled={!googleEnabled || oauthProvider !== null}>
           {oauthProvider === "google" ? <Loader2 className="animate-spin" /> : <Mail />}
           Google
         </Button>
-        <Button variant="outline" type="button" onClick={() => onOAuth("apple")} disabled={!appleEnabled || oauthProvider !== null}>
-          {oauthProvider === "apple" ? <Loader2 className="animate-spin" /> : <Apple />}
-          Apple
-        </Button>
+        {appleEnabled ? (
+          <Button variant="outline" type="button" onClick={() => onOAuth("apple")} disabled={oauthProvider !== null}>
+            {oauthProvider === "apple" ? <Loader2 className="animate-spin" /> : <Apple />}
+            Apple
+          </Button>
+        ) : null}
       </div>
 
-      {!appleEnabled ? <p className="mt-2 text-xs text-muted-foreground">Apple OAuth belum diaktifkan untuk development project ini.</p> : null}
+      {!googleEnabled ? <p className="mt-2 text-xs text-muted-foreground">Google Login belum dikonfigurasi untuk deployment ini.</p> : null}
 
       <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
         <Separator className="flex-1" />

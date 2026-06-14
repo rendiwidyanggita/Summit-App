@@ -116,10 +116,12 @@ async function resolveProduct(input: z.infer<typeof cartItemCreateSchema>, tx: P
   const product = await tx.product.findFirst({
     where: {
       status: "ACTIVE",
+      category: { isVisible: true },
       ...(input.productId ? { id: input.productId } : { slug: input.productSlug }),
     },
     include: {
       variants: {
+        where: { isActive: true },
         orderBy: { createdAt: "asc" },
       },
     },

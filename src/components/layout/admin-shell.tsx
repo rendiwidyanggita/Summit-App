@@ -11,14 +11,18 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { SkipToContent } from "@/components/layout/skip-to-content";
 import { adminNav } from "@/lib/constants";
+import { adminNavPermissions } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
 
-function AdminNav() {
+function AdminNav({ permissions }: { permissions: string[] }) {
   const pathname = usePathname();
 
   return (
     <nav className="grid gap-1">
-      {adminNav.map((item) => {
+      {adminNav.filter((item) => {
+        const required = adminNavPermissions[item.href];
+        return !required || permissions.includes(required);
+      }).map((item) => {
         const active = pathname === item.href;
         const Icon = item.icon;
 
@@ -41,7 +45,7 @@ function AdminNav() {
   );
 }
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({ children, permissions }: { children: React.ReactNode; permissions: string[] }) {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
@@ -54,7 +58,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="p-4">
-          <AdminNav />
+          <AdminNav permissions={permissions} />
         </div>
       </aside>
 
@@ -71,7 +75,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <SheetTitle>Admin Backoffice</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
-                <AdminNav />
+                <AdminNav permissions={permissions} />
               </div>
             </SheetContent>
           </Sheet>

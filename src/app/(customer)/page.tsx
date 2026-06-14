@@ -43,7 +43,7 @@ export default function HomePage() {
               Summit Gear
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
-              Pilih perlengkapan pendakian yang pas untuk summit attack, camping, dan perjalanan akhir pekan. Katalog, keranjang, dan checkout mock sudah disiapkan untuk flow belanja web.
+              Pilih perlengkapan pendakian yang pas untuk summit attack, camping, dan perjalanan akhir pekan. Jelajahi katalog, kelola keranjang, dan coba alur checkout demonstrasi.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="inverse" size="lg" asChild>
@@ -77,7 +77,7 @@ export default function HomePage() {
               {[
                 { icon: PackageCheck, label: `${catalogProducts.length} produk` },
                 { icon: Star, label: "Rating 4.8+" },
-                { icon: Truck, label: "Ongkir mock" },
+                { icon: Truck, label: "Ongkir simulasi" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm text-white/85">
                   <item.icon className="size-4 text-white" />
@@ -99,8 +99,8 @@ export default function HomePage() {
         <div className="grid gap-4 md:grid-cols-3">
           {[
             { icon: Search, title: "Cari cepat", body: "Temukan gear lewat search, kategori, brand, rating, dan harga." },
-            { icon: ShoppingCart, title: "Keranjang aktif", body: "Ubah quantity, cek berat, dan lanjut ke checkout mock." },
-            { icon: ShieldCheck, title: "Siap integrasi", body: "UI sudah menjaga boundary untuk payment, ongkir, dan stock reserve." },
+            { icon: ShoppingCart, title: "Keranjang aktif", body: "Ubah quantity, cek berat, dan lanjut ke checkout demonstrasi." },
+            { icon: ShieldCheck, title: "Alur terintegrasi", body: "Order, stok, voucher, dan operasional admin tersambung ke backend." },
           ].map((item, index) => (
             <div key={item.title} className={`summit-card-shadow rounded-xl border bg-card p-6 ${index === 1 ? "md:-translate-y-3 md:border-primary/30" : ""}`}>
               <item.icon className="size-5 text-primary" />
@@ -166,9 +166,9 @@ export default function HomePage() {
       </section>
 
       <DarkPromoBand
-        eyebrow="Promo preview"
-        title="Flash sale gear camp siap ditampilkan."
-        description={`${discountedProducts.length} produk diskon, voucher, dan countdown disiapkan sebagai UI preview. Data final tetap bisa disambungkan ke modul promo admin nanti.`}
+        eyebrow="Promo gear"
+        title="Temukan perlengkapan dengan harga terbaik."
+        description={`${discountedProducts.length} produk diskon dan voucher tersedia untuk dicoba pada alur belanja demonstrasi.`}
         primaryHref="/produk"
         primaryLabel="Lihat produk diskon"
         secondaryHref="/keranjang"
@@ -182,7 +182,7 @@ export default function HomePage() {
             <Badge variant="secondary">Terlaris</Badge>
             <h2 className="mt-3 text-2xl font-semibold tracking-normal">Sering dipilih pendaki</h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Produk dengan angka terjual tertinggi dari katalog mock. Bagian ini menjaga homepage tetap informatif tanpa terasa seperti kumpulan kartu yang sama.
+              Produk dengan angka terjual tertinggi dari katalog Summit Gear untuk membantu memilih perlengkapan yang sering diminati.
             </p>
             <Button className="mt-5" asChild>
               <Link href="/produk">

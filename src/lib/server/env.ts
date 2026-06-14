@@ -1,15 +1,7 @@
 const requiredProductionEnv = [
   "APP_URL",
+  "DATABASE_URL",
   "AUTH_SECRET",
-  "AUTH_GOOGLE_ID",
-  "AUTH_GOOGLE_SECRET",
-  "AUTH_APPLE_ID",
-  "AUTH_APPLE_SECRET",
-  "BREVO_API_KEY",
-  "EMAIL_FROM",
-  "MIDTRANS_SERVER_KEY",
-  "MIDTRANS_CLIENT_KEY",
-  "MIDTRANS_IS_PRODUCTION",
 ] as const;
 
 export function getAppUrl() {
@@ -18,6 +10,10 @@ export function getAppUrl() {
 
 export function hasEnv(name: string) {
   return Boolean(process.env[name]?.trim());
+}
+
+export function isDemoMode() {
+  return process.env.DEMO_MODE === "true";
 }
 
 export function assertProductionEnv() {
@@ -48,4 +44,8 @@ export function hasMidtransEnv() {
 
 export function isMidtransProduction() {
   return process.env.MIDTRANS_IS_PRODUCTION === "true";
+}
+
+export function isDemoMidtransEnabled() {
+  return isDemoMode() && process.env.MIDTRANS_MOCK_ENABLED === "true";
 }

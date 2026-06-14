@@ -97,6 +97,7 @@ export function serializeOrder(order: OrderWithRelations) {
           midtransTransactionId: order.payment.midtransTransactionId,
           snapToken: order.payment.snapToken,
           redirectUrl: order.payment.redirectUrl,
+          isDemo: Boolean(order.payment.snapToken?.startsWith("mock-snap-token-")),
           paymentType: order.payment.paymentType,
           fraudStatus: order.payment.fraudStatus,
           paidAt: order.payment.paidAt,

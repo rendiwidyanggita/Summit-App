@@ -49,7 +49,7 @@ export function ProductFilters({
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold">Filter Produk</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Filter lokal Sprint 3, siap untuk query backend.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Gunakan filter untuk mempersempit hasil katalog.</p>
         </div>
         <Button type="button" variant="ghost" size="sm" onClick={onReset}>
           <RotateCcw /> Reset

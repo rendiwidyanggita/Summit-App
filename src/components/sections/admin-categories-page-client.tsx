@@ -1,107 +1,52 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Image from "next/image";
-import { FolderTree, Search, Tags, TextSearch } from "lucide-react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { FolderTree, Loader2, Pencil, Plus, Tags, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
-import { AdminDataToolbar, AdminMetricCard, AdminMockActionNotice, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
+import { AdminDataToolbar, AdminMetricCard, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
 import { AdminPageHeader } from "@/components/sections/admin-page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { adminCategories } from "@/lib/admin-commerce-mock";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { AdminCategory, AdminListResponse } from "@/lib/admin-types";
+import { apiRequest } from "@/lib/api-client";
 
-const options = [
-  { label: "Semua kategori", value: "ALL" },
-  { label: "Visible", value: "VISIBLE" },
-  { label: "Hidden", value: "HIDDEN" },
-];
+const options = [{ label: "Semua kategori", value: "ALL" }, { label: "Visible", value: "VISIBLE" }, { label: "Hidden", value: "HIDDEN" }];
 
 export function AdminCategoriesPageClient() {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("ALL");
-
-  const categories = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-
-    return adminCategories.filter((category) => {
-      const matchesSearch = keyword ? [category.name, category.slug, category.parent].join(" ").toLowerCase().includes(keyword) : true;
-      const matchesStatus = status === "ALL" ? true : category.status === status;
-
-      return matchesSearch && matchesStatus;
-    });
+  const [data, setData] = useState<AdminListResponse<AdminCategory> | null>(null);
+  const [search, setSearch] = useState(""); const [status, setStatus] = useState("ALL");
+  const [editing, setEditing] = useState<AdminCategory | null | undefined>(undefined); const [loading, setLoading] = useState(false);
+  const load = useCallback(async () => {
+    try { setData(await apiRequest(`/api/admin/categories?q=${encodeURIComponent(search)}&status=${status}&pageSize=100`)); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Kategori gagal dimuat."); }
   }, [search, status]);
+  useEffect(() => { const timer = setTimeout(() => void load(), 200); return () => clearTimeout(timer); }, [load]);
 
-  return (
-    <div className="grid gap-6">
-      <AdminPageHeader title="Manajemen Kategori" description="UI mock untuk hierarki kategori, slug, metadata SEO, dan visibilitas kategori katalog." />
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <AdminMetricCard title="Kategori" value={String(adminCategories.length)} note="Route kategori sudah tersedia" icon={Tags} />
-        <AdminMetricCard title="Parent group" value="2" note="Gear Utama dan Essentials" icon={FolderTree} />
-        <AdminMetricCard title="SEO preview" value="Aktif" note="Meta title disiapkan per kategori" icon={TextSearch} />
-      </div>
-
-      <AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={options} placeholder="Cari kategori, slug, atau parent..." />
-
-      <div className="grid gap-4 xl:grid-cols-[0.75fr_1.25fr]">
-        <Card className="rounded-[1.35rem]">
-          <CardHeader>
-            <CardTitle className="text-base">Hierarki mock</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-3">
-            {["Gear Utama", "Essentials"].map((group) => (
-              <div key={group} className="rounded-lg border p-3">
-                <div className="font-medium">{group}</div>
-                <div className="mt-3 grid gap-2">
-                  {adminCategories.filter((category) => category.parent === group).map((category) => (
-                    <div key={category.slug} className="flex items-center justify-between rounded-md bg-secondary px-3 py-2 text-sm">
-                      <span>{category.name}</span>
-                      <span className="text-muted-foreground">{category.productCount} produk</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-[1.35rem]">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Kategori katalog</CardTitle>
-            <Button disabled>Tambah kategori</Button>
-          </CardHeader>
-          <CardContent className="grid gap-3">
-            {categories.length ? (
-              categories.map((category) => (
-                <div key={category.slug} className="grid gap-3 rounded-[1.15rem] border p-3 md:grid-cols-[96px_minmax(0,1fr)_auto] md:items-center">
-                  <div className="relative h-24 overflow-hidden rounded-md bg-secondary md:h-20">
-                    <Image src={category.image} alt={category.name} fill className="object-cover" sizes="160px" />
-                  </div>
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-medium">{category.name}</h2>
-                      <AdminStatusPill status={category.status} />
-                    </div>
-                    <div className="mt-1 text-sm text-muted-foreground">/{category.slug} - {category.parent}</div>
-                    <div className="mt-2 rounded-md bg-secondary px-3 py-2 text-xs text-muted-foreground">Meta: {category.metaTitle}</div>
-                  </div>
-                  <div className="text-left md:text-right">
-                    <div className="text-lg font-semibold">{category.activeProductCount}/{category.productCount}</div>
-                    <div className="text-xs text-muted-foreground">aktif</div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="grid place-items-center rounded-lg border p-8 text-center text-sm text-muted-foreground">
-                <Search className="mb-2 size-6" />
-                Kategori tidak ditemukan.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <AdminMockActionNotice />
-    </div>
-  );
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setLoading(true); const form = new FormData(event.currentTarget);
+    const payload = { name: String(form.get("name")), slug: String(form.get("slug")), parentId: String(form.get("parentId") ?? ""), icon: String(form.get("icon") ?? ""), imageUrl: String(form.get("imageUrl") ?? ""), isVisible: form.get("isVisible") === "on", metaTitle: String(form.get("metaTitle") ?? ""), metaDescription: "" };
+    try { await apiRequest(editing ? `/api/admin/categories/${editing.id}` : "/api/admin/categories", { method: editing ? "PATCH" : "POST", body: JSON.stringify(payload) }); toast.success("Kategori disimpan."); setEditing(undefined); await load(); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Kategori gagal disimpan."); } finally { setLoading(false); }
+  }
+  async function remove(item: AdminCategory) {
+    if (!confirm(`Hapus kategori ${item.name}?`)) return;
+    try { await apiRequest(`/api/admin/categories/${item.id}`, { method: "DELETE" }); toast.success("Kategori dihapus."); await load(); } catch (error) { toast.error(error instanceof Error ? error.message : "Kategori gagal dihapus."); }
+  }
+  const items = data?.items ?? [];
+  return <div className="grid gap-6"><AdminPageHeader title="Manajemen Kategori" description="Hierarki, slug, metadata SEO, gambar, dan visibilitas kategori dari database." />
+    <div className="grid gap-4 md:grid-cols-3"><AdminMetricCard title="Kategori" value={String(data?.pagination.total ?? 0)} note="Total tersimpan" icon={Tags} /><AdminMetricCard title="Visible" value={String(items.filter((i) => i.isVisible).length)} note="Tampil di katalog" icon={FolderTree} /><AdminMetricCard title="Parent" value={String(items.filter((i) => !i.parentId).length)} note="Kategori induk" icon={FolderTree} /></div>
+    <div className="flex flex-col gap-3 sm:flex-row"><div className="flex-1"><AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={options} /></div><Button onClick={() => setEditing(null)}><Plus /> Tambah kategori</Button></div>
+    <div className="grid gap-3">{items.map((item) => <Card key={item.id}><CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"><div><div className="flex gap-2"><strong>{item.name}</strong><AdminStatusPill status={item.isVisible ? "VISIBLE" : "HIDDEN"} /></div><p className="text-sm text-muted-foreground">/{item.slug} · parent: {item.parent?.name ?? "-"} · {item.activeProductCount}/{item.productCount} produk aktif</p></div><div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => setEditing(item)}><Pencil /> Edit</Button><Button size="sm" variant="ghost" onClick={() => void remove(item)}><Trash2 /> Hapus</Button></div></CardContent></Card>)}</div>
+    <Dialog open={editing !== undefined} onOpenChange={(open) => !open && setEditing(undefined)}><DialogContent><DialogHeader><DialogTitle>{editing ? "Edit kategori" : "Tambah kategori"}</DialogTitle><DialogDescription>Kategori yang masih memiliki produk atau child tidak dapat dihapus.</DialogDescription></DialogHeader><form className="grid gap-4" onSubmit={save}>
+      <Field label="Nama" name="name" value={editing?.name} /><Field label="Slug" name="slug" value={editing?.slug} />
+      <div className="grid gap-2"><Label>Parent</Label><select name="parentId" defaultValue={editing?.parentId ?? ""} className="h-10 rounded-md border bg-background px-3"><option value="">Tanpa parent</option>{items.filter((i) => i.id !== editing?.id).map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</select></div>
+      <Field label="Icon" name="icon" value={editing?.icon} required={false} /><Field label="URL gambar" name="imageUrl" value={editing?.imageUrl} required={false} /><Field label="Meta title" name="metaTitle" value={editing?.metaTitle} required={false} />
+      <label className="flex gap-2 text-sm"><input type="checkbox" name="isVisible" defaultChecked={editing?.isVisible ?? true} /> Tampilkan di katalog</label><Button type="submit" disabled={loading}>{loading ? <Loader2 className="animate-spin" /> : null} Simpan</Button>
+    </form></DialogContent></Dialog>
+  </div>;
 }
+function Field({ label, name, value, required = true }: { label: string; name: string; value?: string | null; required?: boolean }) { return <div className="grid gap-2"><Label>{label}</Label><Input name={name} defaultValue={value ?? ""} required={required} /></div>; }

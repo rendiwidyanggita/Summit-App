@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ReviewForm } from "@/components/sections/review-form";
 import { ApiRequestError, apiRequest } from "@/lib/api-client";
 import type { CustomerOrderResponse, CustomerOrderStatus } from "@/lib/commerce-types";
 import { formatRupiah } from "@/lib/utils";
@@ -188,6 +189,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
             <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><PackageCheck className="size-5 text-primary" /> Timeline order</CardTitle></CardHeader>
             <CardContent><OrderTimeline items={buildTimeline(order)} /></CardContent>
           </Card>
+          <ReviewForm order={order} />
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">

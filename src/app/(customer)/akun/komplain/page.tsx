@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function ComplaintCenterPage() {
   return (
-    <AccountShell title="Komplain" description="Laporkan kendala order, produk, atau pengiriman dan pantau status resolusi mock.">
+    <AccountShell title="Komplain" description="Laporkan kendala order, produk, atau pengiriman dan pantau status resolusi.">
       <ComplaintCenterPageClient />
     </AccountShell>
   );

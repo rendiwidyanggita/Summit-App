@@ -1,102 +1,26 @@
 "use client";
-
-import { useMemo, useState } from "react";
-import { BadgePercent, Percent, Ticket, TimerReset } from "lucide-react";
-
-import { AdminDataToolbar, AdminMetricCard, AdminMockActionNotice, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { Loader2, Pencil, Plus, Ticket, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { AdminDataToolbar, AdminMetricCard, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
 import { AdminPageHeader } from "@/components/sections/admin-page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { adminVouchers } from "@/lib/admin-commerce-mock";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { AdminListResponse, AdminVoucher } from "@/lib/admin-types";
+import { apiRequest } from "@/lib/api-client";
 import { formatRupiah } from "@/lib/utils";
 
-const options = [
-  { label: "Semua voucher", value: "ALL" },
-  { label: "Active", value: "ACTIVE" },
-  { label: "Draft", value: "DRAFT" },
-  { label: "Expired", value: "EXPIRED" },
-];
-
+const options = ["ALL","ACTIVE","DRAFT","INACTIVE","EXPIRED"].map((value) => ({ label: value, value }));
 export function AdminVouchersPageClient() {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("ALL");
-
-  const vouchers = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-
-    return adminVouchers.filter((voucher) => {
-      const matchesSearch = keyword ? [voucher.code, voucher.name, voucher.type].join(" ").toLowerCase().includes(keyword) : true;
-      const matchesStatus = status === "ALL" ? true : voucher.status === status;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [search, status]);
-
-  return (
-    <div className="grid gap-6">
-      <AdminPageHeader title="Manajemen Voucher" description="UI mock untuk rules promo, status campaign, kuota, progress pemakaian, dan preview minimum belanja." />
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <AdminMetricCard title="Voucher" value={String(adminVouchers.length)} note="Campaign mock frontend" icon={Ticket} />
-        <AdminMetricCard title="Aktif" value={String(adminVouchers.filter((voucher) => voucher.status === "ACTIVE").length)} note="Siap tampil di checkout mock" icon={BadgePercent} />
-        <AdminMetricCard title="Terpakai" value={String(adminVouchers.reduce((sum, voucher) => sum + voucher.used, 0))} note="Akumulasi usage mock" icon={TimerReset} />
-      </div>
-
-      <AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={options} placeholder="Cari kode voucher atau tipe promo..." />
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        {vouchers.map((voucher) => {
-          const progress = Math.round((voucher.used / voucher.quota) * 100);
-
-          return (
-            <Card key={voucher.code} className="overflow-hidden">
-              <div className="h-1 bg-primary" />
-              <CardHeader>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-lg">{voucher.code}</CardTitle>
-                    <p className="mt-1 text-sm text-muted-foreground">{voucher.name}</p>
-                  </div>
-                  <AdminStatusPill status={voucher.status} />
-                </div>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-lg bg-secondary p-3">
-                    <div className="text-xs text-muted-foreground">Tipe</div>
-                    <div className="mt-1 font-medium">{voucher.type}</div>
-                  </div>
-                  <div className="rounded-lg bg-secondary p-3">
-                    <div className="text-xs text-muted-foreground">Value</div>
-                    <div className="mt-1 font-medium">{voucher.value}</div>
-                  </div>
-                  <div className="rounded-lg bg-secondary p-3">
-                    <div className="text-xs text-muted-foreground">Min belanja</div>
-                    <div className="mt-1 font-medium">{formatRupiah(voucher.minSpend)}</div>
-                  </div>
-                </div>
-                <div>
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Kuota</span>
-                    <span className="font-medium">{voucher.used}/{voucher.quota}</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-secondary">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                    <Percent className="size-4" /> {voucher.period}
-                  </span>
-                  <Button variant="outline" disabled>Ubah rules</Button>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <AdminMockActionNotice />
-    </div>
-  );
+  const [data,setData]=useState<AdminListResponse<AdminVoucher>|null>(null); const [search,setSearch]=useState(""); const [status,setStatus]=useState("ALL"); const [editing,setEditing]=useState<AdminVoucher|null|undefined>(); const [saving,setSaving]=useState(false);
+  const load=useCallback(async()=>{try{setData(await apiRequest(`/api/admin/vouchers?q=${encodeURIComponent(search)}&status=${status}&pageSize=100`));}catch(e){toast.error(e instanceof Error?e.message:"Voucher gagal dimuat.");}},[search,status]);
+  useEffect(()=>{const t=setTimeout(()=>void load(),200);return()=>clearTimeout(t);},[load]);
+  async function save(event:FormEvent<HTMLFormElement>){event.preventDefault();setSaving(true);const f=new FormData(event.currentTarget);const payload={code:String(f.get("code")),name:String(f.get("name")),type:String(f.get("type")),value:Number(f.get("value")),minSpend:Number(f.get("minSpend")),maxDiscount:f.get("maxDiscount")?Number(f.get("maxDiscount")):null,quota:f.get("quota")?Number(f.get("quota")):null,startsAt:new Date(String(f.get("startsAt"))).toISOString(),endsAt:new Date(String(f.get("endsAt"))).toISOString(),status:String(f.get("status"))};try{await apiRequest(editing?`/api/admin/vouchers/${editing.id}`:"/api/admin/vouchers",{method:editing?"PATCH":"POST",body:JSON.stringify(payload)});toast.success("Voucher disimpan.");setEditing(undefined);await load();}catch(e){toast.error(e instanceof Error?e.message:"Voucher gagal disimpan.");}finally{setSaving(false);}}
+  async function remove(v:AdminVoucher){if(!confirm(`Nonaktifkan ${v.code}?`))return;try{await apiRequest(`/api/admin/vouchers/${v.id}`,{method:"DELETE"});toast.success("Voucher dinonaktifkan.");await load();}catch(e){toast.error(e instanceof Error?e.message:"Voucher gagal dinonaktifkan.");}}
+  const items=data?.items??[];return <div className="grid gap-6"><AdminPageHeader title="Manajemen Voucher" description="Rules promo, status, kuota, periode, dan pemakaian voucher dari database."/><div className="grid gap-4 md:grid-cols-3"><AdminMetricCard title="Voucher" value={String(data?.pagination.total??0)} note="Total campaign" icon={Ticket}/><AdminMetricCard title="Aktif" value={String(items.filter(v=>v.status==="ACTIVE").length)} note="Berlaku di checkout" icon={Ticket}/><AdminMetricCard title="Terpakai" value={String(items.reduce((s,v)=>s+v.used,0))} note="Order valid" icon={Ticket}/></div><div className="flex flex-col gap-3 sm:flex-row"><div className="flex-1"><AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={options}/></div><Button onClick={()=>setEditing(null)}><Plus/>Tambah voucher</Button></div><div className="grid gap-4 lg:grid-cols-2">{items.map(v=><Card key={v.id}><CardContent className="grid gap-3 p-4"><div className="flex justify-between gap-3"><div><strong>{v.code}</strong><p className="text-sm text-muted-foreground">{v.name}</p></div><AdminStatusPill status={v.status}/></div><div className="text-sm">{v.type} · {v.type==="PERCENTAGE"?`${v.value}%`:formatRupiah(v.value)} · minimum {formatRupiah(v.minSpend)}</div><div className="text-sm text-muted-foreground">Kuota: {v.used}/{v.quota??"∞"}</div><div className="flex gap-2"><Button size="sm" variant="outline" onClick={()=>setEditing(v)}><Pencil/>Edit</Button><Button size="sm" variant="ghost" onClick={()=>void remove(v)}><Trash2/>Nonaktifkan</Button></div></CardContent></Card>)}</div>
+  <Dialog open={editing!==undefined} onOpenChange={o=>!o&&setEditing(undefined)}><DialogContent><DialogHeader><DialogTitle>{editing?"Edit voucher":"Tambah voucher"}</DialogTitle><DialogDescription>Satu voucher per checkout dan kuota dihitung dari order valid.</DialogDescription></DialogHeader><form className="grid gap-3" onSubmit={save}><div className="grid grid-cols-2 gap-3"><F l="Kode" n="code" v={editing?.code}/><F l="Nama" n="name" v={editing?.name}/></div><div className="grid grid-cols-2 gap-3"><S l="Tipe" n="type" v={editing?.type??"FIXED_AMOUNT"} a={["FIXED_AMOUNT","PERCENTAGE","FREE_SHIPPING"]}/><S l="Status" n="status" v={editing?.status??"DRAFT"} a={["DRAFT","ACTIVE","INACTIVE","EXPIRED"]}/></div><div className="grid grid-cols-3 gap-3"><F l="Value" n="value" t="number" v={editing?.value}/><F l="Min belanja" n="minSpend" t="number" v={editing?.minSpend??0}/><F l="Kuota" n="quota" t="number" v={editing?.quota??""} r={false}/></div><F l="Maks diskon" n="maxDiscount" t="number" v={editing?.maxDiscount??""} r={false}/><div className="grid grid-cols-2 gap-3"><F l="Mulai" n="startsAt" t="datetime-local" v={editing?.startsAt?.slice(0,16)}/><F l="Selesai" n="endsAt" t="datetime-local" v={editing?.endsAt?.slice(0,16)}/></div><Button disabled={saving}>{saving?<Loader2 className="animate-spin"/>:null}Simpan</Button></form></DialogContent></Dialog></div>;
 }
+function F({l,n,v,t="text",r=true}:{l:string;n:string;v?:string|number|null;t?:string;r?:boolean}){return <div className="grid gap-2"><Label>{l}</Label><Input name={n} type={t} defaultValue={v??""} required={r}/></div>}function S({l,n,v,a}:{l:string;n:string;v:string;a:string[]}){return <div className="grid gap-2"><Label>{l}</Label><select name={n} defaultValue={v} className="h-10 rounded-md border bg-background px-3">{a.map(x=><option key={x}>{x}</option>)}</select></div>}

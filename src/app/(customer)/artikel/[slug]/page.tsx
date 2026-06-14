@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ArticleDetailView } from "@/components/sections/article-detail-view";
-import { getArticleBySlug, getRelatedArticles } from "@/lib/support-trust-data";
+import { getPublicArticle } from "@/lib/server/trust-support-service";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const result = await getPublicArticle(slug).catch(() => null);
+  const article = result?.article;
 
   if (!article) {
     return {
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: article.title,
       description: article.excerpt,
-      images: [article.image],
+      images: article.image ? [article.image] : [],
       type: "article",
     },
   };
@@ -31,11 +32,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const result = await getPublicArticle(slug).catch(() => null);
+  const article = result?.article;
 
   if (!article) {
     notFound();
   }
 
-  return <ArticleDetailView article={article} relatedArticles={getRelatedArticles(slug)} />;
+  return <ArticleDetailView article={article} relatedArticles={result?.related ?? []} />;
 }

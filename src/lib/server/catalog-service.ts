@@ -61,7 +61,10 @@ function productWhere(query: ProductQuery): Prisma.ProductWhereInput {
           ],
         }
       : {}),
-    ...(query.category ? { category: { slug: query.category } } : {}),
+    category: {
+      isVisible: true,
+      ...(query.category ? { slug: query.category } : {}),
+    },
     ...(query.brand ? { brand: { slug: query.brand } } : {}),
     ...(query.minPrice || query.maxPrice
       ? {
@@ -86,7 +89,7 @@ function productWhere(query: ProductQuery): Prisma.ProductWhereInput {
       : {}),
     ...(query.inStockOnly
       ? {
-          variants: { some: { stock: { gt: 0 } } },
+          variants: { some: { stock: { gt: 0 }, isActive: true } },
         }
       : {}),
   };
@@ -114,7 +117,7 @@ function serializeProduct(product: ProductWithRelations) {
     price: Number(product.price),
     discountPrice: product.discountPrice ? Number(product.discountPrice) : null,
     ratingAvg: product.ratingAvg ? Number(product.ratingAvg) : null,
-    variants: product.variants?.map((variant) => ({
+    variants: product.variants?.filter((variant) => variant.isActive).map((variant) => ({
       ...variant,
       priceModifier: Number(variant.priceModifier),
     })),
@@ -155,7 +158,7 @@ export async function listProducts(query: ProductQuery) {
       include: {
         category: true,
         brand: true,
-        variants: true,
+        variants: { where: { isActive: true } },
       },
       orderBy: productOrderBy(query.sort),
       skip,
@@ -184,7 +187,7 @@ export async function getProductBySlug(slug: string) {
     include: {
       category: true,
       brand: true,
-      variants: true,
+      variants: { where: { isActive: true } },
     },
   });
 
@@ -207,7 +210,7 @@ export async function getCategoryBySlug(slug: string) {
 export async function listCatalogSitemapEntries() {
   const [products, categories] = await Promise.all([
     prisma.product.findMany({
-      where: { status: "ACTIVE" },
+      where: { status: "ACTIVE", category: { isVisible: true } },
       select: {
         slug: true,
         updatedAt: true,
@@ -216,6 +219,7 @@ export async function listCatalogSitemapEntries() {
     }),
     prisma.category.findMany({
       where: {
+        isVisible: true,
         products: {
           some: { status: "ACTIVE" },
         },
@@ -237,7 +241,7 @@ export async function listCatalogSitemapEntries() {
 export async function getRelatedProducts(slug: string, limit = 6) {
   const safeLimit = Math.min(20, Math.max(1, Math.trunc(limit)));
   const source = await prisma.product.findFirst({
-    where: { slug, status: "ACTIVE" },
+    where: { slug, status: "ACTIVE", category: { isVisible: true } },
     select: { id: true, categoryId: true },
   });
 
@@ -247,6 +251,7 @@ export async function getRelatedProducts(slug: string, limit = 6) {
     where: {
       status: "ACTIVE",
       categoryId: source.categoryId,
+      category: { isVisible: true },
       NOT: { id: source.id },
     },
     include: {
@@ -263,6 +268,7 @@ export async function getRelatedProducts(slug: string, limit = 6) {
 
 export async function listCategories() {
   return prisma.category.findMany({
+    where: { isVisible: true },
     orderBy: [{ parentId: "asc" }, { name: "asc" }],
     include: {
       _count: {

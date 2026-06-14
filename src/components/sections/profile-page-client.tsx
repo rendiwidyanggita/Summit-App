@@ -144,7 +144,7 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
                         <Camera /> Upload nanti
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground">Upload file masuk saat storage aktif; backend Sprint 2 menerima URL gambar.</p>
+                    <p className="text-xs text-muted-foreground">Versi demo menerima URL gambar profil.</p>
                   </div>
                 </div>
               </div>

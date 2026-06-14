@@ -4,8 +4,11 @@ import { prisma } from "../src/lib/db";
 import { addCartItem } from "../src/lib/server/cart-service";
 import { createCheckoutOrder } from "../src/lib/server/checkout-service";
 import { cancelUserOrder, confirmUserOrderReceived, getUserOrder, listUserOrders } from "../src/lib/server/order-service";
-import { createMidtransSignature, processMidtransNotification } from "../src/lib/server/payment-service";
+import { createMidtransSignature, processMidtransNotification, simulateDemoPayment } from "../src/lib/server/payment-service";
 import { estimateShipping } from "../src/lib/server/shipping-service";
+
+process.env.DEMO_MODE = "true";
+process.env.MIDTRANS_MOCK_ENABLED = "true";
 
 const testEmail = "sprint5-backend-test@summitgear.local";
 
@@ -161,10 +164,11 @@ async function main() {
   const checks: Array<{ check: string; ok: boolean }> = [];
 
   const midtransOrder = await createOrder(user.id, address.id, product.id, variant.id, 1);
-  checks.push({ check: "midtrans snap returned", ok: Boolean(midtransOrder.payment?.snapToken && midtransOrder.payment.redirectUrl) });
+  checks.push({ check: "midtrans demo returned", ok: Boolean(midtransOrder.payment?.snapToken && midtransOrder.payment.redirectUrl && midtransOrder.payment.isDemo) });
 
-  const paidResult = await processMidtransNotification(notificationPayload(midtransOrder.orderNumber, midtransOrder.total, "settlement"));
-  checks.push({ check: "settlement paid", ok: paidResult.orderStatus === "PAID" && paidResult.paymentStatus === "PAID" });
+  const paidResult = await simulateDemoPayment(user.id, midtransOrder.orderNumber);
+  checks.push({ check: "demo settlement paid", ok: paidResult.orderStatus === "PAID" && paidResult.paymentStatus === "PAID" });
+  checks.push(await expectReject("demo settlement ownership enforced", () => simulateDemoPayment("missing-user", midtransOrder.orderNumber)));
 
   const stockAfterPaid = await prisma.productVariant.findUniqueOrThrow({ where: { id: variant.id } });
   await processMidtransNotification(notificationPayload(midtransOrder.orderNumber, midtransOrder.total, "settlement"));

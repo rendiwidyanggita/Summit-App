@@ -1,12 +1,11 @@
 "use client";
 
 import type * as React from "react";
-import { AlertTriangle, Info, Search } from "lucide-react";
+import { AlertTriangle, Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 export function AdminMetricCard({
   title,
@@ -84,15 +83,6 @@ export function AdminDataToolbar({
           </option>
         ))}
       </select>
-    </div>
-  );
-}
-
-export function AdminMockActionNotice({ className }: { className?: string }) {
-  return (
-    <div className={cn("flex gap-3 rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm", className)}>
-      <Info className="mt-0.5 size-4 shrink-0 text-accent" />
-      <p className="text-muted-foreground">Semua action pada Sprint 6 ini mock frontend. Tidak ada request API, mutation database, audit log, atau RBAC enforcement yang dijalankan.</p>
     </div>
   );
 }

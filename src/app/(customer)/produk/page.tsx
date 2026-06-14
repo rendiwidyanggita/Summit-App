@@ -29,15 +29,15 @@ export default function ProductsPage() {
         <DesignParticles />
         <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
-            <Badge variant="accent">Sprint 3 Catalog</Badge>
+            <Badge variant="accent">Katalog Summit Gear</Badge>
             <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Produk Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Cari tenda, carrier, jaket, cooking set, dan essentials lain dengan filter lokal yang siap menjadi kontrak query backend.
+              Cari tenda, carrier, jaket, cooking set, dan essentials lain dengan filter, pencarian, dan pengurutan katalog.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:w-[520px]">
             {[
-              { icon: Boxes, label: "Produk mock", value: `${catalogProducts.length}` },
+              { icon: Boxes, label: "Produk tersedia", value: `${catalogProducts.length}` },
               { icon: BadgePercent, label: "Sedang diskon", value: `${discountedProducts}` },
               { icon: Search, label: "Mulai dari", value: formatRupiah(lowestPrice) },
             ].map((item) => (
@@ -51,7 +51,7 @@ export default function ProductsPage() {
         </div>
         <div className="border-t border-white/15 bg-primary-foreground/8 px-5 py-3 text-sm text-primary-foreground/80 sm:px-6">
           <ShieldCheck className="mr-2 inline size-4 text-accent" />
-          Data masih mock lokal; cart, reserved stock, dan checkout tetap masuk Sprint 4.
+          Katalog demonstrasi dapat digunakan untuk mencoba cart, reserved stock, voucher, dan checkout.
         </div>
       </section>
 

@@ -255,6 +255,7 @@ export async function createCheckoutOrder(userId: string, input: z.infer<typeof 
           midtransTransactionId: payment.midtransTransactionId,
           snapToken: payment.snapToken,
           redirectUrl: payment.redirectUrl,
+          isDemo: Boolean(payment.snapToken?.startsWith("mock-snap-token-")),
           paymentType: payment.paymentType,
           fraudStatus: payment.fraudStatus,
           expiredAt: payment.expiredAt,

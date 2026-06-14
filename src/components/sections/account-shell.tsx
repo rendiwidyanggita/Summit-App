@@ -56,7 +56,7 @@ export function AccountShell({
         <div className="flex flex-col gap-3 border-t border-white/15 bg-primary-foreground/8 px-5 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-center gap-2 text-primary-foreground/80">
             <CheckCircle2 className="size-4 text-accent" />
-            Sprint 2 account sudah memakai session dan API backend.
+            Profil, alamat, pesanan, dan fitur support tersambung ke session serta API backend.
           </div>
           <Link href="/" className="inline-flex items-center gap-2 font-medium text-primary-foreground hover:underline">
             <Home className="size-4" />
@@ -72,7 +72,7 @@ export function AccountShell({
               <div className="mb-3 rounded-md bg-secondary p-3">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <ShieldCheck className="size-4 text-primary" />
-                  Sprint 2 Account
+                  Customer Account
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">Auth, profil, dan alamat mengikuti account flow PRD.</p>
               </div>

@@ -9,12 +9,12 @@ import {
 const productInclude = {
   category: true,
   brand: true,
-  variants: true,
+  variants: { where: { isActive: true } },
 } satisfies Prisma.ProductInclude;
 
 async function fetchFeatured(limit = 8) {
   const products = await prisma.product.findMany({
-    where: { status: "ACTIVE", isFeatured: true },
+    where: { status: "ACTIVE", isFeatured: true, category: { isVisible: true } },
     include: productInclude,
     orderBy: [{ soldCount: "desc" }, { createdAt: "desc" }],
     take: limit,
@@ -24,7 +24,7 @@ async function fetchFeatured(limit = 8) {
 
 async function fetchBestSellers(limit = 8) {
   const products = await prisma.product.findMany({
-    where: { status: "ACTIVE" },
+    where: { status: "ACTIVE", category: { isVisible: true } },
     include: productInclude,
     orderBy: [{ soldCount: "desc" }, { createdAt: "desc" }],
     take: limit,
@@ -34,7 +34,7 @@ async function fetchBestSellers(limit = 8) {
 
 async function fetchNewArrivals(limit = 8) {
   const products = await prisma.product.findMany({
-    where: { status: "ACTIVE" },
+    where: { status: "ACTIVE", category: { isVisible: true } },
     include: productInclude,
     orderBy: { createdAt: "desc" },
     take: limit,

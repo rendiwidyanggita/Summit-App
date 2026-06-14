@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 
 import { OrderStatus, PaymentStatus, Prisma } from "@/generated/prisma/client";
-import { getAppUrl, hasMidtransEnv, isMidtransProduction } from "@/lib/server/env";
+import { getAppUrl, hasMidtransEnv, isDemoMidtransEnabled, isMidtransProduction } from "@/lib/server/env";
 import { ApiError } from "@/lib/server/http";
 import { createNotification } from "@/lib/server/notification-service";
 import { sendPaymentPaidEmail } from "@/lib/server/email-service";
@@ -48,7 +48,7 @@ function midtransServerKey() {
 }
 
 function shouldMockMidtrans() {
-  return process.env.NODE_ENV !== "production" && (!hasMidtransEnv() || process.env.MIDTRANS_MOCK_ENABLED === "true");
+  return isDemoMidtransEnabled() || (process.env.NODE_ENV !== "production" && (!hasMidtransEnv() || process.env.MIDTRANS_MOCK_ENABLED === "true"));
 }
 
 function basicAuth(serverKey: string) {
@@ -132,7 +132,7 @@ export async function createMidtransSnapTransaction(order: OrderForPayment) {
   if (shouldMockMidtrans()) {
     return {
       token: `mock-snap-token-${order.orderNumber}`,
-      redirect_url: `${midtransSnapBaseUrl()}/snap/v2/vtweb/mock-snap-token-${order.orderNumber}`,
+      redirect_url: `${getAppUrl().replace(/\/$/, "")}/pembayaran/${order.orderNumber}`,
       isMock: true,
     };
   }
@@ -167,10 +167,11 @@ export async function createMidtransSnapTransaction(order: OrderForPayment) {
 }
 
 export function createMidtransSignature(input: { orderId: string; statusCode: string; grossAmount: string; serverKey?: string }) {
+  if (!input.serverKey && shouldMockMidtrans()) return "mock-signature";
+
   const serverKey = input.serverKey ?? midtransServerKey();
 
   if (!serverKey) {
-    if (shouldMockMidtrans()) return "mock-signature";
     throw new ApiError(500, "MIDTRANS_CONFIG_MISSING", "Konfigurasi Midtrans belum tersedia.");
   }
 
@@ -349,6 +350,48 @@ export async function processMidtransNotification(payload: MidtransNotificationP
     paymentType: result.payment.paymentType,
     fraudStatus: result.payment.fraudStatus,
   };
+}
+
+export async function simulateDemoPayment(userId: string, orderId: string) {
+  if (!isDemoMidtransEnabled()) {
+    throw new ApiError(404, "DEMO_PAYMENT_DISABLED", "Simulasi pembayaran tidak tersedia.");
+  }
+
+  const order = await prisma.order.findFirst({
+    where: {
+      userId,
+      OR: [{ id: orderId }, { orderNumber: orderId }],
+    },
+    include: {
+      payment: true,
+    },
+  });
+
+  if (!order?.payment) {
+    throw new ApiError(404, "ORDER_NOT_FOUND", "Order pembayaran tidak ditemukan.");
+  }
+
+  if (!order.payment.snapToken?.startsWith("mock-snap-token-")) {
+    throw new ApiError(400, "NOT_DEMO_PAYMENT", "Order ini bukan transaksi pembayaran demo.");
+  }
+
+  if (order.payment.status !== "PENDING" || order.status !== "PENDING_PAYMENT") {
+    throw new ApiError(400, "PAYMENT_NOT_PENDING", "Pembayaran demo ini sudah tidak menunggu pembayaran.");
+  }
+
+  const grossAmount = Number(order.total).toFixed(2);
+
+  return processMidtransNotification({
+    transaction_time: new Date().toISOString(),
+    transaction_status: "settlement",
+    transaction_id: `demo-${order.orderNumber}`,
+    status_code: "200",
+    signature_key: "mock-signature",
+    payment_type: "demo",
+    order_id: order.orderNumber,
+    gross_amount: grossAmount,
+    fraud_status: "accept",
+  });
 }
 
 export async function notifyOrderCreated(order: OrderForPayment) {

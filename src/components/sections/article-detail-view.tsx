@@ -5,20 +5,20 @@ import { ArrowLeft, Clock, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { type ArticleMock } from "@/lib/support-trust-data";
+import { type ArticleItem } from "@/lib/trust-types";
 
 export function ArticleDetailView({
   article,
   relatedArticles,
 }: {
-  article: ArticleMock;
-  relatedArticles: ArticleMock[];
+  article: ArticleItem;
+  relatedArticles: ArticleItem[];
 }) {
   return (
     <article>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0">
-          <Image src={article.image} alt={article.title} fill priority className="object-cover opacity-45" sizes="100vw" />
+          {article.image ? <Image src={article.image} alt={article.title} fill priority className="object-cover opacity-45" sizes="100vw" /> : null}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/75 to-primary/20" />
         <div className="container-page relative grid min-h-[420px] content-end py-8">
@@ -38,7 +38,7 @@ export function ArticleDetailView({
               <span className="inline-flex items-center gap-2">
                 <Clock className="size-4" /> {article.readingTime}
               </span>
-              <span>{article.publishedAt}</span>
+              <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("id-ID") : ""}</span>
             </div>
           </div>
         </div>
@@ -55,9 +55,6 @@ export function ArticleDetailView({
             {article.content.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
-          </div>
-          <div className="mt-8 rounded-lg border border-accent/40 bg-accent/10 p-4 text-sm text-muted-foreground">
-            Metadata, Open Graph image, dan slug artikel disiapkan dari data mock lokal. CRUD artikel tetap pekerjaan backend/admin berikutnya.
           </div>
         </div>
 

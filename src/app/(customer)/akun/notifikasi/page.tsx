@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function NotificationsPage() {
   return (
-    <AccountShell title="Notifikasi" description="Preview notifikasi transaksi, wishlist price drop, return, dan promo tanpa service backend.">
+    <AccountShell title="Notifikasi" description="Pantau pembaruan transaksi, return, komplain, dan moderasi review.">
       <NotificationsPageClient />
     </AccountShell>
   );

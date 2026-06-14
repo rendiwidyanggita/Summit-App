@@ -120,6 +120,7 @@ export type CheckoutOrderResponse = {
     midtransTransactionId: string | null;
     snapToken: string | null;
     redirectUrl: string | null;
+    isDemo: boolean;
     paymentType: string | null;
     fraudStatus: string | null;
     expiredAt: string | null;
@@ -191,6 +192,7 @@ export type CustomerOrderResponse = {
     midtransTransactionId: string | null;
     snapToken: string | null;
     redirectUrl: string | null;
+    isDemo: boolean;
     paymentType: string | null;
     fraudStatus: string | null;
     paidAt: string | null;

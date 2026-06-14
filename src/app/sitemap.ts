@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { categoryCatalog } from "@/lib/catalog-mock";
 import { listCatalogSitemapEntries } from "@/lib/server/catalog-service";
-import { articles } from "@/lib/support-trust-data";
+import { listPublicArticles } from "@/lib/server/trust-support-service";
 
 const routes = ["", "/produk", "/keranjang", "/checkout", "/artikel", "/faq"];
 
@@ -40,7 +40,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const articleRoutes = articles.map((article) => ({
+  const articles = await listPublicArticles({ status: "ALL", page: 1, pageSize: 100 }).catch(() => ({ items: [] }));
+  const articleRoutes = articles.items.map((article) => ({
     url: `${baseUrl}/artikel/${article.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,

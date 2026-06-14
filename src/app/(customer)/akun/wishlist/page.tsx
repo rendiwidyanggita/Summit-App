@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function WishlistPage() {
   return (
-    <AccountShell title="Wishlist" description="Simpan gear favorit, pantau stok, dan siapkan notifikasi diskon mock sesuai Sprint 7.">
+    <AccountShell title="Wishlist" description="Simpan gear favorit dan pantau stok produk yang tersedia.">
       <WishlistPageClient />
     </AccountShell>
   );

@@ -41,7 +41,7 @@ export default function RegisterPage() {
           ))}
         </div>
         <div className="trail-divider" />
-        <p className="p-4 pt-3 text-sm leading-6 text-muted-foreground">Akun baru disiapkan untuk profil, alamat utama, email verification, dan checkout Sprint 4.</p>
+        <p className="p-4 pt-3 text-sm leading-6 text-muted-foreground">Akun baru dapat digunakan untuk profil, alamat utama, verifikasi email, dan checkout.</p>
       </div>
 
       <RegisterForm googleEnabled={hasGoogleOAuthEnv()} appleEnabled={hasAppleOAuthEnv()} />

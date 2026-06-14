@@ -1,20 +1,17 @@
 import {
-  BarChart3,
   Boxes,
   FileText,
   Flag,
-  Gift,
   Home,
   LayoutDashboard,
   MessageSquareWarning,
   Package,
   Percent,
   RotateCcw,
-  ShieldCheck,
   ShoppingBag,
   Tags,
   Truck,
-  Users,
+  Star,
 } from "lucide-react";
 
 import {
@@ -49,17 +46,15 @@ export const adminNav = [
   { href: "/admin/pesanan", label: "Pesanan", icon: Truck },
   { href: "/admin/voucher", label: "Voucher", icon: Percent },
   { href: "/admin/banner", label: "Banner", icon: Flag },
-  { href: "/admin/flash-sale", label: "Flash Sale", icon: Gift },
   { href: "/admin/return", label: "Return", icon: RotateCcw },
-  { href: "/admin/customer", label: "Customer", icon: Users },
+  { href: "/admin/komplain", label: "Komplain", icon: MessageSquareWarning },
+  { href: "/admin/review", label: "Review", icon: Star },
   { href: "/admin/artikel", label: "Artikel", icon: FileText },
-  { href: "/admin/laporan", label: "Laporan", icon: BarChart3 },
-  { href: "/admin/role", label: "Role", icon: ShieldCheck },
 ];
 
 export const foundationModules = [
-  { label: "Katalog", value: `${catalogProducts.length} produk mock`, icon: Boxes },
-  { label: "Order Aktif", value: "Belum terhubung", icon: ShoppingBag },
+  { label: "Katalog", value: `${catalogProducts.length} produk demo`, icon: Boxes },
+  { label: "Order Aktif", value: "Terhubung backend", icon: ShoppingBag },
   { label: "CS", value: "WhatsApp siap", icon: MessageSquareWarning },
   { label: "Web", value: "Mobile-first", icon: Home },
 ];

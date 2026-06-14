@@ -45,6 +45,7 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
   const [selectedVariantId, setSelectedVariantId] = useState(availableVariants[0]?.id ?? product.variants[0]?.id ?? "");
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const selectedVariant = product.variants.find((variant) => variant.id === selectedVariantId) ?? product.variants[0];
   const discount = getDiscountPercent(product);
   const unitPrice = useMemo(() => product.price + (selectedVariant?.priceModifier ?? 0), [product.price, selectedVariant?.priceModifier]);
@@ -83,6 +84,22 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
     }
   }
 
+  async function addToWishlist() {
+    setWishlistLoading(true);
+    try {
+      await apiRequest("/api/wishlist", { method: "POST", body: JSON.stringify({ productId: product.id }) });
+      toast.success("Produk ditambahkan ke wishlist.");
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 401) {
+        router.push(`/masuk?callbackUrl=/produk/${product.slug}`);
+        return;
+      }
+      toast.error(error instanceof Error ? error.message : "Gagal menambahkan wishlist.");
+    } finally {
+      setWishlistLoading(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex flex-wrap gap-2">
@@ -117,7 +134,7 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
             </div>
             <div className="rounded-md bg-secondary p-3 text-sm">
               <ShieldCheck className="mb-2 size-4 text-primary" />
-              COD mengikuti rule Sprint 4
+              COD mengikuti aturan checkout
             </div>
           </div>
         </CardContent>
@@ -168,19 +185,19 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
           {loading ? <Loader2 className="animate-spin" /> : <ShoppingCart />}
           Tambah ke keranjang
         </Button>
-        <Button variant="outline" disabled>
-          <Heart /> Wishlist mock
+        <Button variant="outline" disabled={wishlistLoading} onClick={addToWishlist}>
+          {wishlistLoading ? <Loader2 className="animate-spin" /> : <Heart />} Wishlist
         </Button>
       </div>
 
       <div className="mt-5 grid gap-3 rounded-lg bg-primary p-4 text-sm text-primary-foreground sm:grid-cols-2">
         <div className="flex gap-3">
           <Truck className="mt-0.5 size-4 shrink-0 text-accent" />
-          <span>Ongkir dihitung dari alamat dan berat cart pada checkout Sprint 4.</span>
+          <span>Ongkir simulasi dihitung dari alamat dan berat cart pada checkout.</span>
         </div>
         <div className="flex gap-3">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" />
-          <span>Wishlist, review, dan trust signal tetap mock sampai Sprint 7.</span>
+          <span>Wishlist dan review terhubung ke akun serta order customer.</span>
         </div>
       </div>
     </div>

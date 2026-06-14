@@ -1,7 +1,5 @@
-import { FileText } from "lucide-react";
-
-import { AdminModulePage } from "@/components/sections/admin-module-page";
+import { AdminArticlesPageClient } from "@/components/sections/admin-trust-pages";
 
 export default function AdminArticlePage() {
-  return <AdminModulePage title="Manajemen Artikel" description="Artikel tips pendakian, review gear, edukasi pemula, slug, metadata, dan Open Graph image." icon={FileText} />;
+  return <AdminArticlesPageClient />;
 }

@@ -21,10 +21,10 @@ import type { AccountAddressResponse, CartResponse, CheckoutOrderResponse, Check
 import { formatRupiah } from "@/lib/utils";
 
 const paymentMethods: PaymentMethodOption[] = [
-  { id: "MIDTRANS_VA", label: "Virtual Account", description: "BCA, BNI, BRI, Mandiri via Midtrans pada Sprint 5.", group: "Midtrans" },
-  { id: "MIDTRANS_QRIS", label: "QRIS", description: "Pembayaran QRIS disiapkan sebagai metode order.", group: "Midtrans" },
-  { id: "MIDTRANS_EWALLET", label: "E-Wallet", description: "GoPay, OVO, DANA, ShopeePay sesuai dukungan Midtrans.", group: "Midtrans" },
-  { id: "MIDTRANS_CARD", label: "Kartu Kredit/Debit", description: "Pembayaran kartu melalui Midtrans pada Sprint 5.", group: "Midtrans" },
+  { id: "MIDTRANS_VA", label: "Virtual Account", description: "Simulasi pembayaran Virtual Account untuk demonstrasi.", group: "Midtrans" },
+  { id: "MIDTRANS_QRIS", label: "QRIS", description: "Simulasi pembayaran QRIS untuk demonstrasi.", group: "Midtrans" },
+  { id: "MIDTRANS_EWALLET", label: "E-Wallet", description: "Simulasi pembayaran e-wallet untuk demonstrasi.", group: "Midtrans" },
+  { id: "MIDTRANS_CARD", label: "Kartu Kredit/Debit", description: "Simulasi pembayaran kartu untuk demonstrasi.", group: "Midtrans" },
   { id: "COD", label: "COD", description: "Bayar di tempat, maksimal Rp1.500.000 dan wilayah didukung.", group: "COD" },
 ];
 
@@ -192,7 +192,7 @@ export function CheckoutPageClient() {
             <Badge variant="accent">Order Dibuat</Badge>
             <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">Checkout berhasil</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Order tersimpan di backend. Pembayaran non-COD dapat dilanjutkan melalui transaksi Midtrans yang dibuat untuk order ini.
+              Order tersimpan di backend. Pembayaran non-COD dapat dilanjutkan melalui simulasi pembayaran demo.
             </p>
           </div>
           <div className="grid gap-5 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -232,7 +232,11 @@ export function CheckoutPageClient() {
                 </div>
                 {createdOrder.payment?.redirectUrl ? (
                   <Button asChild>
-                    <a href={createdOrder.payment.redirectUrl}>Bayar melalui Midtrans</a>
+                    {createdOrder.payment.isDemo ? (
+                      <Link href={`/pembayaran/${createdOrder.orderNumber}`}>Buka simulasi pembayaran</Link>
+                    ) : (
+                      <a href={createdOrder.payment.redirectUrl}>Bayar melalui Midtrans</a>
+                    )}
                   </Button>
                 ) : null}
                 <Button variant="outline" asChild>
@@ -292,12 +296,12 @@ export function CheckoutPageClient() {
           <div>
             <h1 className="text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Checkout Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Alamat, kurir, voucher, metode pembayaran, dan order creation sudah memakai backend Sprint 4.
+              Alamat, voucher, reserved stock, dan order tersambung ke backend. Pembayaran serta ongkir menggunakan simulasi untuk demonstrasi.
             </p>
           </div>
           <div className="w-fit rounded-full border border-white/20 bg-white/12 px-4 py-2 text-sm">
             <Clock className="mr-2 inline size-4 text-accent" />
-            Payment backend aktif
+            Mode demonstrasi
           </div>
         </div>
       </section>
@@ -374,7 +378,7 @@ export function CheckoutPageClient() {
                   {creatingOrder ? <Loader2 className="animate-spin" /> : <ArrowRight />}
                   Buat order
                 </Button>
-                <p className="text-xs text-muted-foreground">Order, reserved stock, dan transaksi pembayaran dibuat oleh backend.</p>
+                <p className="text-xs text-muted-foreground">Order dan reserved stock dibuat oleh backend. Pembayaran non-COD disimulasikan untuk demo.</p>
               </div>
             }
           />

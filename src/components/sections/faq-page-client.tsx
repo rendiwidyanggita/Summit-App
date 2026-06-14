@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { faqs } from "@/lib/support-trust-data";
+import { faqs } from "@/lib/faq-data";
 
 const categories = ["Semua", ...Array.from(new Set(faqs.map((faq) => faq.category)))];
 
@@ -73,7 +73,7 @@ export function FaqPageClient() {
       <div className="mt-6 flex flex-col gap-3 rounded-[1.25rem] border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="font-semibold">Masih butuh bantuan?</div>
-          <p className="mt-1 text-sm text-muted-foreground">Komplain dan return mock sudah disiapkan di pusat akun customer.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Gunakan pusat komplain atau return dari akun customer untuk bantuan lanjutan.</p>
         </div>
         <Button asChild>
           <Link href="/akun/komplain">

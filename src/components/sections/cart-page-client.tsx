@@ -98,7 +98,7 @@ export function CartPageClient() {
   if (loading) {
     return (
       <div className="container-page py-8">
-        <RouteStatePanel icon={Loader2} eyebrow="Keranjang" title="Memuat keranjang" description="Mengambil item cart dari backend Sprint 4." />
+        <RouteStatePanel icon={Loader2} eyebrow="Keranjang" title="Memuat keranjang" description="Mengambil item cart dari backend." />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export function CartPageClient() {
           icon={PackageX}
           eyebrow="Keranjang"
           title="Keranjang kosong"
-          description="Pilih produk dan varian dari katalog untuk mulai checkout Sprint 4."
+          description="Pilih produk dan varian dari katalog untuk mulai checkout."
           actions={
             <Button asChild>
               <Link href="/produk">Lihat produk</Link>
@@ -145,7 +145,7 @@ export function CartPageClient() {
         <DesignParticles />
         <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <Badge variant="accent">Sprint 4 Cart</Badge>
+            <Badge variant="accent">Shopping Cart</Badge>
             <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Keranjang Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
               Review item, sesuaikan quantity, cek estimasi berat, lalu lanjut ke checkout yang sudah terhubung backend.
@@ -153,7 +153,7 @@ export function CartPageClient() {
           </div>
           <div className="flex flex-wrap gap-2 text-sm lg:max-w-sm">
             <span className="rounded-full bg-white/12 px-3 py-2">Cart API</span>
-            <span className="rounded-full bg-white/12 px-3 py-2">Voucher Sprint 4</span>
+            <span className="rounded-full bg-white/12 px-3 py-2">Voucher aktif</span>
             <span className="rounded-full bg-white/12 px-3 py-2">Ongkir backend</span>
           </div>
         </div>
