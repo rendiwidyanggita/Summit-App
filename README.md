@@ -1,257 +1,138 @@
-# Summit Gear
+# Summit Gear — Responsive Web E-Commerce for Hiking Equipment
 
-Panduan instalasi, pengaturan lokal, dan deployment demo Summit Gear.
+A mobile-first responsive B2C e-commerce web application for **hikers and outdoor communities in Indonesia**, built with **Next.js**, **PostgreSQL**, and **Prisma**.
 
-## Prasyarat
+The core problem we set out to solve: hikers in Indonesia still struggle to find a trusted, comprehensive, and mobile-friendly platform dedicated to purchasing hiking equipment — most outdoor shops rely on generic marketplaces without a curated shopping experience tailored to hiking needs.
 
-Pastikan perangkat sudah memiliki:
+---
 
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) beserta npm
-- Database PostgreSQL, direkomendasikan menggunakan [Supabase](https://supabase.com/)
+## ✨ Technologies
 
-Versi utama teknologi yang digunakan project ini:
+- `Next.js 16` — Fullstack framework (App Router, Server Actions, Route Handlers)
+- `React 19` — UI library
+- `PostgreSQL` — Relational database
+- `Supabase` — Database provider (PostgreSQL hosting)
+- `Prisma 7` — ORM & database migration
+- `Auth.js / NextAuth` — Authentication (email/password, Google OAuth)
+- `Tailwind CSS` — Utility-first CSS framework
+- `shadcn/ui` — Reusable component library
+- `Midtrans` — Payment gateway (VA, QRIS, e-wallet, credit/debit card)
+- `Cloudinary` — Image storage & optimization
+- `Brevo` — Transactional email service
+- `Vercel` — Deployment platform
 
-- Next.js 16
-- React 19
-- Prisma 7
-- PostgreSQL
+---
 
-## 1. Clone Repository
+## 🚀 Features
 
-```bash
-git clone <URL_REPOSITORY>
-cd SummitApp
-```
+- **Curated product catalog** — hikers can browse, filter, and search gear by category, brand, price, and rating without sifting through thousands of irrelevant products
+- **Integrated checkout with shipping cost calculation** — eliminates the hassle of manually calculating shipping fees; customers know the total cost upfront before paying
+- **Multi-payment methods via Midtrans** — VA, QRIS, e-wallet, and credit/debit cards available so customers aren't limited to a single payment option
+- **Real-time order management** — customers can track order status from payment to delivery without needing to contact support
+- **Return & complaint system** — customers can submit return requests with photo evidence directly from the website
+- **Product reviews & ratings** — helps fellow hikers make informed purchase decisions based on previous buyer experiences
+- **Centralized admin backoffice** — internal team manages products, inventory, orders, promotions, banners, flash sales, vouchers, and reports from a single dashboard without direct database access
+- **Role-based access control (RBAC)** — restricts admin access by responsibility (Super Admin, Operations, Marketing, CS, Finance) to maintain data security
+- **SEO-friendly** — URL slugs, meta tags, Open Graph, and sitemap so products are easily discoverable via search engines
+- **Mobile-first responsive** — design optimized for a seamless shopping experience across smartphones, tablets, and desktops
 
-Jika repository sudah tersedia secara lokal, masuk langsung ke direktori project.
+---
 
-## 2. Instal Dependensi
+## 📍 The Process
 
-```bash
-npm install
-```
+**The problem:** Hikers in Indonesia — both beginners and experienced — struggle to find an online hiking gear store that provides a curated shopping experience. Existing outdoor shops are typically scattered across generic marketplaces without hiking-specific filters, lack features like size guides or gear checklists, and the ordering process often still relies on manual chat. On the operational side, inventory management, order processing, and promotions are handled separately without a unified system.
 
-Pada Windows PowerShell, gunakan `npm.cmd` jika eksekusi `npm.ps1` diblokir oleh execution policy:
+**Our approach:** We broke this problem down into two main user groups. For **customers**, we built a complete mobile-first shopping experience — from browsing products with advanced filters, integrated checkout with shipping calculation and multi-payment options, real-time order tracking, to review and return features. For the **internal team**, we built an admin backoffice on the `/admin` route with RBAC so each role (Super Admin, Operations, Marketing, CS, Finance) only accesses relevant modules — from catalog management, order fulfillment, promo campaigns, to sales reports and audit logs.
 
-```powershell
-npm.cmd install
-```
+An interesting technical challenge: we integrated the Midtrans payment gateway with webhooks to ensure the final payment status always follows server-side validation, not the browser-side status from the customer. We also implemented a reserved stock mechanism during checkout to prevent overselling when multiple customers purchase the same product simultaneously.
 
-## 3. Konfigurasi Environment
+---
 
-Salin file `.env.example` menjadi `.env`.
+## 🚦 Running the Project
 
-Windows PowerShell:
+1. Clone the repository:
 
-```powershell
-Copy-Item .env.example .env
-```
+   ```bash
+   git clone <REPOSITORY_URL>
+   cd SummitApp
+   ```
 
-Linux/macOS:
+2. Install dependencies:
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   npm install
+   ```
 
-Kemudian isi nilai pada `.env` sesuai layanan yang digunakan.
+   > On Windows PowerShell, use `npm.cmd install` if `npm.ps1` is blocked by the execution policy.
 
-### Variabel Wajib
+3. Setup environment — copy `.env.example` to `.env`:
 
-| Variabel | Kegunaan |
-| --- | --- |
-| `APP_URL` | URL aplikasi lokal, gunakan `http://localhost:3000`. |
-| `NODE_ENV` | Mode aplikasi, gunakan `development` untuk pengembangan lokal. |
-| `DEMO_MODE` | Aktifkan perilaku khusus demo seperti simulasi pembayaran. |
-| `DATABASE_URL` | Koneksi database saat aplikasi berjalan. Untuk Supabase, gunakan transaction pooler port `6543`. |
-| `DIRECT_URL` | Koneksi database untuk migrasi dan seed. Untuk Supabase, gunakan session pooler atau koneksi langsung port `5432`. |
-| `AUTH_SECRET` | Secret aman untuk proses autentikasi. |
-| `AUTH_TRUST_HOST` | Gunakan `true` untuk mempercayai host aplikasi lokal. |
+   ```bash
+   cp .env.example .env
+   ```
 
-Contoh konfigurasi koneksi Supabase:
+   Then fill in the following configuration in `.env`:
 
-```env
-DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-0-REGION.pooler.supabase.com:5432/postgres"
-```
+   | Variable          | Purpose                                                 |
+   | ----------------- | ------------------------------------------------------- |
+   | `APP_URL`         | Application URL, use `http://localhost:3000`            |
+   | `DATABASE_URL`    | Database connection (Supabase pooler port `6543`)       |
+   | `DIRECT_URL`      | Direct database connection (port `5432`) for migrations |
+   | `AUTH_SECRET`     | Secret key for authentication                           |
+   | `AUTH_TRUST_HOST` | Set `true` for local development                        |
+   | `DEMO_MODE`       | Set `true` for payment simulation                       |
 
-Jangan menyimpan kredensial asli ke Git. File `.env` sudah diabaikan melalui `.gitignore`.
+   Optional variables: `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `CLOUDINARY_*`, `BREVO_API_KEY`, `MIDTRANS_*`, `RAJAONGKIR_API_KEY`, etc.
 
-### Variabel Opsional
+4. Generate Prisma Client:
 
-Isi variabel berikut hanya jika fitur terkait akan digunakan:
+   ```bash
+   npm run prisma:generate
+   ```
 
-- `AUTH_GOOGLE_ID` dan `AUTH_GOOGLE_SECRET`: login Google.
-- `AUTH_APPLE_ID` dan `AUTH_APPLE_SECRET`: login Apple, belum digunakan pada versi demo.
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, dan `SUPABASE_SERVICE_ROLE_KEY`: tidak diperlukan karena aplikasi mengakses Supabase PostgreSQL melalui Prisma.
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, dan `CLOUDINARY_API_SECRET`: penyimpanan gambar Cloudinary.
-- `BREVO_API_KEY`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, dan `EMAIL_FROM`: pengiriman email.
-- `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, dan `MIDTRANS_IS_PRODUCTION`: hanya diperlukan untuk integrasi Midtrans nyata.
-- `MIDTRANS_MOCK_ENABLED`: aktifkan bersama `DEMO_MODE=true` untuk simulasi pembayaran tanpa Midtrans.
-- `RAJAONGKIR_API_KEY` dan `BINDERBYTE_API_KEY`: belum diperlukan karena versi demo memakai kalkulasi ongkir simulasi.
-- `NEXT_PUBLIC_GA_ID` dan `SENTRY_DSN`: belum digunakan pada versi demo.
+5. Run database migrations:
 
-## 4. Siapkan Database dengan Prisma
+   ```bash
+   npm run prisma:migrate
+   ```
 
-Generate Prisma Client:
+6. Seed the database with initial data:
 
-```bash
-npm run prisma:generate
-```
+   ```bash
+   npm run db:seed
+   ```
 
-Terapkan migrasi database:
+   Admin account after seeding:
 
-```bash
-npm run prisma:migrate
-```
+   ```
+   Email: admin@summitgear.local
+   Password: Password123!
+   ```
 
-Isi database dengan data awal:
+7. Start the development server:
 
-```bash
-npm run db:seed
-```
+   ```bash
+   npm run dev
+   ```
 
-Untuk membuka Prisma Studio:
+8. Open `http://localhost:3000` in your browser
 
-```bash
-npm run prisma:studio
-```
+---
 
-Pada Windows PowerShell, ganti `npm` dengan `npm.cmd` untuk seluruh perintah di atas jika diperlukan.
+## 📦 Preview
 
-### Akun Admin Hasil Seed
+<!--
+  Replace "preview.mp4" with the actual filename or URL of your demo video.
+  For GitHub.com: upload the .mp4 via the GitHub file upload UI and paste the hosted URL here.
+-->
 
-Setelah seed berhasil dijalankan, gunakan akun berikut:
+<video src="preview.mp4" controls="controls" width="100%">
+  Your browser does not support the video tag.
+</video>
 
-```text
-Email: admin@summitgear.local
-Password: Password123!
-```
+---
 
-Akun ini hanya ditujukan untuk pengembangan lokal.
+## 📝 License
 
-## 5. Jalankan Development Server
-
-```bash
-npm run dev
-```
-
-Buka [http://localhost:3000](http://localhost:3000) di browser.
-
-## Perintah Project
-
-| Perintah | Kegunaan |
-| --- | --- |
-| `npm run dev` | Menjalankan development server. |
-| `npm run build` | Generate Prisma Client dan membuat production build. |
-| `npm run start` | Menjalankan production build. |
-| `npm run lint` | Menjalankan pemeriksaan ESLint. |
-| `npm run prisma:generate` | Generate Prisma Client. |
-| `npm run prisma:migrate` | Menjalankan migrasi Prisma untuk development. |
-| `npm run prisma:studio` | Membuka Prisma Studio. |
-| `npm run db:seed` | Mengisi database dengan data awal. |
-| `npm run verify:sprint3` | Menjalankan verifikasi backend Sprint 3. |
-| `npm run verify:sprint4` | Menjalankan verifikasi backend Sprint 4. |
-| `npm run verify:sprint5` | Menjalankan verifikasi backend Sprint 5. |
-| `npm run verify:sprint6` | Menjalankan verifikasi backend Sprint 6. |
-| `npm run verify:sprint7` | Menjalankan verifikasi backend Sprint 7. |
-
-Untuk memverifikasi project secara umum:
-
-```bash
-npm run lint
-npm run build
-npm run verify:sprint6
-npm run verify:sprint7
-```
-
-Untuk mencoba production build secara lokal:
-
-```bash
-npm run build
-npm run start
-```
-
-## Deployment Demo di Vercel
-
-Deployment ini ditujukan untuk demonstrasi tugas kuliah dan tidak boleh digunakan untuk menerima transaksi nyata.
-
-1. Hubungkan repository GitHub ke Vercel.
-2. Tambahkan environment variables berikut pada Vercel:
-
-```env
-APP_URL="https://URL-DEPLOYMENT-VERCEL"
-DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
-AUTH_SECRET="SECRET-ACAK-YANG-AMAN"
-AUTH_TRUST_HOST="true"
-DEMO_MODE="true"
-MIDTRANS_MOCK_ENABLED="true"
-MIDTRANS_IS_PRODUCTION="false"
-AUTH_GOOGLE_ID="GOOGLE-CLIENT-ID"
-AUTH_GOOGLE_SECRET="GOOGLE-CLIENT-SECRET"
-BREVO_API_KEY="BREVO-API-KEY"
-EMAIL_FROM="Summit Gear <EMAIL-SENDER-TERVERIFIKASI>"
-```
-
-3. Di Google Cloud Console, tambahkan callback URL:
-
-```text
-https://URL-DEPLOYMENT-VERCEL/api/auth/callback/google
-```
-
-4. Verifikasi sender pada Brevo agar registrasi, verifikasi email, dan reset password dapat didemokan. Jika fitur authorized IP Brevo aktif, izinkan sumber deployment atau nonaktifkan pembatasan IP khusus selama demo.
-5. Jalankan migration dan seed dari komputer lokal menggunakan `DIRECT_URL`:
-
-```powershell
-npx.cmd prisma migrate deploy
-npm.cmd run db:seed
-```
-
-Pada mode demo:
-
-- Pembayaran Midtrans disimulasikan tanpa server/client key atau merchant production.
-- COD tetap dapat digunakan.
-- Tarif dan estimasi ongkir merupakan simulasi.
-- Apple Login, Cloudinary, RajaOngkir, BinderByte, Sentry, dan analytics tidak diperlukan.
-- Jangan mengaktifkan `DEMO_MODE` atau `MIDTRANS_MOCK_ENABLED` untuk toko production nyata.
-
-## Troubleshooting
-
-### `npm.ps1` tidak dapat dijalankan di Windows PowerShell
-
-Gunakan executable npm Windows secara langsung:
-
-```powershell
-npm.cmd run dev
-```
-
-### Prisma gagal terhubung ke database
-
-- Pastikan `DATABASE_URL` dan `DIRECT_URL` di `.env` sudah benar.
-- Pastikan password database dan region Supabase sesuai.
-- Gunakan `DIRECT_URL` port `5432` untuk migrasi dan seed.
-- Pastikan project Supabase aktif dan koneksi jaringan tidak diblokir.
-
-### Prisma Client belum tersedia atau tidak sesuai schema
-
-Jalankan ulang:
-
-```bash
-npm run prisma:generate
-```
-
-### Data awal belum tersedia
-
-Pastikan migrasi berhasil, kemudian jalankan:
-
-```bash
-npm run db:seed
-```
-
-### Port `3000` sedang digunakan
-
-Hentikan proses yang menggunakan port tersebut atau jalankan Next.js pada port lain:
-
-```bash
-npm run dev -- --port 3001
-```
+This project was built for academic purposes.
+Licensed under the [MIT License](https://opensource.org/licenses/MIT).
