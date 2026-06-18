@@ -101,8 +101,8 @@ export default function HomePage() {
             { icon: Search, title: "Cari cepat", body: "Temukan gear lewat search, kategori, brand, rating, dan harga." },
             { icon: ShoppingCart, title: "Keranjang aktif", body: "Ubah quantity, cek berat, dan lanjut ke checkout demonstrasi." },
             { icon: ShieldCheck, title: "Alur terintegrasi", body: "Order, stok, voucher, dan operasional admin tersambung ke backend." },
-          ].map((item, index) => (
-            <div key={item.title} className={`summit-card-shadow rounded-xl border bg-card p-6 ${index === 1 ? "md:-translate-y-3 md:border-primary/30" : ""}`}>
+          ].map((item) => (
+            <div key={item.title} className="summit-card-shadow rounded-xl border bg-card p-6">
               <item.icon className="size-5 text-primary" />
               <h2 className="mt-4 font-semibold">{item.title}</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.body}</p>

@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { HelpCircle, MessageSquareWarning, Search } from "lucide-react";
 
-import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,18 +30,33 @@ export function FaqPageClient() {
 
   return (
     <div className="container-page py-8">
-      <section className="summit-dark relative overflow-hidden rounded-xl p-5 sm:p-7">
-        <DesignParticles />
-        <div className="relative">
-          <Badge variant="accent">Support Center</Badge>
-          <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">FAQ Summit Gear</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
-            Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
-          </p>
-        </div>
-        <div className="relative mt-5 max-w-xl">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari pertanyaan..." className="bg-background pl-9 text-foreground" />
+      <section className="summit-dark relative overflow-hidden rounded-xl border border-white/10">
+        <Image
+          src="https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=1600&q=80"
+          alt="Siluet area camp untuk FAQ Summit Gear"
+          fill
+          priority
+          className="object-cover opacity-35"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[var(--green-house)]/78" />
+        <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
+          <div>
+            <Badge variant="accent">Support Center</Badge>
+            <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">FAQ Summit Gear</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
+              Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
+            </p>
+          </div>
+          <Card className="bg-primary-foreground/95 text-foreground">
+            <CardContent className="p-4">
+              <div className="text-sm font-medium text-muted-foreground">Cari bantuan</div>
+              <div className="relative mt-3">
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari pertanyaan..." className="bg-background pl-9 text-foreground" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
