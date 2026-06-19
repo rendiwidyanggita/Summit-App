@@ -35,12 +35,12 @@ export function DarkPromoBand({
           <h2 className="mt-3 max-w-2xl text-3xl font-medium tracking-[-0.03em] text-white sm:text-5xl">{title}</h2>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-white/70 sm:text-base">{description}</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button variant="accent" size="lg" asChild>
+            <Button variant="inverse" size="lg" asChild>
               <Link href={primaryHref}>
                 {primaryLabel} <ArrowRight />
               </Link>
             </Button>
-            <Button variant="blue" size="lg" asChild>
+            <Button variant="darkOutline" size="lg" asChild>
               <Link href={secondaryHref}>{secondaryLabel}</Link>
             </Button>
           </div>

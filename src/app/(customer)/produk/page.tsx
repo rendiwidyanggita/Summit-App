@@ -1,8 +1,9 @@
+import Image from "next/image";
 import { BadgePercent, Boxes, Search, ShieldCheck } from "lucide-react";
 
 import { CatalogPageClient } from "@/components/sections/catalog-page-client";
-import { DesignParticles } from "@/components/sections/design-particles";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { catalogProducts } from "@/lib/constants";
 import { formatRupiah } from "@/lib/utils";
 
@@ -26,8 +27,16 @@ export default function ProductsPage() {
   return (
     <div className="container-page py-8">
       <section className="summit-dark relative mb-6 overflow-hidden rounded-xl border border-white/10">
-        <DesignParticles />
-        <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <Image
+          src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1600&q=80"
+          alt="Siluet jalur alam untuk katalog produk Summit Gear"
+          fill
+          priority
+          className="object-cover opacity-35"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[var(--green-house)]/78" />
+        <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_450px] lg:items-end">
           <div>
             <Badge variant="accent">Katalog Summit Gear</Badge>
             <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Produk Pendakian</h1>
@@ -35,19 +44,22 @@ export default function ProductsPage() {
               Cari tenda, carrier, jaket, cooking set, dan essentials lain dengan filter, pencarian, dan pengurutan katalog.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3 lg:w-[520px]">
-            {[
-              { icon: Boxes, label: "Produk tersedia", value: `${catalogProducts.length}` },
-              { icon: BadgePercent, label: "Sedang diskon", value: `${discountedProducts}` },
-              { icon: Search, label: "Mulai dari", value: formatRupiah(lowestPrice) },
-            ].map((item) => (
-              <div key={item.label} className="rounded-md border border-white/20 bg-white/10 p-3 backdrop-blur">
-                <item.icon className="size-4 text-accent" />
-                <div className="mt-2 text-lg font-semibold">{item.value}</div>
-                <div className="text-xs text-primary-foreground/72">{item.label}</div>
-              </div>
-            ))}
-          </div>
+          <Card className="bg-primary-foreground/95 text-foreground">
+            <CardContent className="grid gap-3 p-4 text-sm">
+              {[
+                { icon: Boxes, label: "Produk tersedia", value: `${catalogProducts.length}` },
+                { icon: BadgePercent, label: "Sedang diskon", value: `${discountedProducts}` },
+                { icon: Search, label: "Mulai dari", value: formatRupiah(lowestPrice) },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between gap-3">
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <item.icon className="size-4" /> {item.label}
+                  </span>
+                  <span className="font-semibold">{item.value}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </div>
         <div className="border-t border-white/15 bg-primary-foreground/8 px-5 py-3 text-sm text-primary-foreground/80 sm:px-6">
           <ShieldCheck className="mr-2 inline size-4 text-accent" />
