@@ -20,13 +20,8 @@ export function AuthPageShell({
 }) {
   return (
     <section className="summit-surface relative overflow-hidden border-b">
-      <div className="pointer-events-none absolute -left-24 top-16 size-72 rounded-full bg-[var(--green-light)]/60 blur-3xl" />
-      <div className="pointer-events-none absolute -right-28 bottom-8 size-96 rounded-full bg-white/70 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px rotate-12 bg-primary/10" />
       <div className="container-page relative grid min-h-[calc(100vh-4rem)] gap-6 py-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-center lg:py-10">
         <div className="relative overflow-hidden rounded-[2rem] border bg-card/88 p-4 shadow-sm backdrop-blur sm:p-6 lg:rounded-[2.5rem_1.25rem_2.5rem_1.25rem]">
-          <div className="absolute -right-12 -top-12 size-40 rounded-full bg-[var(--green-light)]/55" />
-          <div className="absolute bottom-0 left-0 h-24 w-44 rounded-tr-[5rem] bg-primary/8" />
           <div className="relative">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="accent" className="w-fit">

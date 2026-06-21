@@ -9,7 +9,6 @@ import {
   ShoppingCart,
   Star,
   Truck,
-  Zap,
 } from "lucide-react";
 
 import { DarkPromoBand } from "@/components/sections/dark-promo-band";
@@ -173,7 +172,7 @@ export default function HomePage() {
         primaryLabel="Lihat produk diskon"
         secondaryHref="/keranjang"
         secondaryLabel="Cek keranjang"
-        icon={Zap}
+        
       />
 
       <section className="container-page py-12">
@@ -200,7 +199,7 @@ export default function HomePage() {
                     {product.category} - {product.sold} terjual - {product.rating} rating
                   </div>
                 </div>
-                <Zap className="size-4 shrink-0 text-accent" />
+                
               </Link>
             ))}
           </div>
