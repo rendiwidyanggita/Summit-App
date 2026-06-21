@@ -5,12 +5,6 @@ import { requireUser } from "@/lib/server/authz";
 import { handleRouteError, ok } from "@/lib/server/http";
 import { uploadToCloudinary } from "@/lib/server/upload-service";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
