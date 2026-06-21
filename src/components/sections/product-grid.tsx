@@ -2,9 +2,9 @@ import { SearchX } from "lucide-react";
 
 import { ProductCard } from "@/components/sections/product-card";
 import { RouteStatePanel } from "@/components/sections/route-state-panel";
-import type { ProductCatalogItem } from "@/lib/constants";
+import type { ProductListItem } from "@/lib/product-types";
 
-export function ProductGrid({ products }: { products: ProductCatalogItem[] }) {
+export function ProductGrid({ products }: { products: ProductListItem[] }) {
   if (products.length === 0) {
     return (
       <RouteStatePanel icon={SearchX} eyebrow="Katalog kosong" title="Produk tidak ditemukan" description="Coba ubah kata kunci, rentang harga, atau nonaktifkan beberapa filter." />

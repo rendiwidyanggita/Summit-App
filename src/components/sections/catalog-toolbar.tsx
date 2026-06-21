@@ -4,7 +4,7 @@ import { Search, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { CatalogSortKey } from "@/lib/constants";
+export type CatalogSortKey = "newest" | "price_asc" | "price_desc" | "name_asc" | "best_selling" | "rating_desc";
 
 export function CatalogToolbar({
   search,
@@ -34,10 +34,10 @@ export function CatalogToolbar({
         aria-label="Urutkan produk"
       >
         <option value="newest">Terbaru</option>
-        <option value="price-asc">Termurah</option>
-        <option value="price-desc">Termahal</option>
-        <option value="best-selling">Terlaris</option>
-        <option value="rating-desc">Rating tertinggi</option>
+        <option value="price_asc">Termurah</option>
+        <option value="price_desc">Termahal</option>
+        <option value="best_selling">Terlaris</option>
+        <option value="rating_desc">Rating tertinggi</option>
       </select>
       <Button type="button" variant="outline" className="lg:hidden" onClick={onOpenFilters} aria-label="Buka filter produk">
         <SlidersHorizontal /> Filter

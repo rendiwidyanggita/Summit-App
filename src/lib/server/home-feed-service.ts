@@ -52,6 +52,7 @@ async function fetchTopCategories(limit = 6) {
     name: category.name,
     slug: category.slug,
     icon: category.icon,
+    imageUrl: category.imageUrl,
     productCount: category._count.products,
   }));
 }

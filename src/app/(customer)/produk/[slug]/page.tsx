@@ -11,8 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { catalogProducts, getProductsByCategory } from "@/lib/constants";
-import { getProductBySlug as getCatalogProductBySlug } from "@/lib/server/catalog-service";
+import { getProductBySlug as getCatalogProductBySlug, getRelatedProducts } from "@/lib/server/catalog-service";
 
 function buildProductJsonLd(product: Awaited<ReturnType<typeof getCatalogProductBySlug>>, baseUrl: string) {
   if (!product) return null;
@@ -128,11 +127,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const categorySlug = catalogProduct.category?.slug ?? "";
   const productView = toProductDetailView(catalogProduct);
   const specs = serializeSpecs(catalogProduct.specs);
-  const relatedProducts = getProductsByCategory(categorySlug)
-    .filter((item) => item.slug !== catalogProduct.slug)
-    .slice(0, 3);
-
-  const fallbackRelatedProducts = catalogProducts.filter((item) => item.slug !== catalogProduct.slug).slice(0, 3);
+  const relatedProducts = await getRelatedProducts(catalogProduct.slug, 3);
 
   return (
     <div className="container-page py-8">
@@ -236,7 +231,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </Button>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(relatedProducts.length ? relatedProducts : fallbackRelatedProducts).map((item) => (
+          {relatedProducts.map((item) => (
             <ProductCard key={item.slug} product={item} />
           ))}
         </div>
