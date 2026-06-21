@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { requireUser } from "@/lib/server/authz";
-import { badRequest, handleRouteError, ok } from "@/lib/server/http";
+import { fail, handleRouteError, ok } from "@/lib/server/http";
 import { hasCloudinaryEnv } from "@/lib/server/env";
 
 cloudinary.config({
@@ -16,14 +16,14 @@ export async function POST(request: Request) {
     if (!user.ok) return user.response;
 
     if (!hasCloudinaryEnv()) {
-      return badRequest({ message: "Cloudinary tidak dikonfigurasi. Hubungi administrator." });
+      return fail(400, "CLOUDINARY_NOT_CONFIGURED", "Cloudinary tidak dikonfigurasi. Hubungi administrator.");
     }
 
     const formData = await request.formData();
     const files = formData.getAll("file") as File[];
 
     if (files.length === 0) {
-      return badRequest({ message: "Tidak ada file yang diunggah." });
+      return fail(400, "NO_FILE", "Tidak ada file yang diunggah.");
     }
 
     const uploadPromises = files.map(async (file) => {
