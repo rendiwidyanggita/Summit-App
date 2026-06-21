@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { catalogBrands, categoryCatalog } from "@/lib/constants";
+import type { CategoryListItem } from "@/lib/product-types";
 import { formatRupiah } from "@/lib/utils";
 
 export type CatalogFilterState = {
@@ -35,11 +35,15 @@ function toggleValue(values: string[], value: string) {
 
 export function ProductFilters({
   value,
+  categories = [],
+  brands = [],
   onChange,
   onReset,
   lockedCategorySlug,
 }: {
   value: CatalogFilterState;
+  categories?: CategoryListItem[];
+  brands?: { name: string; slug: string }[];
   onChange: (value: CatalogFilterState) => void;
   onReset: () => void;
   lockedCategorySlug?: string;
@@ -60,7 +64,7 @@ export function ProductFilters({
         <div>
           <div className="mb-3 text-sm font-medium">Kategori</div>
           <div className="grid gap-2">
-            {categoryCatalog.map((category) => (
+            {categories.map((category) => (
               <label key={category.slug} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
                 <input
                   type="checkbox"
@@ -80,15 +84,15 @@ export function ProductFilters({
       <div>
         <div className="mb-3 text-sm font-medium">Brand</div>
           <div className="grid gap-2">
-          {catalogBrands.map((brand) => (
-            <label key={brand} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
+          {brands.map((brand) => (
+            <label key={brand.slug} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-secondary">
               <input
                 type="checkbox"
                 className="size-4 rounded border-input accent-primary"
-                checked={value.brands.includes(brand)}
-                onChange={() => onChange({ ...value, brands: toggleValue(value.brands, brand) })}
+                checked={value.brands.includes(brand.slug)}
+                onChange={() => onChange({ ...value, brands: toggleValue(value.brands, brand.slug) })}
               />
-              {brand}
+              {brand.name}
             </label>
           ))}
         </div>

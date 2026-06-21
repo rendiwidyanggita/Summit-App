@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiRequestError, apiRequest } from "@/lib/api-client";
-import type { CartResponse } from "@/lib/commerce-types";
+import { useCart } from "@/contexts/cart-context";
 import { cn, formatRupiah } from "@/lib/utils";
 
 export type ProductDetailViewProduct = {
@@ -41,6 +41,7 @@ function getDiscountPercent(product: ProductDetailViewProduct) {
 
 export function ProductDetailSummary({ product }: { product: ProductDetailViewProduct }) {
   const router = useRouter();
+  const { addItemToCart } = useCart();
   const availableVariants = product.variants.filter((variant) => variant.stock > 0);
   const [selectedVariantId, setSelectedVariantId] = useState(availableVariants[0]?.id ?? product.variants[0]?.id ?? "");
   const [quantity, setQuantity] = useState(1);
@@ -61,13 +62,19 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
     setLoading(true);
 
     try {
-      await apiRequest<CartResponse>("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({
-          productSlug: product.slug,
-          variantId: selectedVariant.id,
-          quantity,
-        }),
+      await addItemToCart(product.slug, selectedVariant.id, quantity);
+      toast.success("Produk ditambahkan ke keranjang.");
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 401) {
+        router.push(`/masuk?callbackUrl=/produk/${product.slug}`);
+        return;
+      }
+
+      toast.error(error instanceof Error ? error.message : "Gagal menambahkan produk ke keranjang.");
+    } finally {
+      setLoading(false);
+    }
+  }
       });
 
       toast.success("Produk ditambahkan ke keranjang.");

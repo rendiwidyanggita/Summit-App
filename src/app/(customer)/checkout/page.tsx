@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CheckoutPageClient } from "@/components/sections/checkout-page-client";
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function CheckoutPage() {
-  return <CheckoutPageClient />;
+  return (
+    <Suspense fallback={<div className="container-page py-8">Memuat checkout...</div>}>
+      <CheckoutPageClient />
+    </Suspense>
+  );
 }

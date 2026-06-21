@@ -16,18 +16,25 @@ import { ProductCard } from "@/components/sections/product-card";
 import { SectionHeader } from "@/components/sections/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { catalogProducts, categoryCatalog, featuredProducts, getDiscountPercent } from "@/lib/constants";
+import { getHomeFeed } from "@/lib/server/home-feed-service";
 
-export default function HomePage() {
-  const bestSellers = [...catalogProducts].sort((a, b) => b.sold - a.sold).slice(0, 4);
-  const discountedProducts = catalogProducts.filter((product) => getDiscountPercent(product) > 0);
+export default async function HomePage() {
+  const feed = await getHomeFeed();
+  const { banners, featured, bestSellers, categories } = feed;
+  // Fallback to featured if there's no discount
+  const discountedProducts = featured.filter((product) => product.discountPrice !== null);
+  
+  const mainCategory = categories[0] || { name: "Kategori", slug: "kategori", description: "Jelajahi produk kami", imageUrl: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4", icon: null, productCount: 0, highlight: "Pilihan Utama" };
+  const subCategories = categories.slice(1, 7);
+  const heroBannerUrl = banners.find((b) => b.placement === "HOME_HERO")?.imageUrl ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=80";
+  const heroBannerTitle = banners.find((b) => b.placement === "HOME_HERO")?.title ?? "Summit Gear";
 
   return (
     <div className="overflow-hidden">
       <section className="relative isolate overflow-hidden bg-[var(--green-house)] text-white">
         <Image
-          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=80"
-          alt="Lanskap pegunungan sebagai latar Summit Gear"
+          src={heroBannerUrl}
+          alt={heroBannerTitle}
           fill
           priority
           className="pointer-events-none -z-20 object-cover object-center brightness-[0.58] saturate-[0.75]"
@@ -39,7 +46,7 @@ export default function HomePage() {
           <div className="max-w-3xl">
             <Badge className="border-white/25 bg-white/10 text-white shadow-none backdrop-blur">Outdoor Gear Store</Badge>
             <h1 className="mt-5 text-5xl font-semibold leading-[0.92] tracking-[-0.045em] text-white sm:text-6xl lg:text-7xl">
-              Summit Gear
+              {heroBannerTitle}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
               Pilih perlengkapan pendakian yang pas untuk summit attack, camping, dan perjalanan akhir pekan. Jelajahi katalog, kelola keranjang, dan coba alur checkout demonstrasi.
@@ -68,13 +75,15 @@ export default function HomePage() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="text-sm font-medium text-white/70">Rekomendasi Minggu Ini</div>
-                <div className="mt-1 text-2xl font-semibold tracking-[-0.02em]">Summit Ridge Tent 2P</div>
+                <div className="mt-1 text-2xl font-semibold tracking-[-0.02em]">{featured[0]?.name ?? "Summit Ridge Tent 2P"}</div>
               </div>
-              <Badge className="border-white/20 bg-white text-primary">-{getDiscountPercent(catalogProducts[0])}%</Badge>
+              {featured[0]?.discountPrice && (
+                <Badge className="border-white/20 bg-white text-primary">-{Math.round(((featured[0].price - featured[0].discountPrice) / featured[0].price) * 100)}%</Badge>
+              )}
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {[
-                { icon: PackageCheck, label: `${catalogProducts.length} produk` },
+                { icon: PackageCheck, label: `${categories.reduce((a, b) => a + b.productCount, 0)}+ produk` },
                 { icon: Star, label: "Rating 4.8+" },
                 { icon: Truck, label: "Ongkir simulasi" },
               ].map((item) => (
@@ -85,7 +94,7 @@ export default function HomePage() {
               ))}
             </div>
             <Button variant="inverse" className="mt-5 w-full" asChild>
-              <Link href="/produk/summit-ridge-tent-2p">
+              <Link href={`/produk/${featured[0]?.slug ?? "summit-ridge-tent-2p"}`}>
                 Lihat detail gear <ArrowRight />
               </Link>
             </Button>
@@ -121,26 +130,25 @@ export default function HomePage() {
           </Button>
         </div>
         <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-          <Link href="/kategori/tenda" className="group relative min-h-[360px] overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-[var(--green-house)] text-white shadow-sm">
-            <Image src={categoryCatalog[0].image} alt={categoryCatalog[0].name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 58vw, 100vw" />
+          <Link href={`/kategori/${mainCategory.slug}`} className="group relative min-h-[360px] overflow-hidden rounded-[2rem_1rem_2rem_1rem] bg-[var(--green-house)] text-white shadow-sm">
+            <Image src={mainCategory.imageUrl ?? "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4"} alt={mainCategory.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 58vw, 100vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--green-house)]/92 via-[var(--green-house)]/38 via-[38%] to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-              <Badge variant="accent">{categoryCatalog[0].highlight}</Badge>
-              <h3 className="mt-4 text-3xl font-semibold tracking-normal">{categoryCatalog[0].name}</h3>
-              <p className="mt-2 max-w-lg text-sm leading-6 text-white/85">{categoryCatalog[0].description}</p>
+              <Badge variant="accent">Top Kategori</Badge>
+              <h3 className="mt-4 text-3xl font-semibold tracking-normal">{mainCategory.name}</h3>
+              <p className="mt-2 max-w-lg text-sm leading-6 text-white/85">{mainCategory.productCount} produk tersedia</p>
             </div>
           </Link>
           <div className="grid gap-3 sm:grid-cols-2">
-            {categoryCatalog.slice(1, 7).map((category) => (
+            {subCategories.map((category) => (
               <Link key={category.slug} href={`/kategori/${category.slug}`} className="group relative min-h-44 overflow-hidden rounded-[1.25rem] border bg-[var(--green-house)] text-white shadow-sm">
-                <Image src={category.image} alt={category.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 25vw, 50vw" />
+                <Image src={category.imageUrl ?? "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4"} alt={category.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(min-width: 1024px) 25vw, 50vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--green-house)]/92 via-[var(--green-house)]/36 via-[40%] to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4">
-                  <Badge variant="accent">{category.highlight}</Badge>
+                  <Badge variant="accent">{category.productCount} produk</Badge>
                   <div className="mt-3 text-lg font-semibold">{category.name}</div>
-                  <p className="mt-1 line-clamp-2 text-xs text-white/80">{category.description}</p>
                 </div>
               </Link>
             ))}
@@ -158,7 +166,7 @@ export default function HomePage() {
           </Button>
         </div>
         <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.map((product) => (
+          {featured.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
         </div>
@@ -196,7 +204,7 @@ export default function HomePage() {
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-medium">{product.name}</div>
                   <div className="mt-1 text-sm text-muted-foreground">
-                    {product.category} - {product.sold} terjual - {product.rating} rating
+                    {product.category?.name ?? "Produk"} - {product.soldCount} terjual - {product.ratingAvg ?? 0} rating
                   </div>
                 </div>
                 

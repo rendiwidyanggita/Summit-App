@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/server/http";
 
 export const shippingEstimateSchema = z.object({
   addressId: z.string().trim().optional(),
+  itemIds: z.array(z.string()).optional(),
 });
 
 const baseRates = [
@@ -36,6 +37,17 @@ export async function estimateShipping(userId: string, input: z.infer<typeof shi
     throw new ApiError(400, "EMPTY_CART", "Keranjang masih kosong.");
   }
 
+  let cartItems = cart.items;
+  if (input.itemIds && input.itemIds.length > 0) {
+    cartItems = cartItems.filter((item) => input.itemIds!.includes(item.id));
+    if (cartItems.length === 0) {
+      throw new ApiError(400, "EMPTY_CART", "Item yang dipilih tidak valid atau sudah dihapus.");
+    }
+  }
+
+  const totalWeightGram = cartItems.reduce((acc, item) => acc + item.lineWeightGram, 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
+
   const address = input.addressId
     ? await prisma.address.findFirst({ where: { id: input.addressId, userId } })
     : await prisma.address.findFirst({ where: { userId, isPrimary: true } });
@@ -44,7 +56,7 @@ export async function estimateShipping(userId: string, input: z.infer<typeof shi
     throw new ApiError(404, "ADDRESS_NOT_FOUND", "Alamat pengiriman tidak ditemukan.");
   }
 
-  const chargeableKg = Math.max(1, Math.ceil(cart.summary.totalWeightGram / 1000));
+  const chargeableKg = Math.max(1, Math.ceil(totalWeightGram / 1000));
   const multiplier = provinceMultiplier(address.province);
 
   return {
@@ -56,9 +68,9 @@ export async function estimateShipping(userId: string, input: z.infer<typeof shi
       city: address.city,
       district: address.district,
       postalCode: address.postalCode,
-      codSupported: codSupported(address.province, cart.summary.subtotal),
+      codSupported: codSupported(address.province, subtotal),
     },
-    weightGram: cart.summary.totalWeightGram,
+    weightGram: totalWeightGram,
     chargeableKg,
     services: baseRates.map((rate) => ({
       id: rate.id,

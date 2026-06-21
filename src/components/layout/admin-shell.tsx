@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Menu, Search, Globe } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export function AdminShell({ children, permissions }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-secondary/80 backdrop-blur lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r bg-secondary/80 backdrop-blur lg:flex">
         <div className="flex h-[72px] items-center gap-2 border-b px-5">
           <Image src="/logo.png" alt="Summit Gear Logo" width={36} height={36} className="rounded-full border bg-white p-1" />
           <div>
@@ -57,8 +57,14 @@ export function AdminShell({ children, permissions }: { children: React.ReactNod
             <div className="text-xs text-muted-foreground">Admin Backoffice</div>
           </div>
         </div>
-        <div className="p-4">
+        <div className="flex-1 overflow-y-auto p-4">
           <AdminNav permissions={permissions} />
+        </div>
+        <div className="border-t p-4">
+          <Link href="/" className="flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
+            <Globe className="size-4" />
+            Website Utama
+          </Link>
         </div>
       </aside>
 
@@ -70,12 +76,18 @@ export function AdminShell({ children, permissions }: { children: React.ReactNod
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72">
+            <SheetContent side="left" className="flex w-72 flex-col">
               <SheetHeader>
                 <SheetTitle>Admin Backoffice</SheetTitle>
               </SheetHeader>
-              <div className="mt-6">
+              <div className="mt-6 flex-1 overflow-y-auto">
                 <AdminNav permissions={permissions} />
+              </div>
+              <div className="mt-auto border-t pt-4">
+                <Link href="/" className="flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
+                  <Globe className="size-4" />
+                  Website Utama
+                </Link>
               </div>
             </SheetContent>
           </Sheet>
@@ -89,9 +101,11 @@ export function AdminShell({ children, permissions }: { children: React.ReactNod
             <Button variant="ghost" size="icon" aria-label="Notifikasi admin">
               <Bell />
             </Button>
-            <Avatar>
-              <AvatarFallback>SA</AvatarFallback>
-            </Avatar>
+            <Link href="/akun/profil" aria-label="Profil Admin">
+              <Avatar className="transition-all hover:ring-2 hover:ring-primary hover:ring-offset-2">
+                <AvatarFallback>SA</AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
         </header>
         <main id="main-content" className="p-4 sm:p-6" tabIndex={-1}>

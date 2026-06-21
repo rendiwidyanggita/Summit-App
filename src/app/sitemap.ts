@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 
-import { categoryCatalog } from "@/lib/catalog-mock";
 import { listCatalogSitemapEntries } from "@/lib/server/catalog-service";
 import { listPublicArticles } from "@/lib/server/trust-support-service";
 
@@ -18,20 +17,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.7,
   }));
 
-  const categoryRoutes = [
-    ...catalog.categories.map((category) => ({
-      url: `${baseUrl}/kategori/${category.slug}`,
-      lastModified: category.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.75,
-    })),
-    ...categoryCatalog.map((category) => ({
-      url: `${baseUrl}/kategori/${category.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
-  ];
+  const categoryRoutes = catalog.categories.map((category) => ({
+    url: `${baseUrl}/kategori/${category.slug}`,
+    lastModified: category.updatedAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
 
   const productRoutes = catalog.products.map((product) => ({
     url: `${baseUrl}/produk/${product.slug}`,

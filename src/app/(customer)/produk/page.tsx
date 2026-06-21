@@ -4,7 +4,8 @@ import { BadgePercent, Boxes, Search, ShieldCheck } from "lucide-react";
 import { CatalogPageClient } from "@/components/sections/catalog-page-client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { catalogProducts } from "@/lib/constants";
+import { listProducts, productQuerySchema } from "@/lib/server/catalog-service";
+import { listCategories, listBrands } from "@/lib/server/catalog-service";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata = {
@@ -20,9 +21,40 @@ export const metadata = {
   },
 };
 
-export default function ProductsPage() {
-  const discountedProducts = catalogProducts.filter((product) => product.compareAt > product.price).length;
-  const lowestPrice = Math.min(...catalogProducts.map((product) => product.price));
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const queryParams = await searchParams;
+  const parsedQuery = productQuerySchema.parse({
+    q: queryParams.q,
+    category: queryParams.category,
+    brand: queryParams.brand,
+    minPrice: queryParams.minPrice,
+    maxPrice: queryParams.maxPrice,
+    minRating: queryParams.minRating,
+    discountOnly: queryParams.discountOnly,
+    inStockOnly: queryParams.inStockOnly,
+    sort: queryParams.sort,
+    page: queryParams.page,
+  });
+
+  const [productsData, categories, brands] = await Promise.all([
+    listProducts(parsedQuery),
+    listCategories(),
+    listBrands(),
+  ]);
+
+  const discountedProductsCount = productsData.items.filter((p) => p.discountPrice).length;
+  const lowestPrice = productsData.items.length > 0 ? Math.min(...productsData.items.map((p) => Number(p.discountPrice ?? p.price))) : 0;
+  
+  const mappedProducts = productsData.items.map((p) => ({
+    ...p,
+    price: Number(p.price),
+    costPrice: Number(p.costPrice),
+    discountPrice: p.discountPrice ? Number(p.discountPrice) : null,
+    ratingAvg: Number(p.ratingAvg),
+    photo: p.photos?.[0] ?? null,
+    brand: p.brand ? { name: p.brand.name, slug: p.brand.slug } : null,
+    category: p.category ? { name: p.category.name, slug: p.category.slug } : null,
+  }));
 
   return (
     <div className="container-page py-8">
@@ -47,8 +79,8 @@ export default function ProductsPage() {
           <Card className="bg-primary-foreground/95 text-foreground">
             <CardContent className="grid gap-3 p-4 text-sm">
               {[
-                { icon: Boxes, label: "Produk tersedia", value: `${catalogProducts.length}` },
-                { icon: BadgePercent, label: "Sedang diskon", value: `${discountedProducts}` },
+                { icon: Boxes, label: "Produk tersedia", value: `${productsData.pagination.total}` },
+                { icon: BadgePercent, label: "Sedang diskon", value: `${discountedProductsCount}` },
                 { icon: Search, label: "Mulai dari", value: formatRupiah(lowestPrice) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between gap-3">
@@ -67,7 +99,22 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <CatalogPageClient products={catalogProducts} />
+      <CatalogPageClient 
+        products={mappedProducts} 
+        categories={categories.map((c) => ({ ...c, productCount: c._count.products }))} 
+        brands={brands} 
+        initialFilters={{
+          categorySlugs: typeof queryParams.category === "string" ? [queryParams.category] : [],
+          brands: typeof queryParams.brand === "string" ? [queryParams.brand] : [],
+          minPrice: typeof queryParams.minPrice === "string" ? queryParams.minPrice : "",
+          maxPrice: typeof queryParams.maxPrice === "string" ? queryParams.maxPrice : "",
+          minRating: typeof queryParams.minRating === "string" ? queryParams.minRating : "",
+          discountOnly: queryParams.discountOnly === "true",
+          inStockOnly: queryParams.inStockOnly === "true",
+        }}
+        initialSort={typeof queryParams.sort === "string" ? queryParams.sort : "newest"}
+        initialSearch={typeof queryParams.q === "string" ? queryParams.q : ""}
+      />
     </div>
   );
 }

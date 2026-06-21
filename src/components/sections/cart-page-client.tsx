@@ -11,51 +11,29 @@ import { OrderSummary } from "@/components/sections/order-summary";
 import { RouteStatePanel } from "@/components/sections/route-state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ApiRequestError, apiRequest } from "@/lib/api-client";
+import { useCart } from "@/contexts/cart-context";
 import type { CartResponse } from "@/lib/commerce-types";
 
 export function CartPageClient() {
-  const [cart, setCart] = useState<CartResponse | null>(null);
+  const { cart, loading: contextLoading, updateItemQuantity, removeCartItem, clearCart: clearCartContext } = useCart();
   const [loading, setLoading] = useState(true);
   const [unauthenticated, setUnauthenticated] = useState(false);
   const [busyItemId, setBusyItemId] = useState<string | null>(null);
   const [clearing, setClearing] = useState(false);
-
-  async function loadCart() {
-    try {
-      const data = await apiRequest<CartResponse>("/api/cart");
-      setCart(data);
-      setUnauthenticated(false);
-    } catch (error) {
-      if (error instanceof ApiRequestError && error.status === 401) {
-        setUnauthenticated(true);
-        setCart(null);
-        return;
-      }
-
-      toast.error(error instanceof Error ? error.message : "Gagal memuat keranjang.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void loadCart();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, []);
+    if (cart) {
+      setSelectedItemIds(new Set(cart.items.map((i) => i.id)));
+      setUnauthenticated(false);
+    }
+    setLoading(false);
+  }, [cart]);
 
   async function updateQuantity(id: string, quantity: number) {
     setBusyItemId(id);
-
     try {
-      const data = await apiRequest<CartResponse>(`/api/cart/items/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ quantity }),
-      });
-      setCart(data);
+      await updateItemQuantity(id, quantity);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Quantity gagal diperbarui.");
     } finally {
@@ -65,12 +43,8 @@ export function CartPageClient() {
 
   async function removeItem(id: string) {
     setBusyItemId(id);
-
     try {
-      const data = await apiRequest<CartResponse>(`/api/cart/items/${id}`, {
-        method: "DELETE",
-      });
-      setCart(data);
+      await removeCartItem(id);
       toast.success("Item dihapus dari keranjang.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Item gagal dihapus.");
@@ -81,12 +55,8 @@ export function CartPageClient() {
 
   async function clearCart() {
     setClearing(true);
-
     try {
-      const data = await apiRequest<CartResponse>("/api/cart", {
-        method: "DELETE",
-      });
-      setCart(data);
+      await clearCartContext();
       toast.success("Keranjang dikosongkan.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Keranjang gagal dikosongkan.");
@@ -94,6 +64,36 @@ export function CartPageClient() {
       setClearing(false);
     }
   }
+
+  function handleSelect(id: string, checked: boolean) {
+    setSelectedItemIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function handleSelectAll(checked: boolean) {
+    if (checked && cart) setSelectedItemIds(new Set(cart.items.map((i) => i.id)));
+    else setSelectedItemIds(new Set());
+  }
+
+  const selectedItems = cart?.items.filter((item) => selectedItemIds.has(item.id)) ?? [];
+  const selectedSubtotal = selectedItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
+  const selectedWeight = selectedItems.reduce((acc, item) => acc + (item.product.weightGram * item.quantity), 0);
+  const selectedQuantity = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const filteredCart: CartResponse | null = cart ? {
+    ...cart,
+    items: selectedItems,
+    summary: {
+      itemCount: selectedItems.length,
+      totalQuantity: selectedQuantity,
+      subtotal: selectedSubtotal,
+      totalWeightGram: selectedWeight,
+    }
+  } : null;
 
   if (loading) {
     return (
@@ -161,8 +161,25 @@ export function CartPageClient() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid gap-4">
+          <div className="flex items-center gap-2 px-1">
+            <input 
+              type="checkbox" 
+              className="size-5 cursor-pointer accent-primary" 
+              checked={cart.items.length > 0 && selectedItemIds.size === cart.items.length}
+              onChange={(e) => handleSelectAll(e.target.checked)}
+            />
+            <span className="text-sm font-medium">Pilih Semua ({cart.items.length})</span>
+          </div>
           {cart.items.map((item) => (
-            <CartItemRow key={item.id} item={item} busy={busyItemId === item.id} onQuantityChange={updateQuantity} onRemove={removeItem} />
+            <CartItemRow 
+              key={item.id} 
+              item={item} 
+              busy={busyItemId === item.id} 
+              selected={selectedItemIds.has(item.id)}
+              onSelect={handleSelect}
+              onQuantityChange={updateQuantity} 
+              onRemove={removeItem} 
+            />
           ))}
           <div className="grid gap-3 rounded-xl border bg-white p-4 text-sm sm:grid-cols-3">
             {[
@@ -179,16 +196,18 @@ export function CartPageClient() {
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
-          <OrderSummary
-            cart={cart}
-            action={
-              <Button asChild>
-                <Link href="/checkout">
-                  Lanjut checkout <ArrowRight />
-                </Link>
-              </Button>
-            }
-          />
+          {filteredCart && (
+            <OrderSummary
+              cart={filteredCart}
+              action={
+                <Button asChild disabled={selectedItemIds.size === 0}>
+                  <Link href={`/checkout?items=${Array.from(selectedItemIds).join(",")}`}>
+                    Lanjut checkout <ArrowRight />
+                  </Link>
+                </Button>
+              }
+            />
+          )}
           <Button variant="outline" className="mt-3 w-full" asChild>
             <Link href="/produk">
               <ShoppingBag /> Tambah gear lain

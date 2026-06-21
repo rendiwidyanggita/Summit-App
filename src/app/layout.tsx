@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { CartProvider } from "@/contexts/cart-context";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -30,8 +31,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="id">
       <body>
-        {children}
-        <Toaster />
+        <CartProvider>
+          {children}
+          <Toaster />
+        </CartProvider>
       </body>
     </html>
   );

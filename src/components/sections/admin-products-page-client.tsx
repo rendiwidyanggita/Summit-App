@@ -49,16 +49,39 @@ export function AdminProductsPageClient() {
     event.preventDefault(); setSaving(true);
     const form = new FormData(event.currentTarget);
     const existingVariants = editing?.variants ?? [];
-    const payload = {
-      name: String(form.get("name")), slug: String(form.get("slug")), description: String(form.get("description")),
-      categoryId: String(form.get("categoryId")), brandId: String(form.get("brandId")), weightGram: Number(form.get("weightGram")),
-      price: Number(form.get("price")), costPrice: Number(form.get("costPrice")), discountPrice: form.get("discountPrice") ? Number(form.get("discountPrice")) : null,
-      photos: String(form.get("photo")).split(",").map((value) => value.trim()).filter(Boolean), videoUrl: editing?.videoUrl ?? "",
-      status: String(form.get("status")), isCodAllowed: editing?.isCodAllowed ?? true, tags: editing?.tags ?? [], specs: editing?.specs ?? null, isFeatured: editing?.isFeatured ?? false, metaTitle: editing?.metaTitle ?? "", metaDescription: editing?.metaDescription ?? "",
-      variants: existingVariants.length ? existingVariants.map((variant, index) => index === 0 ? { ...variant, stock: Number(form.get("stock")), sku: String(form.get("sku")) } : variant)
-        : [{ sku: String(form.get("sku")), size: "", color: "", stock: Number(form.get("stock")), minimumStock: 10, priceModifier: 0, isActive: true }],
-    };
+    
     try {
+      let uploadedUrls: string[] = [];
+      const photoFiles = form.getAll("photoFiles") as File[];
+      const validFiles = photoFiles.filter((f) => f.size > 0);
+      
+      if (validFiles.length > 0) {
+        const uploadData = new FormData();
+        for (const f of validFiles) uploadData.append("file", f);
+        
+        const res = await fetch("/api/upload", { method: "POST", body: uploadData });
+        if (!res.ok) throw new Error("Gagal mengunggah foto produk.");
+        const json = await res.json() as { urls: string[] };
+        uploadedUrls = json.urls;
+      }
+
+      const manualUrls = String(form.get("photo")).split(",").map((value) => value.trim()).filter(Boolean);
+      const combinedPhotos = Array.from(new Set([...manualUrls, ...uploadedUrls]));
+
+      const payload = {
+        name: String(form.get("name")), slug: String(form.get("slug")), description: String(form.get("description")),
+        categoryId: String(form.get("categoryId")), brandId: String(form.get("brandId")), weightGram: Number(form.get("weightGram")),
+        price: Number(form.get("price")), costPrice: Number(form.get("costPrice")), discountPrice: form.get("discountPrice") ? Number(form.get("discountPrice")) : null,
+        photos: combinedPhotos, videoUrl: editing?.videoUrl ?? "",
+        status: String(form.get("status")), isCodAllowed: editing?.isCodAllowed ?? true, tags: editing?.tags ?? [], specs: editing?.specs ?? null, isFeatured: editing?.isFeatured ?? false, metaTitle: editing?.metaTitle ?? "", metaDescription: editing?.metaDescription ?? "",
+        variants: existingVariants.length ? existingVariants.map((variant, index) => {
+          const isProductActive = String(form.get("status")) !== "ARCHIVED";
+          return index === 0
+            ? { ...variant, stock: Number(form.get("stock")), sku: String(form.get("sku")), isActive: isProductActive }
+            : { ...variant, isActive: isProductActive };
+        }) : [{ sku: String(form.get("sku")), size: "", color: "", stock: Number(form.get("stock")), minimumStock: 10, priceModifier: 0, isActive: String(form.get("status")) !== "ARCHIVED" }],
+      };
+
       await apiRequest(editing ? `/api/admin/products/${editing.id}` : "/api/admin/products", { method: editing ? "PATCH" : "POST", body: JSON.stringify(payload) });
       toast.success(editing ? "Produk diperbarui." : "Produk ditambahkan."); setEditing(undefined); await load();
     } catch (error) { toast.error(error instanceof Error ? error.message : "Produk gagal disimpan."); }
@@ -99,7 +122,13 @@ export function AdminProductsPageClient() {
         <div className="grid gap-3 sm:grid-cols-2"><SelectField label="Kategori" name="categoryId" value={editing?.categoryId} options={categories.map((c) => ({ value: c.id, label: c.name }))} /><SelectField label="Brand" name="brandId" value={editing?.brandId} options={brands.map((b) => ({ value: b.id, label: b.name }))} /></div>
         <div className="grid gap-3 sm:grid-cols-3"><Field label="Harga jual" name="price" type="number" value={editing?.price} /><Field label="Harga beli" name="costPrice" type="number" value={editing?.costPrice} /><Field label="Harga diskon" name="discountPrice" type="number" value={editing?.discountPrice ?? ""} /></div>
         <div className="grid gap-3 sm:grid-cols-3"><Field label="Berat gram" name="weightGram" type="number" value={editing?.weightGram ?? 500} /><Field label="SKU utama" name="sku" value={editing?.variants[0]?.sku} /><Field label="Stok utama" name="stock" type="number" value={editing?.variants[0]?.stock ?? 0} /></div>
-        <Field label="URL foto (pisahkan koma)" name="photo" value={editing?.photos.join(", ")} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="URL foto (pisahkan koma) (opsional)" name="photo" value={editing?.photos.join(", ")} />
+          <div className="grid gap-2">
+            <Label>Atau unggah foto dari komputer</Label>
+            <Input type="file" name="photoFiles" accept="image/*" multiple />
+          </div>
+        </div>
         <SelectField label="Status" name="status" value={editing?.status ?? "DRAFT"} options={["DRAFT","ACTIVE","INACTIVE","ARCHIVED"].map((value) => ({ value, label: value }))} />
         <Button type="submit" disabled={saving}>{saving ? <Loader2 className="animate-spin" /> : null} Simpan produk</Button>
       </form>

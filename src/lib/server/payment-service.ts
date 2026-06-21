@@ -143,25 +143,45 @@ export async function createMidtransSnapTransaction(order: OrderForPayment) {
     throw new ApiError(500, "MIDTRANS_CONFIG_MISSING", "Konfigurasi Midtrans belum tersedia.");
   }
 
-  const response = await fetch(`${midtransSnapBaseUrl()}/snap/v1/transactions`, {
+  // Try with specific enabled_payments first
+  let payload = buildSnapPayload(order);
+  let response = await fetch(`${midtransSnapBaseUrl()}/snap/v1/transactions`, {
     method: "POST",
     headers: {
       authorization: `Basic ${basicAuth(serverKey)}`,
       "content-type": "application/json",
       accept: "application/json",
     },
-    body: JSON.stringify(buildSnapPayload(order)),
+    body: JSON.stringify(payload),
   });
 
-  const payload = (await response.json().catch(() => null)) as { token?: string; redirect_url?: string; error_messages?: string[] } | null;
+  let result = (await response.json().catch(() => null)) as { token?: string; redirect_url?: string; error_messages?: string[]; status_code?: string } | null;
 
-  if (!response.ok || !payload?.token || !payload.redirect_url) {
-    throw new ApiError(response.status || 502, "MIDTRANS_CREATE_FAILED", "Gagal membuat transaksi Midtrans.", payload);
+  // Fallback: if error 402 (payment method not enabled), retry without enabled_payments constraint
+  if (!response.ok && result?.status_code === "402") {
+    console.warn("[midtrans] Payment channel not enabled, retrying with all available channels...");
+    
+    payload = { ...payload, enabled_payments: undefined };
+    response = await fetch(`${midtransSnapBaseUrl()}/snap/v1/transactions`, {
+      method: "POST",
+      headers: {
+        authorization: `Basic ${basicAuth(serverKey)}`,
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    result = (await response.json().catch(() => null)) as { token?: string; redirect_url?: string; error_messages?: string[] } | null;
+  }
+
+  if (!response.ok || !result?.token || !result.redirect_url) {
+    throw new ApiError(response.status || 502, "MIDTRANS_CREATE_FAILED", "Gagal membuat transaksi Midtrans.", result);
   }
 
   return {
-    token: payload.token,
-    redirect_url: payload.redirect_url,
+    token: result.token,
+    redirect_url: result.redirect_url,
     isMock: false,
   };
 }

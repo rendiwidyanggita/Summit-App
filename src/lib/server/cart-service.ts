@@ -255,11 +255,18 @@ export async function clearCart(userId: string) {
   });
 }
 
-export async function getCartForCheckout(userId: string, tx: Prisma.TransactionClient = prisma) {
+export async function getCartForCheckout(userId: string, tx: Prisma.TransactionClient = prisma, itemIds?: string[]) {
   const cart = await getOrCreateCart(userId, tx);
 
   if (cart.items.length === 0) {
     throw new ApiError(400, "EMPTY_CART", "Keranjang masih kosong.");
+  }
+
+  if (itemIds && itemIds.length > 0) {
+    cart.items = cart.items.filter((item) => itemIds.includes(item.id));
+    if (cart.items.length === 0) {
+      throw new ApiError(400, "EMPTY_CART", "Item yang dipilih tidak valid atau sudah dihapus.");
+    }
   }
 
   return cart;

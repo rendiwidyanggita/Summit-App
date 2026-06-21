@@ -40,12 +40,24 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
     const formData = new FormData(event.currentTarget);
 
     try {
+      let imageUrl = profile.image ?? "";
+      const imageFile = formData.get("imageFile") as File | null;
+      if (imageFile && imageFile.size > 0) {
+        const uploadData = new FormData();
+        uploadData.append("file", imageFile);
+        
+        const res = await fetch("/api/upload", { method: "POST", body: uploadData });
+        if (!res.ok) throw new Error("Gagal mengunggah foto profil.");
+        const json = await res.json() as { urls: string[] };
+        imageUrl = json.urls[0] || imageUrl;
+      }
+
       const data = await apiRequest<Profile>("/api/account/profile", {
         method: "PATCH",
         body: JSON.stringify({
           name: String(formData.get("name") ?? ""),
           phone: String(formData.get("phone") ?? ""),
-          image: String(formData.get("image") ?? ""),
+          image: imageUrl,
         }),
       });
       setProfile((current) => ({ ...current, ...data }));
@@ -137,14 +149,11 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
                     <AvatarFallback className="bg-secondary text-xl text-primary">{initials}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 gap-2">
-                    <Label htmlFor="image">Foto profil URL</Label>
+                    <Label htmlFor="imageFile">Pilih foto profil baru</Label>
                     <div className="flex flex-wrap gap-2">
-                      <Input id="image" name="image" type="url" defaultValue={profile.image ?? ""} placeholder="https://..." className="max-w-sm" />
-                      <Button type="button" variant="outline" disabled>
-                        <Camera /> Upload nanti
-                      </Button>
+                      <Input id="imageFile" name="imageFile" type="file" accept="image/*" className="max-w-sm cursor-pointer" />
                     </div>
-                    <p className="text-xs text-muted-foreground">Versi demo menerima URL gambar profil.</p>
+                    <p className="text-xs text-muted-foreground">Kosongkan jika tidak ingin mengubah foto profil.</p>
                   </div>
                 </div>
               </div>
