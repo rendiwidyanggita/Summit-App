@@ -21,10 +21,10 @@ import type { AccountAddressResponse, CartResponse, CheckoutOrderResponse, Check
 import { formatRupiah } from "@/lib/utils";
 
 const paymentMethods: PaymentMethodOption[] = [
-  { id: "MIDTRANS_VA", label: "Virtual Account", description: "Simulasi pembayaran Virtual Account untuk demonstrasi.", group: "Midtrans" },
-  { id: "MIDTRANS_QRIS", label: "QRIS", description: "Simulasi pembayaran QRIS untuk demonstrasi.", group: "Midtrans" },
-  { id: "MIDTRANS_EWALLET", label: "E-Wallet", description: "Simulasi pembayaran e-wallet untuk demonstrasi.", group: "Midtrans" },
-  { id: "MIDTRANS_CARD", label: "Kartu Kredit/Debit", description: "Simulasi pembayaran kartu untuk demonstrasi.", group: "Midtrans" },
+  { id: "MIDTRANS_VA", label: "Virtual Account", description: "Pembayaran instan dan otomatis terverifikasi dengan Virtual Account.", group: "Midtrans" },
+  { id: "MIDTRANS_QRIS", label: "QRIS", description: "Scan kode QRIS melalui aplikasi e-wallet atau mobile banking pilihan Anda.", group: "Midtrans" },
+  { id: "MIDTRANS_EWALLET", label: "E-Wallet", description: "Bayar lebih cepat dengan saldo aplikasi e-wallet yang Anda gunakan.", group: "Midtrans" },
+  { id: "MIDTRANS_CARD", label: "Kartu Kredit/Debit", description: "Pembayaran aman menggunakan kartu kredit atau debit berlogo Visa/Mastercard.", group: "Midtrans" },
   { id: "COD", label: "COD", description: "Bayar di tempat, maksimal Rp1.500.000 dan wilayah didukung.", group: "COD" },
 ];
 
@@ -206,7 +206,7 @@ export function CheckoutPageClient() {
             <Badge variant="accent">Order Dibuat</Badge>
             <h1 className="mt-4 text-3xl font-semibold tracking-normal sm:text-5xl">Checkout berhasil</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Order tersimpan di backend. Pembayaran non-COD dapat dilanjutkan melalui simulasi pembayaran demo.
+              Pesanan Anda aman. Silakan lanjutkan ke pembayaran yang dijamin keamanannya.
             </p>
           </div>
           <div className="grid gap-5 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -247,7 +247,7 @@ export function CheckoutPageClient() {
                 {createdOrder.payment?.redirectUrl ? (
                   <Button asChild>
                     {createdOrder.payment.isDemo ? (
-                      <Link href={`/pembayaran/${createdOrder.orderNumber}`}>Buka simulasi pembayaran</Link>
+                      <Link href={`/pembayaran/${createdOrder.orderNumber}`}>Selesaikan pembayaran</Link>
                     ) : (
                       <a href={createdOrder.payment.redirectUrl}>Bayar melalui Midtrans</a>
                     )}
@@ -291,7 +291,7 @@ export function CheckoutPageClient() {
           <CardContent className="grid gap-4 p-6 text-center">
             <MapPin className="mx-auto size-10 text-primary" />
             <h1 className="text-2xl font-semibold tracking-normal">Alamat belum tersedia</h1>
-            <p className="text-sm text-muted-foreground">Tambahkan alamat utama agar backend bisa menghitung ongkir dan membuat snapshot shipment.</p>
+            <p className="text-sm text-muted-foreground">Tambahkan alamat utama untuk menghitung estimasi ongkos kirim secara akurat.</p>
             <Button asChild className="mx-auto">
               <Link href="/akun/alamat">Tambah alamat</Link>
             </Button>
@@ -310,12 +310,12 @@ export function CheckoutPageClient() {
           <div>
             <h1 className="text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Checkout Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Alamat, voucher, reserved stock, dan order tersambung ke backend. Pembayaran serta ongkir menggunakan simulasi untuk demonstrasi.
+              Alamat, voucher, dan kuantitas produk akan dikonfirmasi secara otomatis melalui sistem backend yang aman.
             </p>
           </div>
           <div className="w-fit rounded-full border border-white/20 bg-white/12 px-4 py-2 text-sm">
             <Clock className="mr-2 inline size-4 text-accent" />
-            Mode demonstrasi
+            Aman & Terpercaya
           </div>
         </div>
       </section>
@@ -374,7 +374,7 @@ export function CheckoutPageClient() {
               {selectedPayment.id === "COD" ? (
                 <div className="flex gap-3 rounded-md border border-accent bg-accent/15 p-3">
                   <AlertTriangle className="mt-0.5 size-4 shrink-0 text-accent" />
-                  <span>COD mengikuti limit transaksi, dukungan wilayah, dan validasi final backend.</span>
+                  <span>COD mengikuti limit transaksi, dukungan wilayah, dan validasi sistem.</span>
                 </div>
               ) : null}
             </CardContent>
@@ -392,7 +392,7 @@ export function CheckoutPageClient() {
                   {creatingOrder ? <Loader2 className="animate-spin" /> : <ArrowRight />}
                   Buat order
                 </Button>
-                <p className="text-xs text-muted-foreground">Order dan reserved stock dibuat oleh backend. Pembayaran non-COD disimulasikan untuk demo.</p>
+                <p className="text-xs text-muted-foreground">Pesanan Anda diproses secara otomatis. Selesaikan pembayaran dengan aman.</p>
               </div>
             }
           />

@@ -203,7 +203,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {[
                 { icon: Package, text: "SKU varian sudah tersedia sebagai kontrak cart item." },
                 { icon: CheckCircle2, text: "Stok dan berat siap dipakai untuk checkout dan ongkir." },
-                { icon: ArrowRight, text: "Tombol add-to-cart sudah terhubung ke backend." },
+                { icon: ArrowRight, text: "Proses pemesanan dan checkout dijamin cepat dan aman." },
               ].map((item) => (
                 <div key={item.text} className="flex gap-3">
                   <item.icon className="mt-0.5 size-4 shrink-0 text-primary" />

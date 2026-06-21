@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function ReturnCenterPage() {
   return (
-    <AccountShell title="Return & RMA" description="Ajukan pengembalian, pantau review admin, dan lihat kebijakan refund manual sesuai PRD.">
+    <AccountShell title="Return & RMA" description="Ajukan pengembalian barang, pantau status pengembalian, dan lihat kebijakan refund.">
       <ReturnCenterPageClient />
     </AccountShell>
   );

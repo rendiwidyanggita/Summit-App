@@ -45,7 +45,7 @@ export function FaqPageClient() {
             <Badge variant="accent">Support Center</Badge>
             <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">FAQ Summit Gear</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
-              Jawaban cepat untuk belanja, pembayaran, pengiriman, return, dan akun customer sesuai alur PRD.
+              Jawaban cepat dan bantuan lengkap seputar belanja, pembayaran, pengiriman, return, dan akun customer.
             </p>
           </div>
           <Card className="bg-primary-foreground/95 text-foreground">

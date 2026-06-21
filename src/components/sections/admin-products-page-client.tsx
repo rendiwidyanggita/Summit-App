@@ -14,11 +14,61 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { AdminCategory, AdminListResponse, AdminProduct } from "@/lib/admin-types";
-import { apiRequest } from "@/lib/api-client";
+import { ApiRequestError, apiRequest } from "@/lib/api-client";
 import { formatRupiah } from "@/lib/utils";
 
 type Brand = { id: string; name: string; slug: string };
 const statusOptions = ["ALL", "ACTIVE", "DRAFT", "INACTIVE", "ARCHIVED", "LOW_STOCK"].map((value) => ({ label: value.replace("_", " "), value }));
+
+function normalizePhotoUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      if ((parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") && parsed.pathname.startsWith("/uploads/")) {
+        return parsed.pathname;
+      }
+    } catch {
+      return trimmed;
+    }
+    return trimmed;
+  }
+  if (trimmed.startsWith("/uploads/")) return trimmed;
+  return trimmed;
+}
+
+function assertPhotoInput(urls: string[]) {
+  if (!urls.length) {
+    throw new Error("Tambahkan minimal satu foto produk lewat upload device atau URL foto.");
+  }
+
+  const invalidUrl = urls.find((url) => {
+    if (url.startsWith("/uploads/")) return false;
+    try {
+      new URL(url);
+      return false;
+    } catch {
+      return true;
+    }
+  });
+
+  if (invalidUrl) {
+    throw new Error(`URL foto tidak valid: ${invalidUrl}`);
+  }
+}
+
+function getValidationMessage(details: unknown) {
+  if (!details || typeof details !== "object") return null;
+  const fieldErrors = "fieldErrors" in details ? (details as { fieldErrors?: Record<string, string[]> }).fieldErrors : undefined;
+  if (!fieldErrors) return null;
+
+  const firstError = Object.entries(fieldErrors).find(([, messages]) => messages?.length);
+  if (!firstError) return null;
+
+  const [field, messages] = firstError;
+  return `${field}: ${messages[0]}`;
+}
 
 export function AdminProductsPageClient() {
   const [data, setData] = useState<AdminListResponse<AdminProduct> | null>(null);
@@ -61,12 +111,14 @@ export function AdminProductsPageClient() {
         
         const res = await fetch("/api/upload", { method: "POST", body: uploadData });
         if (!res.ok) throw new Error("Gagal mengunggah foto produk.");
-        const json = await res.json() as { urls: string[] };
-        uploadedUrls = json.urls;
+        const json = await res.json() as { data?: { urls: string[] }, urls?: string[] };
+        uploadedUrls = json.data?.urls || json.urls || [];
       }
 
-      const manualUrls = String(form.get("photo")).split(",").map((value) => value.trim()).filter(Boolean);
-      const combinedPhotos = Array.from(new Set([...manualUrls, ...uploadedUrls]));
+      const manualUrls = String(form.get("photo")).split(",").map(normalizePhotoUrl).filter(Boolean);
+      const normalizedUploadedUrls = uploadedUrls.map(normalizePhotoUrl).filter(Boolean);
+      const combinedPhotos = Array.from(new Set([...manualUrls, ...normalizedUploadedUrls]));
+      assertPhotoInput(combinedPhotos);
 
       const payload = {
         name: String(form.get("name")), slug: String(form.get("slug")), description: String(form.get("description")),
@@ -84,7 +136,10 @@ export function AdminProductsPageClient() {
 
       await apiRequest(editing ? `/api/admin/products/${editing.id}` : "/api/admin/products", { method: editing ? "PATCH" : "POST", body: JSON.stringify(payload) });
       toast.success(editing ? "Produk diperbarui." : "Produk ditambahkan."); setEditing(undefined); await load();
-    } catch (error) { toast.error(error instanceof Error ? error.message : "Produk gagal disimpan."); }
+    } catch (error) {
+      const validationMessage = error instanceof ApiRequestError && error.code === "VALIDATION_ERROR" ? getValidationMessage(error.details) : null;
+      toast.error(validationMessage ?? (error instanceof Error ? error.message : "Produk gagal disimpan."));
+    }
     finally { setSaving(false); }
   }
 
@@ -96,7 +151,7 @@ export function AdminProductsPageClient() {
 
   const products = data?.items ?? [];
   return <div className="grid gap-6">
-    <AdminPageHeader title="Manajemen Produk" description="Katalog, varian, stok, harga beli/jual, margin, dan status produk terhubung ke backend." />
+    <AdminPageHeader title="Manajemen Produk" description="Katalog, varian, stok, harga beli/jual, margin, dan status produk terkelola secara terpusat." />
     <div className="grid gap-4 md:grid-cols-3">
       <AdminMetricCard title="Total produk" value={String(data?.pagination.total ?? 0)} note={`${products.filter((p) => p.status === "ACTIVE").length} aktif`} icon={Package} />
       <AdminMetricCard title="Low stock" value={String(products.filter((p) => p.lowStock).length)} note="Sesuai threshold varian" icon={SlidersHorizontal} />
@@ -108,7 +163,7 @@ export function AdminProductsPageClient() {
     </div>
     <Card><CardHeader><CardTitle className="text-base">Produk katalog</CardTitle></CardHeader><CardContent className="grid gap-3">
       {loading ? <Loader2 className="animate-spin" /> : products.map((product) => <div key={product.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[64px_1fr_auto] md:items-center">
-        <div className="relative size-16 overflow-hidden rounded-md bg-secondary">{product.photos[0] ? <Image src={product.photos[0]} alt={product.name} fill className="object-cover" sizes="64px" /> : null}</div>
+        <div className="relative size-16 overflow-hidden rounded-md bg-secondary">{product.photos[0] ? <Image src={normalizePhotoUrl(product.photos[0])} alt={product.name} fill className="object-cover" sizes="64px" /> : null}</div>
         <div><div className="flex flex-wrap items-center gap-2"><strong>{product.name}</strong><AdminStatusPill status={product.status} /><AdminLowStockFlag show={product.lowStock} /></div>
           <div className="mt-1 text-sm text-muted-foreground">{product.brand.name} · {product.category.name} · {product.stock} stok · margin {product.margin}%</div>
           <div className="mt-1 font-medium">{formatRupiah(product.price)}</div></div>
@@ -123,7 +178,7 @@ export function AdminProductsPageClient() {
         <div className="grid gap-3 sm:grid-cols-3"><Field label="Harga jual" name="price" type="number" value={editing?.price} /><Field label="Harga beli" name="costPrice" type="number" value={editing?.costPrice} /><Field label="Harga diskon" name="discountPrice" type="number" value={editing?.discountPrice ?? ""} /></div>
         <div className="grid gap-3 sm:grid-cols-3"><Field label="Berat gram" name="weightGram" type="number" value={editing?.weightGram ?? 500} /><Field label="SKU utama" name="sku" value={editing?.variants[0]?.sku} /><Field label="Stok utama" name="stock" type="number" value={editing?.variants[0]?.stock ?? 0} /></div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="URL foto (pisahkan koma) (opsional)" name="photo" value={editing?.photos.join(", ")} />
+          <Field label="URL foto opsional (pisahkan koma)" name="photo" value={editing?.photos.join(", ")} required={false} />
           <div className="grid gap-2">
             <Label>Atau unggah foto dari komputer</Label>
             <Input type="file" name="photoFiles" accept="image/*" multiple />
@@ -136,8 +191,9 @@ export function AdminProductsPageClient() {
   </div>;
 }
 
-function Field({ label, name, value, type = "text" }: { label: string; name: string; value?: string | number | null; type?: string }) {
-  return <div className="grid gap-2"><Label>{label}</Label><Input name={name} type={type} defaultValue={value ?? ""} required={name !== "discountPrice"} /></div>;
+function Field({ label, name, value, type = "text", required }: { label: string; name: string; value?: string | number | null; type?: string; required?: boolean }) {
+  const isRequired = required ?? name !== "discountPrice";
+  return <div className="grid gap-2"><Label>{label}</Label><Input name={name} type={type} defaultValue={value ?? ""} required={isRequired} /></div>;
 }
 function SelectField({ label, name, value, options }: { label: string; name: string; value?: string; options: Array<{ value: string; label: string }> }) {
   return <div className="grid gap-2"><Label>{label}</Label><select name={name} defaultValue={value} required className="h-10 rounded-md border bg-background px-3 text-sm">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>;

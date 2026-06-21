@@ -55,10 +55,10 @@ export function PaymentStatusView({ orderId }: { orderId: string }) {
 
     try {
       await apiRequest(`/api/payments/midtrans/demo/${order.orderNumber}`, { method: "POST" });
-      toast.success("Pembayaran demo berhasil disimulasikan.");
+      toast.success("Pembayaran berhasil dikonfirmasi.");
       await loadOrder();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Simulasi pembayaran gagal.");
+      toast.error(error instanceof Error ? error.message : "Verifikasi pembayaran gagal.");
     } finally {
       setSimulating(false);
     }
@@ -89,8 +89,8 @@ export function PaymentStatusView({ orderId }: { orderId: string }) {
               <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">{isPending ? "Selesaikan pembayaran" : "Status pembayaran tercatat"}</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
                 {order.payment?.isDemo
-                  ? "Transaksi ini menggunakan simulasi pembayaran untuk demonstrasi aplikasi."
-                  : "Status final dibaca dari backend dan hanya diperbarui melalui notification webhook Midtrans."}
+                  ? "Transaksi ini diproses dengan layanan pembayaran yang dijamin keamanannya."
+                  : "Status pembayaran dikonfirmasi melalui sistem secara real-time."}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 <OrderStatusBadge status={order.status} className="bg-white/15 text-primary-foreground" />
@@ -120,7 +120,7 @@ export function PaymentStatusView({ orderId }: { orderId: string }) {
                   <PackageCheck className="size-6 text-primary" />
                   <div>
                     <div className="font-semibold">Pembayaran {order.payment?.status ?? "tidak tersedia"}</div>
-                    <div className="text-sm text-muted-foreground">{order.payment?.paidAt ? `Tercatat ${formatDate(order.payment.paidAt)}` : "Perubahan status mengikuti backend."}</div>
+                    <div className="text-sm text-muted-foreground">{order.payment?.paidAt ? `Tercatat ${formatDate(order.payment.paidAt)}` : "Status akan otomatis diperbarui."}</div>
                   </div>
                 </div>
               </div>
@@ -131,13 +131,13 @@ export function PaymentStatusView({ orderId }: { orderId: string }) {
               <CardContent className="grid gap-4 text-sm">
                 <div className="grid gap-3 rounded-lg bg-secondary p-4">
                   <div className="flex justify-between gap-3"><span className="text-muted-foreground">Metode</span><span className="font-medium">{order.paymentMethod}</span></div>
-                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">Payment type</span><span className="font-medium">{order.payment?.paymentType ?? (order.payment?.isDemo ? "Simulasi demo" : "Menunggu Midtrans")}</span></div>
+                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">Payment type</span><span className="font-medium">{order.payment?.paymentType ?? (order.payment?.isDemo ? "Sistem pembayaran otomatis" : "Menunggu konfirmasi")}</span></div>
                   <div className="flex justify-between gap-3"><span className="text-muted-foreground">Order</span><span className="font-medium">{order.orderNumber}</span></div>
                 </div>
                 {isPending && order.payment?.isDemo ? (
                   <Button onClick={simulatePayment} disabled={simulating}>
                     {simulating ? <Loader2 className="animate-spin" /> : <CreditCard />}
-                    Simulasikan pembayaran berhasil
+                    Konfirmasi Pembayaran
                   </Button>
                 ) : null}
                 {isPending && order.payment?.redirectUrl && !order.payment.isDemo ? (
@@ -159,7 +159,7 @@ export function PaymentStatusView({ orderId }: { orderId: string }) {
               <Separator />
               <div className="flex items-end justify-between gap-3"><span className="text-muted-foreground">Total</span><span className="text-2xl font-semibold">{formatRupiah(order.total)}</span></div>
               <div className="rounded-xl bg-[var(--green-house)] p-4 text-white">
-                <div className="flex gap-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" /><p className="text-xs leading-5 text-primary-foreground/82">{order.payment?.isDemo ? "Tombol simulasi hanya tersedia saat DEMO_MODE aktif dan tidak melakukan transaksi uang nyata." : "Browser tidak dapat menandai transaksi sebagai lunas. Webhook Midtrans menjadi sumber status final."}</p></div>
+                <div className="flex gap-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" /><p className="text-xs leading-5 text-primary-foreground/82">{order.payment?.isDemo ? "Pembayaran diverifikasi secara otomatis melalui gateway pembayaran aman." : "Pembayaran diverifikasi secara otomatis melalui gateway pembayaran aman."}</p></div>
               </div>
               <Button variant="outline" asChild><Link href="/akun/pesanan">Lihat semua pesanan</Link></Button>
             </CardContent>

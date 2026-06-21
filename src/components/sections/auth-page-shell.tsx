@@ -29,7 +29,7 @@ export function AuthPageShell({
               </Badge>
               <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
                 <Sparkles className="size-3.5 text-primary" />
-                Outdoor account flow
+                Keamanan Terjamin
               </span>
             </div>
             <h1 className="mt-4 max-w-xl text-3xl font-semibold tracking-normal sm:text-4xl">{title}</h1>
@@ -68,8 +68,8 @@ export function AuthPageShell({
             <div className="mt-7 grid gap-4 rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur">
               {[
                 { icon: CheckCircle2, label: "Profil dan alamat tersimpan untuk proses checkout." },
-                { icon: ShieldCheck, label: "Session web disiapkan untuk Auth.js dan RBAC admin." },
-                { icon: Truck, label: "Pesanan, tracking, dan notifikasi siap mengikuti flow PRD." },
+                { icon: ShieldCheck, label: "Keamanan data diri dan privasi Anda dijamin dan terlindungi." },
+                { icon: Truck, label: "Pesanan, tracking, dan notifikasi selalu terupdate." },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 text-sm text-primary-foreground/88">
                   <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary-foreground/95 text-primary">

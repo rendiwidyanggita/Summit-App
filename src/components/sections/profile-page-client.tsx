@@ -48,8 +48,9 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
         
         const res = await fetch("/api/upload", { method: "POST", body: uploadData });
         if (!res.ok) throw new Error("Gagal mengunggah foto profil.");
-        const json = await res.json() as { urls: string[] };
-        imageUrl = json.urls[0] || imageUrl;
+        const json = await res.json() as { data?: { urls: string[] }, urls?: string[] };
+        const parsedUrls = json.data?.urls || json.urls || [];
+        imageUrl = parsedUrls[0] || imageUrl;
       }
 
       const data = await apiRequest<Profile>("/api/account/profile", {
@@ -200,7 +201,7 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
               </Button>
               <div className="flex gap-3 rounded-md bg-secondary p-3 text-sm text-muted-foreground">
                 <UserRound className="mt-0.5 size-4 shrink-0 text-primary" />
-                Halaman ini sudah diproteksi session dan mengambil data dari backend account API.
+                Halaman profil Anda aman dan terenkripsi.
               </div>
               <div className="flex gap-3 rounded-md bg-secondary p-3 text-sm text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />

@@ -75,21 +75,6 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
       setLoading(false);
     }
   }
-      });
-
-      toast.success("Produk ditambahkan ke keranjang.");
-      router.refresh();
-    } catch (error) {
-      if (error instanceof ApiRequestError && error.status === 401) {
-        router.push(`/masuk?callbackUrl=/produk/${product.slug}`);
-        return;
-      }
-
-      toast.error(error instanceof Error ? error.message : "Gagal menambahkan produk ke keranjang.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function addToWishlist() {
     setWishlistLoading(true);
@@ -200,7 +185,7 @@ export function ProductDetailSummary({ product }: { product: ProductDetailViewPr
       <div className="mt-5 grid gap-3 rounded-lg bg-primary p-4 text-sm text-primary-foreground sm:grid-cols-2">
         <div className="flex gap-3">
           <Truck className="mt-0.5 size-4 shrink-0 text-accent" />
-          <span>Ongkir simulasi dihitung dari alamat dan berat cart pada checkout.</span>
+          <span>Estimasi ongkos kirim akan dihitung secara otomatis saat checkout.</span>
         </div>
         <div className="flex gap-3">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" />

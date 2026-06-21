@@ -32,7 +32,7 @@ function buildTimeline(order: CustomerOrderResponse): OrderTimelineItem[] {
       { label: "Order dibuat", description: "Order dan reserved stock berhasil dibuat.", date: formatDate(order.createdAt), complete: true },
       {
         label: order.status === "EXPIRED" ? "Pembayaran kedaluwarsa" : "Order dibatalkan",
-        description: "Reserved stock sudah dilepas kembali oleh backend.",
+        description: "Stok barang telah disesuaikan secara otomatis.",
         date: formatDate(order.updatedAt),
         complete: true,
         current: true,
@@ -43,7 +43,7 @@ function buildTimeline(order: CustomerOrderResponse): OrderTimelineItem[] {
   const currentIndex = progressStatuses.indexOf(order.status);
   const stages = [
     { status: "PENDING_PAYMENT", label: "Order dibuat", description: "Order dan reserved stock berhasil dibuat.", date: order.createdAt },
-    { status: "PAID", label: order.paymentMethod === "COD" ? "COD dikonfirmasi" : "Pembayaran berhasil", description: "Status pembayaran divalidasi oleh backend.", date: order.payment?.paidAt },
+    { status: "PAID", label: order.paymentMethod === "COD" ? "COD dikonfirmasi" : "Pembayaran berhasil", description: "Status pembayaran berhasil dikonfirmasi.", date: order.payment?.paidAt },
     { status: "PROCESSING", label: "Diproses", description: "Pesanan masuk antrean fulfillment.", date: order.updatedAt },
     { status: "SHIPPED", label: "Dikirim", description: "Pesanan sudah diserahkan ke kurir.", date: order.shipment?.shippedAt },
     { status: "DELIVERED", label: "Terkirim", description: "Kurir menandai paket sudah diterima.", date: order.shipment?.deliveredAt },
@@ -203,7 +203,7 @@ export function OrderDetailView({ orderId }: { orderId: string }) {
               <div className="flex items-end justify-between gap-3"><span className="text-muted-foreground">Total</span><span className="text-2xl font-semibold">{formatRupiah(order.total)}</span></div>
               <div className="rounded-lg bg-secondary p-3">
                 <div className="flex items-center gap-2 font-medium"><CreditCard className="size-4 text-primary" /> {order.paymentMethod}</div>
-                <div className="mt-1 text-xs text-muted-foreground">Status pembayaran ditentukan backend dan webhook Midtrans.</div>
+                <div className="mt-1 text-xs text-muted-foreground">Status pembayaran terverifikasi secara aman dan otomatis.</div>
               </div>
               {order.status === "PENDING_PAYMENT" && order.payment?.redirectUrl ? (
                 <Button asChild><Link href={`/pembayaran/${order.orderNumber}`}>Lanjut bayar</Link></Button>

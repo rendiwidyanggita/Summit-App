@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { CatalogToolbar } from "@/components/sections/catalog-toolbar";
+import { CatalogToolbar, type CatalogSortKey } from "@/components/sections/catalog-toolbar";
 import { defaultCatalogFilterState, ProductFilters, type CatalogFilterState } from "@/components/sections/product-filters";
 import { ProductGrid } from "@/components/sections/product-grid";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { ProductListItem, CategoryListItem } from "@/lib/product-types";
-
-function toNumber(value: string) {
-  const numeric = Number(value.replace(/\D/g, ""));
-  return Number.isFinite(numeric) && numeric > 0 ? numeric : undefined;
-}
 
 function subscribeToClientReady() {
   return () => undefined;
@@ -53,7 +48,7 @@ export function CatalogPageClient({
   const searchParams = useSearchParams();
 
   const [search, setSearch] = useState(initialSearch ?? "");
-  const [sort, setSort] = useState<string>(initialSort ?? "newest");
+  const [sort, setSort] = useState<CatalogSortKey>((initialSort as CatalogSortKey | undefined) ?? "newest");
   const [filters, setFilters] = useState<CatalogFilterState>(
     initialFilters ?? {
       ...defaultCatalogFilterState,
@@ -64,7 +59,7 @@ export function CatalogPageClient({
   const mounted = useSyncExternalStore(subscribeToClientReady, getClientSnapshot, getServerSnapshot);
 
   // Apply filters by pushing to URL
-  const applyFilters = (newFilters: CatalogFilterState, newSearch: string, newSort: string) => {
+  const applyFilters = (newFilters: CatalogFilterState, newSearch: string, newSort: CatalogSortKey) => {
     const params = new URLSearchParams(searchParams.toString());
     
     if (newSearch) params.set("q", newSearch);
@@ -102,7 +97,7 @@ export function CatalogPageClient({
     applyFilters(filters, val, sort);
   };
 
-  const handleSortChange = (val: string) => {
+  const handleSortChange = (val: CatalogSortKey) => {
     setSort(val);
     applyFilters(filters, search, val);
   };
@@ -142,7 +137,7 @@ export function CatalogPageClient({
       </aside>
 
       <div className="grid gap-5">
-        <CatalogToolbar search={search} sort={sort as any} resultCount={products.length} onSearchChange={handleSearchChange} onSortChange={handleSortChange} onOpenFilters={() => setFilterOpen(true)} />
+        <CatalogToolbar search={search} sort={sort} resultCount={products.length} onSearchChange={handleSearchChange} onSortChange={handleSortChange} onOpenFilters={() => setFilterOpen(true)} />
 
         <div className="flex flex-wrap items-center gap-2 rounded-[1.25rem] border bg-card/80 p-3 shadow-sm">
           {activeFilterLabels.map((label) => (
