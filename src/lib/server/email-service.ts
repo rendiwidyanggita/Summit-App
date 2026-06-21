@@ -32,46 +32,48 @@ function parseSender(value: string) {
 
 export async function sendTransactionalEmail(input: SendEmailInput) {
   if (!hasBrevoEnv()) {
-    const isLocalApp = getAppUrl().includes("localhost") || getAppUrl().includes("127.0.0.1");
-
-    if (process.env.NODE_ENV === "production" && !isLocalApp) {
-      throw new Error("Brevo email configuration is missing.");
-    }
-
-    console.warn(`[email:skipped] ${input.subject} -> ${input.to.email}`);
+    console.warn(`[email:skipped:no-brevo-config] ${input.subject} -> ${input.to.email}`);
+    
     return {
       skipped: true,
+      reason: "Brevo configuration not available",
     };
   }
 
-  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: {
-      "api-key": process.env.BREVO_API_KEY!,
-      "content-type": "application/json",
-      accept: "application/json",
-    },
-    body: JSON.stringify({
-      sender: parseSender(process.env.EMAIL_FROM!),
-      to: [
-        {
-          email: input.to.email,
-          name: input.to.name ?? undefined,
-        },
-      ],
-      subject: input.subject,
-      htmlContent: input.htmlContent,
-      textContent: input.textContent,
-      tags: input.tags,
-    }),
-  });
+  try {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": process.env.BREVO_API_KEY!,
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: parseSender(process.env.EMAIL_FROM!),
+        to: [
+          {
+            email: input.to.email,
+            name: input.to.name ?? undefined,
+          },
+        ],
+        subject: input.subject,
+        htmlContent: input.htmlContent,
+        textContent: input.textContent,
+        tags: input.tags,
+      }),
+    });
 
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Brevo email failed with ${response.status}: ${body}`);
+    if (!response.ok) {
+      const body = await response.text();
+      console.error(`[email:brevo-error] ${response.status}: ${body}`);
+      throw new Error(`Brevo email failed with ${response.status}: ${body}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(`[email:send-failed] ${input.subject} -> ${input.to.email}:`, error);
+    throw error;
   }
-
-  return response.json();
 }
 
 export async function sendVerificationEmail(input: { email: string; name?: string | null; verificationUrl: string }) {

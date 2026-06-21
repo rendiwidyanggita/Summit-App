@@ -1,52 +1,56 @@
-import { promises as fs } from "fs";
-import path from "path";
-
+import { v2 as cloudinary } from "cloudinary";
 import { requireUser } from "@/lib/server/authz";
-import { handleRouteError, ok } from "@/lib/server/http";
-import { uploadToCloudinary } from "@/lib/server/upload-service";
+import { fail, handleRouteError, ok } from "@/lib/server/http";
+import { hasCloudinaryEnv } from "@/lib/server/env";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 export async function POST(request: Request) {
   try {
     const user = await requireUser();
     if (!user.ok) return user.response;
 
+    if (!hasCloudinaryEnv()) {
+      return fail(400, "CLOUDINARY_NOT_CONFIGURED", "Cloudinary tidak dikonfigurasi. Hubungi administrator.");
+    }
+
     const formData = await request.formData();
     const files = formData.getAll("file") as File[];
 
-    if (!files || files.length === 0) {
-      return new Response(JSON.stringify({ error: "No files provided" }), { status: 400 });
+    if (files.length === 0) {
+      return fail(400, "NO_FILE", "Tidak ada file yang diunggah.");
     }
 
-    const isCloudinaryConfigured = Boolean(process.env.CLOUDINARY_API_KEY);
-    const uploadedUrls: string[] = [];
+    const uploadPromises = files.map(async (file) => {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
 
-    for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = `${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+      return new Promise<string>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "summit-gear/profiles",
+            resource_type: "image",
+            transformation: { width: 400, height: 400, crop: "fill", gravity: "face" },
+            format: "jpg",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result!.secure_url);
+          }
+        );
 
-      if (isCloudinaryConfigured) {
-        // Upload ke Cloudinary
-        const result = await uploadToCloudinary(buffer, filename);
-        uploadedUrls.push(result.secure_url);
-      } else {
-        // Fallback: Upload ke penyimpanan lokal (public/uploads)
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
-        await fs.mkdir(uploadDir, { recursive: true });
-        
-        const filePath = path.join(uploadDir, filename);
-        await fs.writeFile(filePath, buffer);
-        
-        uploadedUrls.push(`/uploads/${filename}`);
-      }
-    }
+        uploadStream.end(buffer);
+      });
+    });
 
-    return ok({ urls: uploadedUrls });
+    const urls = await Promise.all(uploadPromises);
+
+    return ok({ urls });
   } catch (error) {
     return handleRouteError(error);
   }
