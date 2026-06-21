@@ -84,6 +84,10 @@ An interesting technical challenge: we integrated the Midtrans payment gateway w
 
    Optional variables: `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `CLOUDINARY_*`, `BREVO_API_KEY`, `MIDTRANS_*`, `RAJAONGKIR_API_KEY`, etc.
 
+   **Important for production deployment:**
+   - **Brevo email service**: If using Vercel or other platforms with dynamic IPs, you may need to whitelist the IP at https://app.brevo.com/security/authorised_ips or use the one-click authorization link sent to your email when first accessing from a new IP.
+   - **Cloudinary** configuration is required for customer profile photo uploads. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` in production environment variables.
+
 4. Generate Prisma Client:
 
    ```bash
