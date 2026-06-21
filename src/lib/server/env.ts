@@ -38,6 +38,10 @@ export function hasBrevoEnv() {
   return hasEnv("BREVO_API_KEY") && hasEnv("EMAIL_FROM");
 }
 
+export function hasCloudinaryEnv() {
+  return hasEnv("CLOUDINARY_CLOUD_NAME") && hasEnv("CLOUDINARY_API_KEY") && hasEnv("CLOUDINARY_API_SECRET");
+}
+
 export function hasMidtransEnv() {
   return hasEnv("MIDTRANS_SERVER_KEY") && hasEnv("MIDTRANS_CLIENT_KEY");
 }
