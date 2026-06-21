@@ -115,6 +115,7 @@ function serializeProduct(product: ProductWithRelations) {
   return {
     ...product,
     price: Number(product.price),
+    costPrice: Number(product.costPrice),
     discountPrice: product.discountPrice ? Number(product.discountPrice) : null,
     ratingAvg: product.ratingAvg ? Number(product.ratingAvg) : null,
     variants: product.variants?.filter((variant) => variant.isActive).map((variant) => ({

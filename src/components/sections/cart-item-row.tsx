@@ -16,18 +16,28 @@ function variantLabel(item: CartItemResponse) {
 export function CartItemRow({
   item,
   busy,
+  selected,
+  onSelect,
   onQuantityChange,
   onRemove,
 }: {
   item: CartItemResponse;
   busy?: boolean;
+  selected: boolean;
+  onSelect: (id: string, checked: boolean) => void;
   onQuantityChange: (id: string, quantity: number) => void;
   onRemove: (id: string) => void;
 }) {
   const stock = item.variant?.stock ?? item.quantity;
 
   return (
-    <div className="grid gap-4 rounded-lg border bg-card p-4 shadow-sm sm:grid-cols-[112px_1fr_auto] sm:items-center">
+    <div className="flex gap-4 rounded-lg border bg-card p-4 shadow-sm items-center sm:grid-cols-[auto_112px_1fr_auto] sm:grid">
+      <input 
+        type="checkbox" 
+        className="size-5 cursor-pointer accent-primary" 
+        checked={selected} 
+        onChange={(e) => onSelect(item.id, e.target.checked)} 
+      />
       <Link href={`/produk/${item.product.slug}`} className="relative aspect-square overflow-hidden rounded-md bg-secondary sm:size-28">
         <Image src={item.product.photo ?? "/icon.svg"} alt={item.product.name} fill className="object-cover" sizes="112px" />
       </Link>

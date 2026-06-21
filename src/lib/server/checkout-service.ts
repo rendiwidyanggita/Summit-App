@@ -20,6 +20,7 @@ export const checkoutCreateOrderSchema = z.object({
     "MIDTRANS_CARD",
     "COD",
   ]),
+  itemIds: z.array(z.string()).optional(),
 });
 
 function addMinutes(minutes: number) {

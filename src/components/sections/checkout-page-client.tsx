@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, ArrowRight, CheckCircle2, Clock, Loader2, MapPin, PackageCheck, ShieldCheck, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,6 +30,10 @@ const paymentMethods: PaymentMethodOption[] = [
 
 export function CheckoutPageClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedItemsQuery = searchParams.get("items");
+  const itemIds = useMemo(() => selectedItemsQuery ? selectedItemsQuery.split(",") : undefined, [selectedItemsQuery]);
+
   const [activeStep, setActiveStep] = useState<CheckoutStep>("Alamat");
   const [cart, setCart] = useState<CartResponse | null>(null);
   const [addresses, setAddresses] = useState<AccountAddressResponse[]>([]);
@@ -48,6 +52,15 @@ export function CheckoutPageClient() {
   const loadCheckout = useCallback(async () => {
     try {
       const [cartData, addressData] = await Promise.all([apiRequest<CartResponse>("/api/cart"), apiRequest<AccountAddressResponse[]>("/api/account/addresses")]);
+      
+      if (itemIds && itemIds.length > 0) {
+        cartData.items = cartData.items.filter((item) => itemIds.includes(item.id));
+        cartData.summary.subtotal = cartData.items.reduce((acc, item) => acc + item.lineSubtotal, 0);
+        cartData.summary.totalWeightGram = cartData.items.reduce((acc, item) => acc + (item.product.weightGram * item.quantity), 0);
+        cartData.summary.totalQuantity = cartData.items.reduce((acc, item) => acc + item.quantity, 0);
+        cartData.summary.itemCount = cartData.items.length;
+      }
+      
       setCart(cartData);
       setAddresses(addressData);
       setSelectedAddressId((current) => current || addressData.find((address) => address.isPrimary)?.id || addressData[0]?.id || "");
@@ -61,7 +74,7 @@ export function CheckoutPageClient() {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, itemIds]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -86,7 +99,7 @@ export function CheckoutPageClient() {
       try {
         const data = await apiRequest<ShippingRatesResponse>("/api/checkout/shipping-rates", {
           method: "POST",
-          body: JSON.stringify({ addressId: selectedAddressId }),
+          body: JSON.stringify({ addressId: selectedAddressId, itemIds }),
         });
 
         if (cancelled) return;
@@ -107,7 +120,7 @@ export function CheckoutPageClient() {
     return () => {
       cancelled = true;
     };
-  }, [cart, createdOrder, selectedAddressId]);
+  }, [cart, createdOrder, selectedAddressId, itemIds]);
 
   const selectedAddress = addresses.find((address) => address.id === selectedAddressId) ?? null;
   const selectedShipping = useMemo(() => shippingRates?.services.find((service) => service.id === selectedShippingId) ?? null, [selectedShippingId, shippingRates?.services]);
@@ -161,6 +174,7 @@ export function CheckoutPageClient() {
           shippingServiceId: selectedShipping.id,
           voucherCode: selectedVoucher?.code,
           paymentMethod: effectivePaymentId,
+          itemIds,
         }),
       });
 

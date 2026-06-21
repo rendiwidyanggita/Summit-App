@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { CartNavPopover } from "@/components/layout/cart-nav-popover";
 import { customerNav } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -87,11 +88,7 @@ export function CustomerHeader({
         </div>
 
         <div className="ml-auto flex items-center gap-1 lg:ml-0">
-          <Button variant="ghost" size="icon" aria-label="Keranjang" asChild>
-            <Link href="/keranjang">
-              <ShoppingCart />
-            </Link>
-          </Button>
+          <CartNavPopover />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

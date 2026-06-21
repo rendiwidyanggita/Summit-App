@@ -43,10 +43,14 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   ]);
 
   const discountedProductsCount = productsData.items.filter((p) => p.discountPrice).length;
-  const lowestPrice = productsData.items.length > 0 ? Math.min(...productsData.items.map((p) => p.discountPrice ?? p.price)) : 0;
+  const lowestPrice = productsData.items.length > 0 ? Math.min(...productsData.items.map((p) => Number(p.discountPrice ?? p.price))) : 0;
   
   const mappedProducts = productsData.items.map((p) => ({
     ...p,
+    price: Number(p.price),
+    costPrice: Number(p.costPrice),
+    discountPrice: p.discountPrice ? Number(p.discountPrice) : null,
+    ratingAvg: Number(p.ratingAvg),
     photo: p.photos?.[0] ?? null,
     brand: p.brand ? { name: p.brand.name, slug: p.brand.slug } : null,
     category: p.category ? { name: p.category.name, slug: p.category.slug } : null,
