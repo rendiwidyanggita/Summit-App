@@ -11,50 +11,29 @@ import { OrderSummary } from "@/components/sections/order-summary";
 import { RouteStatePanel } from "@/components/sections/route-state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ApiRequestError, apiRequest } from "@/lib/api-client";
+import { useCart } from "@/contexts/cart-context";
 import type { CartResponse } from "@/lib/commerce-types";
 
 export function CartPageClient() {
-  const [cart, setCart] = useState<CartResponse | null>(null);
+  const { cart, loading: contextLoading, updateItemQuantity, removeCartItem, clearCart: clearCartContext } = useCart();
   const [loading, setLoading] = useState(true);
   const [unauthenticated, setUnauthenticated] = useState(false);
   const [busyItemId, setBusyItemId] = useState<string | null>(null);
   const [clearing, setClearing] = useState(false);
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
 
-  async function loadCart() {
-    try {
-      const data = await apiRequest<CartResponse>("/api/cart");
-      setCart(data);
-      setSelectedItemIds(new Set(data.items.map((i) => i.id)));
-      setUnauthenticated(false);
-    } catch (error) {
-      if (error instanceof ApiRequestError && error.status === 401) {
-        setUnauthenticated(true);
-        setCart(null);
-        return;
-      }
-      toast.error(error instanceof Error ? error.message : "Gagal memuat keranjang.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void loadCart();
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
+    if (cart) {
+      setSelectedItemIds(new Set(cart.items.map((i) => i.id)));
+      setUnauthenticated(false);
+    }
+    setLoading(false);
+  }, [cart]);
 
   async function updateQuantity(id: string, quantity: number) {
     setBusyItemId(id);
     try {
-      const data = await apiRequest<CartResponse>(`/api/cart/items/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ quantity }),
-      });
-      setCart(data);
+      await updateItemQuantity(id, quantity);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Quantity gagal diperbarui.");
     } finally {
@@ -65,10 +44,7 @@ export function CartPageClient() {
   async function removeItem(id: string) {
     setBusyItemId(id);
     try {
-      const data = await apiRequest<CartResponse>(`/api/cart/items/${id}`, {
-        method: "DELETE",
-      });
-      setCart(data);
+      await removeCartItem(id);
       toast.success("Item dihapus dari keranjang.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Item gagal dihapus.");
@@ -80,10 +56,7 @@ export function CartPageClient() {
   async function clearCart() {
     setClearing(true);
     try {
-      const data = await apiRequest<CartResponse>("/api/cart", {
-        method: "DELETE",
-      });
-      setCart(data);
+      await clearCartContext();
       toast.success("Keranjang dikosongkan.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Keranjang gagal dikosongkan.");
