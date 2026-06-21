@@ -61,8 +61,8 @@ export function AdminProductsPageClient() {
         
         const res = await fetch("/api/upload", { method: "POST", body: uploadData });
         if (!res.ok) throw new Error("Gagal mengunggah foto produk.");
-        const json = await res.json() as { urls: string[] };
-        uploadedUrls = json.urls;
+        const json = await res.json() as { data: { urls: string[] } };
+        uploadedUrls = json.data?.urls ?? [];
       }
 
       const manualUrls = String(form.get("photo")).split(",").map((value) => value.trim()).filter(Boolean);

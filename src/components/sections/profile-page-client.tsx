@@ -48,8 +48,8 @@ export function ProfilePageClient({ initialProfile }: { initialProfile: Profile 
         
         const res = await fetch("/api/upload", { method: "POST", body: uploadData });
         if (!res.ok) throw new Error("Gagal mengunggah foto profil.");
-        const json = await res.json() as { urls: string[] };
-        imageUrl = json.urls[0] || imageUrl;
+        const json = await res.json() as { data: { urls: string[] } };
+        imageUrl = json.data?.urls?.[0] || imageUrl;
       }
 
       const data = await apiRequest<Profile>("/api/account/profile", {
