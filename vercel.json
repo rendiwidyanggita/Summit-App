@@ -29,13 +29,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "APP_URL": "@app_url",
-    "DATABASE_URL": "@database_url",
-    "DIRECT_URL": "@direct_url",
-    "AUTH_SECRET": "@auth_secret",
-    "AUTH_TRUST_HOST": "true",
-    "NODE_ENV": "production"
-  }
+  ]
 }
