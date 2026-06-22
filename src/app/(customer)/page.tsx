@@ -9,7 +9,6 @@ import {
   ShoppingCart,
   Star,
   Truck,
-  Zap,
 } from "lucide-react";
 
 import { DarkPromoBand } from "@/components/sections/dark-promo-band";
@@ -50,7 +49,7 @@ export default async function HomePage() {
               {heroBannerTitle}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
-              Pilih perlengkapan pendakian yang pas untuk summit attack, camping, dan perjalanan akhir pekan. Jelajahi katalog, kelola keranjang, dan coba alur checkout demonstrasi.
+              Pilih perlengkapan pendakian yang pas untuk summit attack, camping, dan perjalanan akhir pekan. Jelajahi katalog, kelola keranjang, dan coba alur checkout yang mudah dan cepat.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="inverse" size="lg" asChild>
@@ -86,7 +85,7 @@ export default async function HomePage() {
               {[
                 { icon: PackageCheck, label: `${categories.reduce((a, b) => a + b.productCount, 0)}+ produk` },
                 { icon: Star, label: "Rating 4.8+" },
-                { icon: Truck, label: "Ongkir simulasi" },
+                { icon: Truck, label: "Ongkos kirim otomatis" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm text-white/85">
                   <item.icon className="size-4 text-white" />
@@ -108,8 +107,8 @@ export default async function HomePage() {
         <div className="grid gap-4 md:grid-cols-3">
           {[
             { icon: Search, title: "Cari cepat", body: "Temukan gear lewat search, kategori, brand, rating, dan harga." },
-            { icon: ShoppingCart, title: "Keranjang aktif", body: "Ubah quantity, cek berat, dan lanjut ke checkout demonstrasi." },
-            { icon: ShieldCheck, title: "Alur terintegrasi", body: "Order, stok, voucher, dan operasional admin tersambung ke backend." },
+            { icon: ShoppingCart, title: "Keranjang aktif", body: "Ubah quantity, cek berat, dan lanjut ke checkout yang aman." },
+            { icon: ShieldCheck, title: "Alur terintegrasi", body: "Proses pesanan, ketersediaan stok, dan potongan harga diproses seketika." },
           ].map((item) => (
             <div key={item.title} className="summit-card-shadow rounded-xl border bg-card p-6">
               <item.icon className="size-5 text-primary" />
@@ -159,7 +158,7 @@ export default async function HomePage() {
 
       <section className="container-page pb-12">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <SectionHeader eyebrow="Featured gear" title="Produk Pilihan" description="Gear yang paling siap masuk flow cart dan checkout customer." />
+          <SectionHeader eyebrow="Featured gear" title="Produk Pilihan" description="Gear unggulan yang paling direkomendasikan untuk Anda." />
           <Button variant="ghost" asChild className="w-fit">
             <Link href="/produk">
               Buka katalog <ArrowRight />
@@ -176,12 +175,12 @@ export default async function HomePage() {
       <DarkPromoBand
         eyebrow="Promo gear"
         title="Temukan perlengkapan dengan harga terbaik."
-        description={`${discountedProducts.length} produk diskon dan voucher tersedia untuk dicoba pada alur belanja demonstrasi.`}
+        description={`${discountedProducts.length} produk diskon dan voucher eksklusif tersedia untuk Anda hari ini.`}
         primaryHref="/produk"
         primaryLabel="Lihat produk diskon"
         secondaryHref="/keranjang"
         secondaryLabel="Cek keranjang"
-        icon={Zap}
+        
       />
 
       <section className="container-page py-12">
@@ -208,7 +207,7 @@ export default async function HomePage() {
                     {product.category?.name ?? "Produk"} - {product.soldCount} terjual - {product.ratingAvg ?? 0} rating
                   </div>
                 </div>
-                <Zap className="size-4 shrink-0 text-accent" />
+                
               </Link>
             ))}
           </div>

@@ -18,7 +18,7 @@ export function ShippingSelector({
   onSelect: (id: string) => void;
 }) {
   if (loading) {
-    return <div className="rounded-lg border bg-secondary p-4 text-sm text-muted-foreground">Menghitung ongkir dari backend...</div>;
+    return <div className="rounded-lg border bg-secondary p-4 text-sm text-muted-foreground">Menghitung estimasi ongkos kirim...</div>;
   }
 
   if (services.length === 0) {
@@ -28,7 +28,7 @@ export function ShippingSelector({
   return (
     <div className="grid gap-3">
       <div className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-xs text-muted-foreground">
-        Tarif dan estimasi kurir merupakan simulasi untuk kebutuhan demonstrasi.
+        Tarif dan estimasi pengiriman dapat berubah sewaktu-waktu sesuai dengan kebijakan layanan ekspedisi yang berlaku.
       </div>
       {services.map((service) => {
         const active = selectedServiceId === service.id;

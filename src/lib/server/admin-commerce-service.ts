@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db";
 import { ApiError } from "@/lib/server/http";
 
 const optionalUrl = z.union([z.string().url(), z.literal("")]).optional().transform((value) => value || null);
-const optionalText = z.string().trim().nullable().optional().transform((value) => value || null);
+const optionalText = z.string().trim().optional().transform((value) => value || null);
+const productPhoto = z.union([z.string().url(), z.string().regex(/^\/uploads\/[^?#]+$/, "Path foto upload harus diawali /uploads/.")]);
 
 export const adminListQuerySchema = z.object({
   q: z.string().trim().optional(),
@@ -35,7 +36,7 @@ export const adminProductMutationSchema = z.object({
   price: z.coerce.number().nonnegative(),
   costPrice: z.coerce.number().nonnegative().default(0),
   discountPrice: z.coerce.number().nonnegative().nullable().optional(),
-  photos: z.array(z.string().url()).min(1),
+  photos: z.array(productPhoto).min(1),
   videoUrl: optionalUrl,
   status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "ARCHIVED"]).default("DRAFT"),
   isCodAllowed: z.boolean().default(true),

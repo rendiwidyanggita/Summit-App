@@ -35,8 +35,8 @@ export const adminNav = [
 ];
 
 export const foundationModules = [
-  { label: "Katalog", value: "Terhubung backend", icon: Boxes },
-  { label: "Order Aktif", value: "Terhubung backend", icon: ShoppingBag },
+  { label: "Katalog", value: "Sistem terintegrasi", icon: Boxes },
+  { label: "Order Aktif", value: "Sistem terintegrasi", icon: ShoppingBag },
   { label: "CS", value: "WhatsApp siap", icon: MessageSquareWarning },
   { label: "Web", value: "Mobile-first", icon: Home },
 ];

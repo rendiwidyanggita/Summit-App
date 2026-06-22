@@ -73,7 +73,7 @@ export function OrdersPageClient() {
             <Badge variant="accent">Customer Order</Badge>
             <h1 className="mt-4 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Pesanan Saya</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-foreground/80 sm:text-base">
-              Status pembayaran, shipment, dan total pesanan dibaca langsung dari backend customer order.
+              Status pembayaran, shipment, dan total pesanan diperbarui secara seketika.
             </p>
           </div>
           <div className="rounded-2xl border border-white/18 bg-white/12 p-4 backdrop-blur">
@@ -110,7 +110,7 @@ export function OrdersPageClient() {
         {loading ? (
           <div className="grid place-items-center rounded-lg border bg-card p-10 text-center">
             <Loader2 className="size-8 animate-spin text-primary" />
-            <p className="mt-3 text-sm text-muted-foreground">Memuat pesanan dari backend...</p>
+            <p className="mt-3 text-sm text-muted-foreground">Memuat riwayat pesanan Anda...</p>
           </div>
         ) : orders.length ? (
           orders.map((order) => (

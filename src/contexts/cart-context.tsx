@@ -106,7 +106,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void refreshCart();
+    queueMicrotask(() => {
+      void refreshCart();
+    });
   }, [refreshCart]);
 
   return (

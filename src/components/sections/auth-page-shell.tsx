@@ -20,13 +20,8 @@ export function AuthPageShell({
 }) {
   return (
     <section className="summit-surface relative overflow-hidden border-b">
-      <div className="pointer-events-none absolute -left-24 top-16 size-72 rounded-full bg-[var(--green-light)]/60 blur-3xl" />
-      <div className="pointer-events-none absolute -right-28 bottom-8 size-96 rounded-full bg-white/70 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px rotate-12 bg-primary/10" />
       <div className="container-page relative grid min-h-[calc(100vh-4rem)] gap-6 py-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-center lg:py-10">
         <div className="relative overflow-hidden rounded-[2rem] border bg-card/88 p-4 shadow-sm backdrop-blur sm:p-6 lg:rounded-[2.5rem_1.25rem_2.5rem_1.25rem]">
-          <div className="absolute -right-12 -top-12 size-40 rounded-full bg-[var(--green-light)]/55" />
-          <div className="absolute bottom-0 left-0 h-24 w-44 rounded-tr-[5rem] bg-primary/8" />
           <div className="relative">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="accent" className="w-fit">
@@ -34,7 +29,7 @@ export function AuthPageShell({
               </Badge>
               <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
                 <Sparkles className="size-3.5 text-primary" />
-                Outdoor account flow
+                Keamanan Terjamin
               </span>
             </div>
             <h1 className="mt-4 max-w-xl text-3xl font-semibold tracking-normal sm:text-4xl">{title}</h1>
@@ -73,8 +68,8 @@ export function AuthPageShell({
             <div className="mt-7 grid gap-4 rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur">
               {[
                 { icon: CheckCircle2, label: "Profil dan alamat tersimpan untuk proses checkout." },
-                { icon: ShieldCheck, label: "Session web disiapkan untuk Auth.js dan RBAC admin." },
-                { icon: Truck, label: "Pesanan, tracking, dan notifikasi siap mengikuti flow PRD." },
+                { icon: ShieldCheck, label: "Keamanan data diri dan privasi Anda dijamin dan terlindungi." },
+                { icon: Truck, label: "Pesanan, tracking, dan notifikasi selalu terupdate." },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 text-sm text-primary-foreground/88">
                   <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary-foreground/95 text-primary">

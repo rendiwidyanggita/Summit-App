@@ -95,7 +95,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         </div>
         <div className="border-t border-white/15 bg-primary-foreground/8 px-5 py-3 text-sm text-primary-foreground/80 sm:px-6">
           <ShieldCheck className="mr-2 inline size-4 text-accent" />
-          Katalog demonstrasi dapat digunakan untuk mencoba cart, reserved stock, voucher, dan checkout.
+          Jelajahi seluruh katalog kami dan temukan berbagai perlengkapan pendakian berkualitas untuk petualangan Anda.
         </div>
       </section>
 

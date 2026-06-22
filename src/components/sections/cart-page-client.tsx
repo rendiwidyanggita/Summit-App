@@ -15,19 +15,17 @@ import { useCart } from "@/contexts/cart-context";
 import type { CartResponse } from "@/lib/commerce-types";
 
 export function CartPageClient() {
-  const { cart, loading: contextLoading, updateItemQuantity, removeCartItem, clearCart: clearCartContext } = useCart();
-  const [loading, setLoading] = useState(true);
-  const [unauthenticated, setUnauthenticated] = useState(false);
+  const { cart, loading, updateItemQuantity, removeCartItem, clearCart: clearCartContext } = useCart();
   const [busyItemId, setBusyItemId] = useState<string | null>(null);
   const [clearing, setClearing] = useState(false);
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (cart) {
-      setSelectedItemIds(new Set(cart.items.map((i) => i.id)));
-      setUnauthenticated(false);
+      queueMicrotask(() => {
+        setSelectedItemIds(new Set(cart.items.map((i) => i.id)));
+      });
     }
-    setLoading(false);
   }, [cart]);
 
   async function updateQuantity(id: string, quantity: number) {
@@ -98,25 +96,7 @@ export function CartPageClient() {
   if (loading) {
     return (
       <div className="container-page py-8">
-        <RouteStatePanel icon={Loader2} eyebrow="Keranjang" title="Memuat keranjang" description="Mengambil item cart dari backend." />
-      </div>
-    );
-  }
-
-  if (unauthenticated) {
-    return (
-      <div className="container-page py-8">
-        <RouteStatePanel
-          icon={ShoppingBag}
-          eyebrow="Keranjang"
-          title="Masuk untuk melihat keranjang"
-          description="Keranjang disimpan per akun agar checkout, voucher, dan reserved stock divalidasi backend."
-          actions={
-            <Button asChild>
-              <Link href="/masuk?callbackUrl=/keranjang">Masuk</Link>
-            </Button>
-          }
-        />
+        <RouteStatePanel icon={Loader2} eyebrow="Keranjang" title="Memuat keranjang" description="Memuat keranjang belanja Anda." />
       </div>
     );
   }
@@ -148,13 +128,13 @@ export function CartPageClient() {
             <Badge variant="accent">Shopping Cart</Badge>
             <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em] sm:text-5xl">Keranjang Pendakian</h1>
             <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
-              Review item, sesuaikan quantity, cek estimasi berat, lalu lanjut ke checkout yang sudah terhubung backend.
+              Review item, sesuaikan quantity, cek estimasi berat, lalu lanjut ke proses pembayaran yang aman.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-sm lg:max-w-sm">
             <span className="rounded-full bg-white/12 px-3 py-2">Cart API</span>
             <span className="rounded-full bg-white/12 px-3 py-2">Voucher aktif</span>
-            <span className="rounded-full bg-white/12 px-3 py-2">Ongkir backend</span>
+            <span className="rounded-full bg-white/12 px-3 py-2">Ongkir Otomatis</span>
           </div>
         </div>
       </section>

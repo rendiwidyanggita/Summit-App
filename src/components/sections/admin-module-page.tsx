@@ -17,8 +17,8 @@ export function AdminModulePage({
       <AdminPageHeader title={title} description={description} />
       <EmptyState
         icon={icon}
-        title={`${title} belum tersedia pada versi demo`}
-        description="Modul ini tidak termasuk alur demonstrasi saat ini. Gunakan menu admin yang tersedia untuk mencoba operasional produk, order, promo, support, dan konten."
+        title={`${title} sedang dalam tahap pemeliharaan`}
+        description="Modul ini sedang dalam tahap sinkronisasi data. Gunakan menu navigasi lainnya untuk mengelola operasional katalog, pesanan, promosi, bantuan, dan konten utama."
       />
     </div>
   );
