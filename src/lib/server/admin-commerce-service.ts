@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { ApiError } from "@/lib/server/http";
 
 const optionalUrl = z.union([z.string().url(), z.literal("")]).optional().transform((value) => value || null);
-const optionalText = z.string().trim().optional().transform((value) => value || null);
+const optionalText = z.string().trim().nullable().optional().transform((value) => value || null);
 
 export const adminListQuerySchema = z.object({
   q: z.string().trim().optional(),

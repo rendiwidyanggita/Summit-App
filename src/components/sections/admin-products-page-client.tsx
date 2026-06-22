@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
-import { Archive, Loader2, Package, Pencil, Plus, SlidersHorizontal } from "lucide-react";
+import { Archive, Loader2, Package, Pencil, Plus, SlidersHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminDataToolbar, AdminLowStockFlag, AdminMetricCard, AdminStatusPill } from "@/components/sections/admin-commerce-ui";
@@ -27,6 +27,7 @@ export function AdminProductsPageClient() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("ALL");
   const [editing, setEditing] = useState<AdminProduct | null | undefined>(undefined);
+  const [retainedPhotos, setRetainedPhotos] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -65,8 +66,7 @@ export function AdminProductsPageClient() {
         uploadedUrls = json.data?.urls ?? [];
       }
 
-      const manualUrls = String(form.get("photo")).split(",").map((value) => value.trim()).filter(Boolean);
-      const combinedPhotos = Array.from(new Set([...manualUrls, ...uploadedUrls]));
+      const combinedPhotos = [...retainedPhotos, ...uploadedUrls];
 
       const payload = {
         name: String(form.get("name")), slug: String(form.get("slug")), description: String(form.get("description")),
@@ -77,8 +77,8 @@ export function AdminProductsPageClient() {
         variants: existingVariants.length ? existingVariants.map((variant, index) => {
           const isProductActive = String(form.get("status")) !== "ARCHIVED";
           return index === 0
-            ? { ...variant, stock: Number(form.get("stock")), sku: String(form.get("sku")), isActive: isProductActive }
-            : { ...variant, isActive: isProductActive };
+            ? { ...variant, size: variant.size ?? "", color: variant.color ?? "", stock: Number(form.get("stock")), sku: String(form.get("sku")), isActive: isProductActive }
+            : { ...variant, size: variant.size ?? "", color: variant.color ?? "", isActive: isProductActive };
         }) : [{ sku: String(form.get("sku")), size: "", color: "", stock: Number(form.get("stock")), minimumStock: 10, priceModifier: 0, isActive: String(form.get("status")) !== "ARCHIVED" }],
       };
 
@@ -104,7 +104,7 @@ export function AdminProductsPageClient() {
     </div>
     <div className="flex flex-col gap-3 sm:flex-row">
       <div className="flex-1"><AdminDataToolbar search={search} onSearchChange={setSearch} filter={status} onFilterChange={setStatus} options={statusOptions} placeholder="Cari produk..." /></div>
-      <Button onClick={() => setEditing(null)}><Plus /> Tambah produk</Button>
+      <Button onClick={() => { setRetainedPhotos([]); setEditing(null); }}><Plus /> Tambah produk</Button>
     </div>
     <Card><CardHeader><CardTitle className="text-base">Produk katalog</CardTitle></CardHeader><CardContent className="grid gap-3">
       {loading ? <Loader2 className="animate-spin" /> : products.map((product) => <div key={product.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[64px_1fr_auto] md:items-center">
@@ -112,7 +112,7 @@ export function AdminProductsPageClient() {
         <div><div className="flex flex-wrap items-center gap-2"><strong>{product.name}</strong><AdminStatusPill status={product.status} /><AdminLowStockFlag show={product.lowStock} /></div>
           <div className="mt-1 text-sm text-muted-foreground">{product.brand.name} · {product.category.name} · {product.stock} stok · margin {product.margin}%</div>
           <div className="mt-1 font-medium">{formatRupiah(product.price)}</div></div>
-        <div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => setEditing(product)}><Pencil /> Edit</Button><Button size="sm" variant="ghost" onClick={() => void archive(product)}><Archive /> Archive</Button></div>
+        <div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => { setRetainedPhotos(product.photos); setEditing(product); }}><Pencil /> Edit</Button><Button size="sm" variant="ghost" onClick={() => void archive(product)}><Archive /> Archive</Button></div>
       </div>)}
     </CardContent></Card>
     <Dialog open={editing !== undefined} onOpenChange={(open) => !open && setEditing(undefined)}><DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto"><DialogHeader><DialogTitle>{editing ? "Edit produk" : "Tambah produk"}</DialogTitle><DialogDescription>Varian pertama dapat diperbarui melalui form ini; varian lain tetap dipertahankan.</DialogDescription></DialogHeader>
@@ -122,12 +122,19 @@ export function AdminProductsPageClient() {
         <div className="grid gap-3 sm:grid-cols-2"><SelectField label="Kategori" name="categoryId" value={editing?.categoryId} options={categories.map((c) => ({ value: c.id, label: c.name }))} /><SelectField label="Brand" name="brandId" value={editing?.brandId} options={brands.map((b) => ({ value: b.id, label: b.name }))} /></div>
         <div className="grid gap-3 sm:grid-cols-3"><Field label="Harga jual" name="price" type="number" value={editing?.price} /><Field label="Harga beli" name="costPrice" type="number" value={editing?.costPrice} /><Field label="Harga diskon" name="discountPrice" type="number" value={editing?.discountPrice ?? ""} /></div>
         <div className="grid gap-3 sm:grid-cols-3"><Field label="Berat gram" name="weightGram" type="number" value={editing?.weightGram ?? 500} /><Field label="SKU utama" name="sku" value={editing?.variants[0]?.sku} /><Field label="Stok utama" name="stock" type="number" value={editing?.variants[0]?.stock ?? 0} /></div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="URL foto (pisahkan koma) (opsional)" name="photo" value={editing?.photos.join(", ")} />
-          <div className="grid gap-2">
-            <Label>Atau unggah foto dari komputer</Label>
-            <Input type="file" name="photoFiles" accept="image/*" multiple />
-          </div>
+        <div className="grid gap-2">
+          <Label>Foto produk</Label>
+          {retainedPhotos.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {retainedPhotos.map((url) => (
+                <div key={url} className="relative size-16 overflow-hidden rounded-md border bg-secondary">
+                  <Image src={url} alt="foto produk" fill className="object-cover" sizes="64px" />
+                  <button type="button" onClick={() => setRetainedPhotos((prev) => prev.filter((u) => u !== url))} className="absolute right-0.5 top-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"><X className="size-3" /></button>
+                </div>
+              ))}
+            </div>
+          )}
+          <Input type="file" name="photoFiles" accept="image/*" multiple />
         </div>
         <SelectField label="Status" name="status" value={editing?.status ?? "DRAFT"} options={["DRAFT","ACTIVE","INACTIVE","ARCHIVED"].map((value) => ({ value, label: value }))} />
         <Button type="submit" disabled={saving}>{saving ? <Loader2 className="animate-spin" /> : null} Simpan produk</Button>
